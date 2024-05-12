@@ -1,0 +1,41 @@
+name: invoice_pdf_generate
+description: A new Flutter project.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.1.2 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_native_splash: ^2.4.0
+  get: ^4.6.6
+  getwidget: ^4.0.0
+  image_picker: ^1.1.1
+  isar: ^3.1.0+1
+  open_file: ^3.3.2
+  path_provider: ^2.1.1
+  pdf: ^3.10.4
+  rename_app: ^1.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  flutter_launcher_icons: "^0.13.1"
+
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: assets/logoapp.png
+  
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/logoapp.png"
+  min_sdk_android: 16
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
