@@ -1,10 +1,13 @@
+import 'dart:ffi';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:invoice_pdf_generate/file_handle_api.dart';
 import 'package:pdf/pdf.dart';
+import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 class PdfController extends GetxController {
@@ -16,35 +19,123 @@ class PdfController extends GetxController {
   var companyAddress = "".obs;
   //company email
   var companyEmail = ''.obs;
-  var invoiceName = ''.obs;
-  var invoiceEmail = ''.obs;
+  late List<List<String>> tableData = [];
+
+  TextEditingController itemController = TextEditingController();
+  TextEditingController srnoController = TextEditingController();
+  TextEditingController qtyController = TextEditingController();
+  TextEditingController amountController = TextEditingController();
+  TextEditingController itemControlleru = TextEditingController();
+  TextEditingController srnoControlleru = TextEditingController();
+  TextEditingController qtyControlleru = TextEditingController();
+  TextEditingController amountControlleru = TextEditingController();
+
+//  Invoice To Name
+// Invoice To Address (optional)
+// Invoice To Contact Number (optional)
+  var invoiceToName = "".obs;
+  var invoiceToAddress = "".obs;
+  var invoiceToContactNumber = "".obs;
   //company image xfile
 
   File? companyPickedImageFile;
   File? qrCodePickedImageFile;
-   companyPickImage() async {
+  File? signatureCodePickedImageFile;
+  companyPickImage() async {
     final picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: ImageSource.gallery);
     companyPickedImageFile = File(pickedImage!.path);
     update();
   }
+
   deleteCompanyImage() {
     companyPickedImageFile = null;
     update();
   }
+
+  void updateTableBasedOnIndex(int index) {
+    tableData[index][0] = srnoControlleru.text.isEmpty
+        ? (tableData.length + 1).toString()
+        : srnoControlleru.text;
+    tableData[index][1] = itemControlleru.text;
+    tableData[index][2] = qtyControlleru.text;
+    tableData[index][3] = amountControlleru.text;
+    itemControlleru.clear();
+    srnoControlleru.clear();
+    qtyControlleru.clear();
+    amountControlleru.clear();
+
+    update();
+  }
+
+  void updateTableData() {
+    //  List listData = [
+    //  {
+    //     'Sr No': srNo,
+    //     'Item & Description': itemController,
+    //     'Qty': qtyController,
+    //     'Amount': amountController,
+    //  }
+    //   ];
+
+    //  List  listData = [
+
+    //     (tableData.length + 1).toString() ,
+    //     amountController,
+    //     itemController,
+    //     qtyController,
+
+    //   ];
+    tableData.add([
+      srnoController.text.isEmpty
+          ? (tableData.length + 1).toString()
+          : srnoController.text,
+      itemController.text,
+      qtyController.text,
+      amountController.text,
+    ]);
+    Get.snackbar(
+      'Success',
+      'Data Added Successfully',
+      snackPosition: SnackPosition.BOTTOM,
+      margin: EdgeInsets.all(10),
+      duration: Duration(seconds: 1),
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+    );
+    itemController.clear();
+    srnoController.clear();
+    qtyController.clear();
+    amountController.clear();
+    update();
+  }
+
   deleteQrCodeImage() {
     qrCodePickedImageFile = null;
     update();
   }
- qrCodePickImage() async {
+
+  qrCodePickImage() async {
     final picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+    final pickedImage = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
     qrCodePickedImageFile = File(pickedImage!.path);
     update();
   }
-    void Function() get companypickImage => companyPickImage;
-  void Function() get qrcodepickImage => qrCodePickImage;
 
+  signaturePickImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+    signatureCodePickedImageFile = File(pickedImage!.path);
+    update();
+  }
+
+  void Function() get companypickImage => companyPickImage;
+  void Function() get qrcodepickImage => qrCodePickImage;
+  void Function() get signaturepickImage => signaturePickImage;
 
   final List<PdfColor> colors = [
     PdfColors.black,
@@ -54,94 +145,49 @@ class PdfController extends GetxController {
     PdfColors.red,
   ];
 
-   Future<File> generate(PdfColor color, pw.Font fontFamily) async {
-    final pdf = pw.Document();
+  Future<File> generate(PdfColor color, pw.Font fontFamily) async {
+    final pdf = pw.Document(
+      theme: pw.ThemeData.withFont(
+          fontFallback: [pw.Font.symbol(), ]),
+    );
 
     final iconImage =
-        (await companyPickedImageFile!.readAsBytes()).buffer.asUint8List();
+        (await companyPickedImageFile?.readAsBytes())?.buffer.asUint8List();
 // Item & Description (editable)
 // Qty (editable)
 // Amount
 // Total (auto-calculated)
     final tableHeaders = [
       'Sr No',
-      'Item & Description',
+      'Item & \nDescription',
       'Qty',
       'Amount',
-      'Vat %',
       'Total',
     ];
-
-    final tableData = [
-      [
-        '1',
-        'Coffee',
-        '7',
-        '\₹ 5',
-        '1 %',
-        '\₹ 35',
-      ],
-      [
-        '2',
-        'Blue Berries',
-        '5',
-        '\₹ 10',
-        '2 %',
-        '\₹ 50',
-      ],
-      [
-        '3',
-        'Water',
-        '1',
-        '\₹ 3',
-        '1.5 %',
-        '\₹ 3',
-      ],
-      [
-        '4',
-        'Apple',
-        '6',
-        '\₹ 8',
-        '2 %',
-        '\₹ 48',
-      ],
-      [
-        '5',
-        'Lunch',
-        '3',
-        '\₹ 90',
-        '12 %',
-        '\₹ 270',
-      ],
-      [
-        '6',
-        'Drinks',
-        '2',
-        '\₹ 15',
-        '0.5 %',
-        '\₹ 30',
-      ],
-      [
-        '7',
-        'Lemon',
-        '4',
-        '\₹ 7',
-        '0.5 %',
-        '\₹ 28',
-      ],
-    ];
-
+final font  = await PdfGoogleFonts.firaSansCondensedRegular();
     pdf.addPage(
       pw.MultiPage(
+        theme: pw.ThemeData.withFont(
+          fontFallback: [
+            
+           await PdfGoogleFonts.materialIcons(),
+        
+           ],
+               icons: await PdfGoogleFonts.materialIcons(), // this line
+
+        ) ,
+        pageFormat: PdfPageFormat.a4,
         build: (context) {
           return [
             pw.Row(
               children: [
-                pw.Image(
-                  pw.MemoryImage(iconImage),
-                  height: 72,
-                  width: 72,
-                ),
+                iconImage != null
+                    ? pw.Image(
+                        pw.MemoryImage(iconImage),
+                        height: 72,
+                        width: 72,
+                      )
+                    : pw.Container(),
                 pw.SizedBox(width: 1 * PdfPageFormat.mm),
                 pw.Column(
                   mainAxisSize: pw.MainAxisSize.min,
@@ -172,9 +218,7 @@ class PdfController extends GetxController {
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Text(
-                     companyName.value.isEmpty
-                        ? 'Test'
-                        : companyName.value,
+                      companyName.value.isEmpty ? 'Test' : companyName.value,
                       style: pw.TextStyle(
                         fontSize: 15.5,
                         fontWeight: pw.FontWeight.bold,
@@ -214,13 +258,13 @@ class PdfController extends GetxController {
             //     font: fontFamily,
             //   ),
             // ),
-          
+
             pw.SizedBox(height: 5 * PdfPageFormat.mm),
 
             ///
             /// PDF Table Create
             ///
-            pw.Table.fromTextArray(
+            pw.TableHelper.fromTextArray(
               headers: tableHeaders,
               data: tableData,
               border: null,
@@ -264,7 +308,7 @@ class PdfController extends GetxController {
                               style: pw.TextStyle(
                                 fontWeight: pw.FontWeight.bold,
                                 color: color,
-                                font: fontFamily,
+                                font: font,
                               ),
                             ),
                           ],
@@ -286,7 +330,7 @@ class PdfController extends GetxController {
                               style: pw.TextStyle(
                                 fontWeight: pw.FontWeight.bold,
                                 color: color,
-                                font: fontFamily,
+                                font: font,
                               ),
                             ),
                           ],
@@ -310,7 +354,7 @@ class PdfController extends GetxController {
                               style: pw.TextStyle(
                                 fontWeight: pw.FontWeight.bold,
                                 color: color,
-                                font: fontFamily,
+                                font: font,
                               ),
                             ),
                           ],
