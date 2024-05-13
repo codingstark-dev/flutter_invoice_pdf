@@ -1,0 +1,320 @@
+//create company screen stateless widget
+// Gather Company Details:
+// Prompt the user to input the following:
+// Company Name
+// Company Logo (image file) option
+// Company Address
+// QR Code (image file for payment)
+// Signature Image (to add below the total amount)
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
+import 'package:getwidget/getwidget.dart';
+import 'package:invoice_pdf_generate/Controller/pdfController.dart';
+import 'package:invoice_pdf_generate/Controller/sqlController.dart';
+import 'package:invoice_pdf_generate/Screens/InvoiceScreen.dart';
+import 'package:invoice_pdf_generate/style/ConstStyle.dart';
+
+class CompanyScreen extends StatelessWidget {
+  const CompanyScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final pdfController = Get.put(PdfController());
+    final sqfliteController = Get.put(SqlDb());
+  final _formKey = GlobalKey<FormState>();
+
+    return Scaffold(
+            resizeToAvoidBottomInset: false,
+
+      appBar: AppBar(
+        elevation: 1,
+        title: const Text('Company Details'),
+        centerTitle: true,
+      ),
+      body: GetBuilder(
+          init: pdfController,
+          builder: (context) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                      Row(
+                      children: [
+                        Expanded(
+                          child: Divider(color: Colors.black38),
+                        ),
+                        const Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: const Text('Choose Company Image'),
+                        ),
+                        Expanded(
+                          child: Divider(color: Colors.black38),
+                        ),
+                      ],
+                    ),
+                
+                    InkWell(
+                      onTap: () {
+                        pdfController.companypickImage();
+                      },
+                      child: GFAvatar(
+                        child: pdfController.companyPickedImageFile == null
+                            ? const Icon(Icons.person,
+                                size: 50, color: Colors.white)
+                            : null,
+                        backgroundImage: pdfController.companyPickedImageFile !=
+                                null
+                            ? FileImage(
+                                File(pdfController.companyPickedImageFile!.path))
+                            : null,
+                        shape: GFAvatarShape.circle,
+                        radius: 50,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    //company name
+                    TextFormField(
+                      
+                      onChanged: (value) {
+                        pdfController.companyName.value = value;
+                      },
+                    
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter company name';
+                      }
+                      return null;
+                      },
+                      decoration: InputDecoration(
+                        isDense: true,
+                        
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        hintText: 'Company Name',
+                        label: Text('Company Name'),
+                        // errorText: 'Please enter company name',
+                        alignLabelWithHint: true,
+                      ),
+                    ),
+                    // company image
+                    SizedBox(
+                      height: 10,
+                    ),
+                    TextFormField(
+                      onChanged: (value) {
+                        pdfController.companyAddress.value = value;
+                      },
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter company address';
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        isDense: true,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        hintText: 'Company Address',
+                        label: Text('Company Address'),
+                        alignLabelWithHint: true,
+                        // errorText: 'Please enter company address',
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Divider(color: Colors.black38),
+                        ),
+                        const Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: const Text('Choose QR Code'),
+                        ),
+                        Expanded(
+                          child: Divider(color: Colors.black38),
+                        ),
+                      ],
+                    ),
+                
+                    SizedBox(
+                      height: 10,
+                    ),
+                
+                    pdfController.qrCodePickedImageFile != null
+                        ? Column(
+                            children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Stack(
+                                alignment: Alignment.topRight,
+                                children: [
+                                  Image.file(
+                                    File(pdfController
+                                        .qrCodePickedImageFile!.path),
+                                    height: 100,
+                                    width: 100,
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey[200],
+                                        borderRadius: BorderRadius.circular(10)),
+                                    child: IconButton(
+                                        padding: const EdgeInsets.all(0),
+                                        iconSize: 10,
+                                        onPressed: () {
+                                          pdfController.qrCodePickImage();
+                                        },
+                                        icon: const Icon(
+                                          Icons.edit,
+                                          size: 20,
+                                        )),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+                        : Container(
+                            decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(10)),
+                          child: IconButton(
+                              onPressed: () async {
+                                pdfController.qrCodePickImage();
+                              },
+                              icon: const Icon(Icons.qr_code),
+                            ),
+                        ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Divider(color: Colors.black38),
+                        ),
+                        const Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: const Text('Choose Signature Image'),
+                        ),
+                        Expanded(
+                          child: Divider(color: Colors.black38),
+                        ),
+                      ],
+                    ),
+                    // company address
+                
+                    pdfController.signatureCodePickedImageFile != null
+                        ? Column(
+                            children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Stack(
+                                alignment: Alignment.topRight,
+                                children: [
+                                  Image.file(
+                                    File(pdfController
+                                        .signatureCodePickedImageFile!.path),
+                                    height: 100,
+                                    width: 100,
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey[200],
+                                        borderRadius: BorderRadius.circular(10)),
+                                    child: IconButton(
+                                        padding: const EdgeInsets.all(0),
+                                        iconSize: 10,
+                                        onPressed: () {
+                                          pdfController.signaturePickImage();
+                                        },
+                                        icon: const Icon(
+                                          Icons.edit,
+                                          size: 20,
+                                        )),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+                        : Container(
+                            decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(10)),
+                          child: IconButton(
+                            
+                              onPressed: () async {
+                                pdfController.signaturePickImage();
+                                },
+                                icon: const Icon(Icons.edit_document)
+                            ),
+                        ),  SizedBox(
+                      height: 20,
+                    ),
+                          Divider(
+                            color: Colors.black26,
+                          ),
+                        SizedBox(
+                      height: 20,
+                    ),
+                    Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: secondaryColor,
+                          backgroundColor: primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        icon: const Icon(Icons.arrow_back_ios),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            sqfliteController.insert('company', {
+                            'name': pdfController.companyName.value,
+                            'logo': pdfController.companyPickedImageFile != null
+                                ? pdfController.companyPickedImageFile!.path
+                                : '',
+                            'address': pdfController.companyAddress.value,
+                            'qr_code': pdfController.qrCodePickedImageFile != null
+                                ? pdfController.qrCodePickedImageFile!.path
+                                : '',
+                            'signature': pdfController.signatureCodePickedImageFile != null
+                                ? pdfController.signatureCodePickedImageFile!.path
+                                : '',
+                          });
+                          Get.to(()=>
+                            InvoiceScreen(),
+                          );
+                            _formKey.currentState!.save();
+                          } else{
+                        Get.snackbar('Error', 'Please fill all the fields',
+                        snackPosition: SnackPosition.BOTTOM,
+                        margin: EdgeInsets.all(10),
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white,
+                        );                     }                         
+                          
+                        },
+                        label: const Text('Go to Invoice Screen'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
+    );
+  }
+}
