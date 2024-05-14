@@ -229,6 +229,44 @@ class _AddDataScreenState extends State<AddDataScreen> {
                       if (context.tableData.isEmpty) {
                         Get.snackbar(
                           'Error',
+                          'Please add some items to see preview',
+                          snackPosition: SnackPosition.BOTTOM,
+                          margin: EdgeInsets.all(10),
+                          backgroundColor: Colors.red,
+                          colorText: Colors.white,
+                        );
+                        return;
+                      }
+                      Get.to(
+                        PdfPreview(build: (format) {
+                          return pdfController.generate(
+                            themeColor,
+                            pw.Font.courier(),
+                            true
+                          ).then((file) => file.readAsBytesSync());
+                        }),
+                    
+                      );
+                    },
+                    icon: const Icon(Icons.remove_red_eye),
+                    label: const Text('Preview Invoice PDF'),
+                  ),
+                ),
+            
+                Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: secondaryColor,
+                      backgroundColor: primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () async {
+                      if (context.tableData.isEmpty) {
+                        Get.snackbar(
+                          'Error',
                           'Please add some items to generate invoice',
                           snackPosition: SnackPosition.BOTTOM,
                           margin: EdgeInsets.all(10),
@@ -237,17 +275,68 @@ class _AddDataScreenState extends State<AddDataScreen> {
                         );
                         return;
                       }
-                      // generate pdf file
-                      final pdfFile = await pdfController.generate(
-                        themeColor,
-                        pw.Font.courier(),
-                      );
+                      //ask for file name
+                      showDialog(
+                        context: bcontext,
+                        builder: (_) {
+                          return AlertDialog(
+                            title: Text('Enter File Name'),
+                            content: TextField(
+                              controller: context.fileNameController,
+                              decoration: InputDecoration(
+                                hintText: 'Enter File Name',
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Get.back();
+                                },
+                                child: Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  if (context.fileNameController.text.isEmpty) {
+                                    Get.snackbar(
+                                      'Error',
+                                      'Please enter file name',
+                                      snackPosition: SnackPosition.BOTTOM,
+                                      margin: EdgeInsets.all(10),
+                                      backgroundColor: Colors.red,
+                                      colorText: Colors.white,
+                                    );
+                                    return;
+                                  }
+                                  Get.back();
 
-                      // opening the pdf file
-                      FileHandleApi.openFile(pdfFile);
+                                  // generate pdf file
+                                  pdfController.generate(
+                                    themeColor,
+                                    pw.Font.courier(),
+                                    false
+                                  ).then((pdfFile) {
+                                    FileHandleApi.openFile(
+                                      pdfFile
+                                    );
+                                  });
+                                },
+                                child: Text('Save'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      // // generate pdf file
+                      // final pdfFile = await pdfController.generate(
+                      //   themeColor,
+                      //   pw.Font.courier(),
+                      // );
+
+                      // // opening the pdf file
+                      // FileHandleApi.openFile(pdfFile);
                     },
                     icon: const Icon(Icons.arrow_back_ios_new),
-                    label: const Text('Add Invoice Content'),
+                    label: const Text('Download Invoice PDF'),
                   ),
                 ),
                 SizedBox(
@@ -510,18 +599,18 @@ class _AddDataScreenState extends State<AddDataScreen> {
                           ).toList(),
                         ),
                       ),
-                      (context.tableData.isEmpty)
-                          ? Container()
-                          :
-                      SizedBox(
-                        height: 200,
-                        child: PdfPreview(build: (format) {
-                          return pdfController.generate(
-                            themeColor,
-                            pw.Font.courier(),
-                          ).then((file) => file.readAsBytesSync());
-                        }),
-                      ),
+                      // (context.tableData.isEmpty)
+                          // ? Container()
+                          // :
+                      // SizedBox(
+                      //   height: 200,
+                      //   child: PdfPreview(build: (format) {
+                      //     return pdfController.generate(
+                      //       themeColor,
+                      //       pw.Font.courier(),
+                      //     ).then((file) => file.readAsBytesSync());
+                      //   }),
+                      // ),
 
                 //   Row(
                 //   children: [
