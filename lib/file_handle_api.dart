@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:downloadsfolder/downloadsfolder.dart';
 import 'package:invoice_pdf_generate/Utils/PermissionUtil.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
@@ -12,15 +13,13 @@ class FileHandleApi {
     required pw.Document pdf,
   }) async {
     await requestPermission();
-    var status = await Permission.storage.status;
-    if (!status.isGranted) {
-      // If not we will ask for permission first
-      await Permission.storage.request();
-    }
+    
     Directory _directory = Directory("");
+        Directory downloadDirectory = await getDownloadDirectory();
+
     if (Platform.isAndroid) {
       // Redirects it to download folder in android
-      _directory = Directory("/storage/emulated/0/Download");
+      _directory = downloadDirectory;
     } else {
       _directory = await getApplicationDocumentsDirectory();
     }
@@ -33,6 +32,8 @@ class FileHandleApi {
     // final dir = await getExternalStorageDirectory();
     final file = File("$exPath/$name");
     await file.writeAsBytes(bytes);
+    await openDownloadFolder();
+    
     //open pdf file
     return file;
   }
@@ -56,9 +57,11 @@ class FileHandleApi {
     try {
       await requestPermission();
       final url = file.path;
-      
 
-      await OpenFile.open(url);
+
+      await OpenFile.open(url,
+          type: 'application/pdf',
+      );
     } on Exception catch (e) {
       print('error: $e');
     }

@@ -239,20 +239,17 @@ class _AddDataScreenState extends State<AddDataScreen> {
                       }
                       Get.to(
                         PdfPreview(build: (format) {
-                          return pdfController.generate(
-                            themeColor,
-                            pw.Font.courier(),
-                            true
-                          ).then((file) => file.readAsBytesSync());
+                          return pdfController
+                              .generate(themeColor, pw.Font.courier(), true)
+                              .then((file) => file.readAsBytesSync());
                         }),
-                    
                       );
                     },
                     icon: const Icon(Icons.remove_red_eye),
                     label: const Text('Preview Invoice PDF'),
                   ),
                 ),
-            
+
                 Directionality(
                   textDirection: TextDirection.rtl,
                   child: ElevatedButton.icon(
@@ -280,21 +277,26 @@ class _AddDataScreenState extends State<AddDataScreen> {
                         context: bcontext,
                         builder: (_) {
                           return AlertDialog(
-                            title: Text('Enter File Name'),
+                            title: Center(child: Text('Enter File Name')),
+                            contentPadding: EdgeInsets.all(10),
                             content: TextField(
                               controller: context.fileNameController,
                               decoration: InputDecoration(
+                                isDense: true,
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10)),
                                 hintText: 'Enter File Name',
                               ),
                             ),
+                            actionsAlignment: MainAxisAlignment.spaceAround,
                             actions: [
-                              TextButton(
+                              ElevatedButton(
                                 onPressed: () {
                                   Get.back();
                                 },
                                 child: Text('Cancel'),
                               ),
-                              TextButton(
+                              ElevatedButton(
                                 onPressed: () {
                                   if (context.fileNameController.text.isEmpty) {
                                     Get.snackbar(
@@ -310,14 +312,19 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                   Get.back();
 
                                   // generate pdf file
-                                  pdfController.generate(
-                                    themeColor,
-                                    pw.Font.courier(),
-                                    false
-                                  ).then((pdfFile) {
-                                    FileHandleApi.openFile(
-                                      pdfFile
-                                    );
+                                  pdfController
+                                      .generate(
+                                          themeColor, pw.Font.courier(), false)
+                                      .then((pdfFile) {
+                                        Get.snackbar(
+                                          'Done',
+                                          'PDF file Saved on Download folder',
+                                          snackPosition: SnackPosition.BOTTOM,
+                                          margin: EdgeInsets.all(10),
+                                          backgroundColor: Colors.green,
+                                          colorText: Colors.white,
+                                        );
+                                    FileHandleApi.openFile(pdfFile);
                                   });
                                 },
                                 child: Text('Save'),
@@ -387,15 +394,16 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                         context.srnoControlleru.text = data[0];
                                         context.itemControlleru.text = data[1];
                                         context.qtyControlleru.text = data[2];
-                                        context.amountControlleru.text = data[3];
+                                        context.amountControlleru.text =
+                                            data[3];
                                         showModalBottomSheet(
-                                          
                                             context: bcontext,
                                             builder: (s) => Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child: Form(
-                                                key: key2,
-                                                child: Column(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Form(
+                                                    key: key2,
+                                                    child: Column(
                                                       children: [
                                                         SizedBox(
                                                           height: 10,
@@ -403,7 +411,8 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                         Row(
                                                           children: [
                                                             Expanded(
-                                                              child: TextFormField(
+                                                              child:
+                                                                  TextFormField(
                                                                 controller: context
                                                                     .srnoControlleru,
                                                                 // validator: (value) {
@@ -417,12 +426,12 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                   isDense: true,
                                                                   border: OutlineInputBorder(
                                                                       borderRadius:
-                                                                          BorderRadius
-                                                                              .circular(
-                                                                                  10)),
-                                                                  hintText: 'Sr No',
-                                                                  label:
-                                                                      Text('Sr No'),
+                                                                          BorderRadius.circular(
+                                                                              10)),
+                                                                  hintText:
+                                                                      'Sr No',
+                                                                  label: Text(
+                                                                      'Sr No'),
                                                                   alignLabelWithHint:
                                                                       true,
                                                                 ),
@@ -432,7 +441,8 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                               width: 10,
                                                             ),
                                                             Expanded(
-                                                              child: TextFormField(
+                                                              child:
+                                                                  TextFormField(
                                                                 keyboardType:
                                                                     TextInputType
                                                                         .number,
@@ -445,7 +455,8 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                   LengthLimitingTextInputFormatter(
                                                                       50),
                                                                 ],
-                                                                validator: (value) {
+                                                                validator:
+                                                                    (value) {
                                                                   if (value!
                                                                       .isEmpty) {
                                                                     return 'Enter quantity';
@@ -459,12 +470,12 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                   isDense: true,
                                                                   border: OutlineInputBorder(
                                                                       borderRadius:
-                                                                          BorderRadius
-                                                                              .circular(
-                                                                                  10)),
-                                                                  hintText: 'Qty',
-                                                                  label:
-                                                                      Text('Qty'),
+                                                                          BorderRadius.circular(
+                                                                              10)),
+                                                                  hintText:
+                                                                      'Qty',
+                                                                  label: Text(
+                                                                      'Qty'),
                                                                   alignLabelWithHint:
                                                                       true,
                                                                 ),
@@ -474,8 +485,10 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                               width: 10,
                                                             ),
                                                             Expanded(
-                                                              child: TextFormField(
-                                                                validator: (value) {
+                                                              child:
+                                                                  TextFormField(
+                                                                validator:
+                                                                    (value) {
                                                                   if (value!
                                                                       .isEmpty) {
                                                                     return 'Enter amount';
@@ -501,9 +514,8 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                   isDense: true,
                                                                   border: OutlineInputBorder(
                                                                       borderRadius:
-                                                                          BorderRadius
-                                                                              .circular(
-                                                                                  10)),
+                                                                          BorderRadius.circular(
+                                                                              10)),
                                                                   hintText:
                                                                       'Amount',
                                                                   label: Text(
@@ -520,7 +532,8 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                         ),
                                                         TextFormField(
                                                           validator: (value) {
-                                                            if (value!.isEmpty) {
+                                                            if (value!
+                                                                .isEmpty) {
                                                               return 'Please enter item & description';
                                                             }
                                                             return null;
@@ -556,11 +569,13 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                 RoundedRectangleBorder(
                                                               borderRadius:
                                                                   BorderRadius
-                                                                      .circular(10),
+                                                                      .circular(
+                                                                          10),
                                                             ),
                                                           ),
                                                           onPressed: () {
-                                                            if (!key2.currentState!
+                                                            if (!key2
+                                                                .currentState!
                                                                 .validate()) {
                                                               Get.snackbar(
                                                                 'Error',
@@ -569,11 +584,14 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                     SnackPosition
                                                                         .BOTTOM,
                                                                 margin:
-                                                                    EdgeInsets.all(10),
+                                                                    EdgeInsets
+                                                                        .all(
+                                                                            10),
                                                                 backgroundColor:
                                                                     Colors.red,
                                                                 colorText:
-                                                                    Colors.white,
+                                                                    Colors
+                                                                        .white,
                                                               );
                                                               return;
                                                             }
@@ -581,15 +599,15 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                 .updateTableBasedOnIndex(
                                                                     index);
                                                           },
-                                                          icon:
-                                                              const Icon(Icons.add),
+                                                          icon: const Icon(
+                                                              Icons.add),
                                                           label: const Text(
                                                               'Update Item'),
                                                         ),
                                                       ],
                                                     ),
-                                              ),
-                                            ));
+                                                  ),
+                                                ));
                                       },
                                     ),
                                   )
@@ -599,18 +617,18 @@ class _AddDataScreenState extends State<AddDataScreen> {
                           ).toList(),
                         ),
                       ),
-                      // (context.tableData.isEmpty)
-                          // ? Container()
-                          // :
-                      // SizedBox(
-                      //   height: 200,
-                      //   child: PdfPreview(build: (format) {
-                      //     return pdfController.generate(
-                      //       themeColor,
-                      //       pw.Font.courier(),
-                      //     ).then((file) => file.readAsBytesSync());
-                      //   }),
-                      // ),
+                // (context.tableData.isEmpty)
+                // ? Container()
+                // :
+                // SizedBox(
+                //   height: 200,
+                //   child: PdfPreview(build: (format) {
+                //     return pdfController.generate(
+                //       themeColor,
+                //       pw.Font.courier(),
+                //     ).then((file) => file.readAsBytesSync());
+                //   }),
+                // ),
 
                 //   Row(
                 //   children: [

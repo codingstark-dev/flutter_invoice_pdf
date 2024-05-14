@@ -7,6 +7,7 @@ environment:
   sdk: '>=3.1.2 <4.0.0'
 
 dependencies:
+  downloadsfolder: ^1.0.1
   expandable_text: ^2.3.0
   flutter:
     sdk: flutter
@@ -33,16 +34,10 @@ flutter_native_splash:
   color: "#ffffff"
   image: assets/logoapp.png
   branding: assets/logoapp.png
-  color_dark: "#121212"
-  image_dark: assets/logoapp.png
-  branding_dark: assets/logoapp.png
-
   android_12:
     image: assets/logoapp.png
     icon_background_color: "#ffffff"
-    image_dark: assets/logoapp.png
-    icon_background_color_dark: "#121212"
-  
+  ios: true
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
