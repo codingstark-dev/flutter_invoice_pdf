@@ -15,20 +15,24 @@ import 'package:getwidget/getwidget.dart';
 import 'package:invoice_pdf_generate/Controller/pdfController.dart';
 import 'package:invoice_pdf_generate/Controller/sqlController.dart';
 import 'package:invoice_pdf_generate/Screens/InvoiceScreen.dart';
+import 'package:invoice_pdf_generate/Utils/Enums.dart';
 import 'package:invoice_pdf_generate/style/ConstStyle.dart';
 
-class CompanyScreen extends StatelessWidget {
+class CompanyScreen extends StatefulWidget {
   const CompanyScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final pdfController = Get.put(PdfController());
-    final sqfliteController = Get.put(SqlDb());
+  State<CompanyScreen> createState() => _CompanyScreenState();
+}
+
+class _CompanyScreenState extends State<CompanyScreen> {
+  final pdfController = Get.put(PdfController());
+  final sqfliteController = Get.put(SqlDb());
   final _formKey = GlobalKey<FormState>();
-
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-            resizeToAvoidBottomInset: false,
-
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 1,
         title: const Text('Company Details'),
@@ -43,68 +47,66 @@ class CompanyScreen extends StatelessWidget {
                 key: _formKey,
                 child: Column(
                   children: [
-                      Row(
+                    const Row(
                       children: [
                         Expanded(
                           child: Divider(color: Colors.black38),
                         ),
-                        const Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: const Text('Choose Company Image'),
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('Choose Company Image'),
                         ),
                         Expanded(
                           child: Divider(color: Colors.black38),
                         ),
                       ],
                     ),
-                
+
                     InkWell(
                       onTap: () {
                         pdfController.companypickImage();
                       },
                       child: GFAvatar(
+                        backgroundImage:
+                            pdfController.companyPickedImageFile != null
+                                ? FileImage(File(
+                                    pdfController.companyPickedImageFile!.path))
+                                : null,
+                        shape: GFAvatarShape.circle,
+                        radius: 50,
                         child: pdfController.companyPickedImageFile == null
                             ? const Icon(Icons.person,
                                 size: 50, color: Colors.white)
                             : null,
-                        backgroundImage: pdfController.companyPickedImageFile !=
-                                null
-                            ? FileImage(
-                                File(pdfController.companyPickedImageFile!.path))
-                            : null,
-                        shape: GFAvatarShape.circle,
-                        radius: 50,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     //company name
                     TextFormField(
-                      
                       onChanged: (value) {
                         pdfController.companyName.value = value;
                       },
-                    
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter company name';
-                      }
-                      return null;
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter company name';
+                        }
+                        return null;
                       },
                       decoration: InputDecoration(
                         isDense: true,
-                        
+
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10)),
                         hintText: 'Company Name',
-                        label: Text('Company Name'),
+                        label: const Text('Company Name'),
                         // errorText: 'Please enter company name',
                         alignLabelWithHint: true,
                       ),
                     ),
                     // company image
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     TextFormField(
@@ -122,33 +124,72 @@ class CompanyScreen extends StatelessWidget {
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10)),
                         hintText: 'Company Address',
-                        label: Text('Company Address'),
+                        label: const Text('Company Address'),
                         alignLabelWithHint: true,
                         // errorText: 'Please enter company address',
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(height: 10),
+                    // Choose Font
+                    DropdownButtonFormField(
+                      isDense: true,
+                      style: TextStyle(
+                        color: primaryColor,
+                      ),
+                      value: pdfController.gstType.value,
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        hintText: 'Select GST Type',
+                        border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                            value: GstType.NONE,
+                            child: Text('None')),
+                        DropdownMenuItem(
+                            value: GstType.GST_5,
+                            child: Text('GST 5%')),
+                        DropdownMenuItem(
+                            value: GstType.GST_12,
+                            child: Text('GST 12%')),
+                        DropdownMenuItem(
+                            value: GstType.GST_18,
+                            child: Text('GST 18%')),
+                        DropdownMenuItem(
+                            value: GstType.GST_28,
+                            child: Text('GST 28%')),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                            pdfController.gstType.value = value;
+                        }
+                      },
+                    ),
+
+                    const SizedBox(
                       height: 10,
                     ),
-                    Row(
+                    const Row(
                       children: [
                         Expanded(
                           child: Divider(color: Colors.black38),
                         ),
-                        const Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: const Text('Choose QR Code'),
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('Choose QR Code'),
                         ),
                         Expanded(
                           child: Divider(color: Colors.black38),
                         ),
                       ],
                     ),
-                
-                    SizedBox(
+
+                    const SizedBox(
                       height: 10,
                     ),
-                
+
                     pdfController.qrCodePickedImageFile != null
                         ? Column(
                             children: [
@@ -167,7 +208,8 @@ class CompanyScreen extends StatelessWidget {
                                   Container(
                                     decoration: BoxDecoration(
                                         color: Colors.grey[200],
-                                        borderRadius: BorderRadius.circular(10)),
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
                                     child: IconButton(
                                         padding: const EdgeInsets.all(0),
                                         iconSize: 10,
@@ -187,25 +229,25 @@ class CompanyScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                                 color: Colors.grey[200],
                                 borderRadius: BorderRadius.circular(10)),
-                          child: IconButton(
+                            child: IconButton(
                               onPressed: () async {
                                 pdfController.qrCodePickImage();
                               },
                               icon: const Icon(Icons.qr_code),
                             ),
-                        ),
-                    SizedBox(
+                          ),
+                    const SizedBox(
                       height: 10,
                     ),
-                
-                    Row(
+
+                    const Row(
                       children: [
                         Expanded(
                           child: Divider(color: Colors.black38),
                         ),
-                        const Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: const Text('Choose Signature Image'),
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('Choose Signature Image'),
                         ),
                         Expanded(
                           child: Divider(color: Colors.black38),
@@ -213,7 +255,7 @@ class CompanyScreen extends StatelessWidget {
                       ],
                     ),
                     // company address
-                
+
                     pdfController.signatureCodePickedImageFile != null
                         ? Column(
                             children: [
@@ -232,7 +274,8 @@ class CompanyScreen extends StatelessWidget {
                                   Container(
                                     decoration: BoxDecoration(
                                         color: Colors.grey[200],
-                                        borderRadius: BorderRadius.circular(10)),
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
                                     child: IconButton(
                                         padding: const EdgeInsets.all(0),
                                         iconSize: 10,
@@ -252,20 +295,19 @@ class CompanyScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                                 color: Colors.grey[200],
                                 borderRadius: BorderRadius.circular(10)),
-                          child: IconButton(
-                            
-                              onPressed: () async {
-                                pdfController.signaturePickImage();
+                            child: IconButton(
+                                onPressed: () async {
+                                  pdfController.signaturePickImage();
                                 },
-                                icon: const Icon(Icons.edit_document)
-                            ),
-                        ),  SizedBox(
+                                icon: const Icon(Icons.edit_document)),
+                          ),
+                    const SizedBox(
                       height: 20,
                     ),
-                          Divider(
-                            color: Colors.black26,
-                          ),
-                        SizedBox(
+                    const Divider(
+                      color: Colors.black26,
+                    ),
+                    const SizedBox(
                       height: 20,
                     ),
                     Directionality(
@@ -282,30 +324,37 @@ class CompanyScreen extends StatelessWidget {
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             sqfliteController.insert('company', {
-                            'name': pdfController.companyName.value,
-                            'logo': pdfController.companyPickedImageFile != null
-                                ? pdfController.companyPickedImageFile!.path
-                                : '',
-                            'address': pdfController.companyAddress.value,
-                            'qr_code': pdfController.qrCodePickedImageFile != null
-                                ? pdfController.qrCodePickedImageFile!.path
-                                : '',
-                            'signature': pdfController.signatureCodePickedImageFile != null
-                                ? pdfController.signatureCodePickedImageFile!.path
-                                : '',
-                          });
-                          Get.to(()=>
-                            InvoiceScreen(),
-                          );
+                              'name': pdfController.companyName.value,
+                              'logo': pdfController.companyPickedImageFile !=
+                                      null
+                                  ? pdfController.companyPickedImageFile!.path
+                                  : '',
+                              'address': pdfController.companyAddress.value,
+                              'qr_code': pdfController.qrCodePickedImageFile !=
+                                      null
+                                  ? pdfController.qrCodePickedImageFile!.path
+                                  : '',
+                              'signature':
+                                  pdfController.signatureCodePickedImageFile !=
+                                          null
+                                      ? pdfController
+                                          .signatureCodePickedImageFile!.path
+                                      : '',
+                            });
+                            Get.to(
+                              () => const InvoiceScreen(),
+                            );
                             _formKey.currentState!.save();
-                          } else{
-                        Get.snackbar('Error', 'Please fill all the fields',
-                        snackPosition: SnackPosition.BOTTOM,
-                        margin: EdgeInsets.all(10),
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white,
-                        );                     }                         
-                          
+                          } else {
+                            Get.snackbar(
+                              'Error',
+                              'Please fill all the fields',
+                              snackPosition: SnackPosition.BOTTOM,
+                              margin: const EdgeInsets.all(10),
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white,
+                            );
+                          }
                         },
                         label: const Text('Go to Invoice Screen'),
                       ),
