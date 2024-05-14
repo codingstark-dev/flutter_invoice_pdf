@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:invoice_pdf_generate/Utils/Enums.dart';
 import 'package:invoice_pdf_generate/file_handle_api.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
@@ -20,6 +21,7 @@ class PdfController extends GetxController {
   //company email
   var companyEmail = ''.obs;
   late List<List<String>> tableData = [];
+  Rx<GstType> gstType = GstType.NONE.obs;
 
   TextEditingController itemController = TextEditingController();
   TextEditingController srnoController = TextEditingController();
@@ -29,6 +31,7 @@ class PdfController extends GetxController {
   TextEditingController srnoControlleru = TextEditingController();
   TextEditingController qtyControlleru = TextEditingController();
   TextEditingController amountControlleru = TextEditingController();
+  TextEditingController fileNameController = TextEditingController();
 
 //  Invoice To Name
 // Invoice To Address (optional)
@@ -145,10 +148,12 @@ class PdfController extends GetxController {
     PdfColors.red,
   ];
 
-  Future<File> generate(PdfColor color, pw.Font fontFamily) async {
+  Future<File> generate(
+      PdfColor color, pw.Font fontFamily, bool preview) async {
     final pdf = pw.Document(
-      theme: pw.ThemeData.withFont(
-          fontFallback: [pw.Font.symbol(), ]),
+      theme: pw.ThemeData.withFont(fontFallback: [
+        pw.Font.symbol(),
+      ]),
     );
 
     final iconImage =
@@ -162,20 +167,17 @@ class PdfController extends GetxController {
       'Item & \nDescription',
       'Qty',
       'Amount',
-      'Total',
+      // 'Total',
     ];
-final font  = await PdfGoogleFonts.firaSansCondensedRegular();
+    final font = await PdfGoogleFonts.firaSansCondensedRegular();
     pdf.addPage(
       pw.MultiPage(
         theme: pw.ThemeData.withFont(
           fontFallback: [
-            
-           await PdfGoogleFonts.materialIcons(),
-        
-           ],
-               icons: await PdfGoogleFonts.materialIcons(), // this line
-
-        ) ,
+            await PdfGoogleFonts.materialIcons(),
+          ],
+          icons: await PdfGoogleFonts.materialIcons(), // this line
+        ),
         pageFormat: PdfPageFormat.a4,
         build: (context) {
           return [
@@ -304,7 +306,7 @@ final font  = await PdfGoogleFonts.firaSansCondensedRegular();
                               ),
                             ),
                             pw.Text(
-                              '\₹ 464',
+                              '\₹ ${tableData.fold(0, (prev, element) => prev + int.parse(element[3]))}',
                               style: pw.TextStyle(
                                 fontWeight: pw.FontWeight.bold,
                                 color: color,
@@ -315,18 +317,20 @@ final font  = await PdfGoogleFonts.firaSansCondensedRegular();
                         ),
                         pw.Row(
                           children: [
-                            pw.Expanded(
-                              child: pw.Text(
-                                'Vat 19.5 %',
-                                style: pw.TextStyle(
-                                  fontWeight: pw.FontWeight.bold,
-                                  color: color,
-                                  font: fontFamily,
-                                ),
-                              ),
-                            ),
+                            (gstType.value == GstType.NONE)
+                                ? pw.Container()
+                                : pw.Expanded(
+                                    child: pw.Text(
+                                      'GST ${gstType.value.toString().split('_').last}%',
+                                      style: pw.TextStyle(
+                                        fontWeight: pw.FontWeight.bold,
+                                        color: color,
+                                        font: fontFamily,
+                                      ),
+                                    ),
+                                  ),
                             pw.Text(
-                              '\₹ 90.48',
+                              '\₹ ${tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse( gstType.value.toString().split('_').last) / 100)}',
                               style: pw.TextStyle(
                                 fontWeight: pw.FontWeight.bold,
                                 color: color,
@@ -350,7 +354,7 @@ final font  = await PdfGoogleFonts.firaSansCondensedRegular();
                               ),
                             ),
                             pw.Text(
-                              '\₹ 554.48',
+                              '\₹ ${tableData.fold(0, (prev, element) => prev + int.parse(element[3])) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse( gstType.value.toString().split('_').last) / 100))}',
                               style: pw.TextStyle(
                                 fontWeight: pw.FontWeight.bold,
                                 color: color,
@@ -436,6 +440,11 @@ final font  = await PdfGoogleFonts.firaSansCondensedRegular();
       ),
     );
 
-    return FileHandleApi.saveDocument(name: 'my_invoice.pdf', pdf: pdf);
+    return preview
+        ? FileHandleApi.saveDocumentTolocal(name: 'temp.pdf', pdf: pdf)
+        : FileHandleApi.saveDocument(
+            name:
+                '${fileNameController.text.isEmpty ? 'invoice' : fileNameController.text}.pdf',
+            pdf: pdf);
   }
 }
