@@ -14,7 +14,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 import '../Controller/pdfController.dart';
-import '../Controller/sqlController.dart';
+import '../Controller/sharedController.dart';
 
 class AddDataScreen extends StatefulWidget {
   const AddDataScreen({Key? key}) : super(key: key);
@@ -27,7 +27,6 @@ class _AddDataScreenState extends State<AddDataScreen> {
   PdfColor themeColor = PdfColors.black;
   pw.Font font = pw.Font.courier();
   final pdfController = Get.put(PdfController());
-  final sqlDatabase = Get.put(SqlDb());
   final key = GlobalKey<FormState>();
   final key2 = GlobalKey<FormState>();
   // final TextEditingController _qtyController = TextEditingController();
@@ -57,8 +56,8 @@ class _AddDataScreenState extends State<AddDataScreen> {
               children: [
                 //info alert that you can delete datatable by clicking long press
                 Container(
-                  padding: EdgeInsets.all(10),
-                  margin: EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.only(bottom: 10),
                   decoration: BoxDecoration(
                       color: primaryColor.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(10),
@@ -69,7 +68,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                         Icons.info,
                         color: primaryColor,
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Flexible(
                         child: Text(
                           'You can delete row by Holding long press, and you can edit datatable by clicking on edit button by scrolling row to right side.',
@@ -101,12 +100,12 @@ class _AddDataScreenState extends State<AddDataScreen> {
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10)),
                           hintText: 'Sr No',
-                          label: Text('Sr No'),
+                          label: const Text('Sr No'),
                           alignLabelWithHint: true,
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
                     Expanded(
@@ -129,12 +128,12 @@ class _AddDataScreenState extends State<AddDataScreen> {
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10)),
                           hintText: 'Qty',
-                          label: Text('Qty'),
+                          label: const Text('Qty'),
                           alignLabelWithHint: true,
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
                     Expanded(
@@ -157,14 +156,14 @@ class _AddDataScreenState extends State<AddDataScreen> {
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10)),
                           hintText: 'Amount',
-                          label: Text('Amount'),
+                          label: const Text('Amount'),
                           alignLabelWithHint: true,
                         ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 TextFormField(
@@ -182,11 +181,11 @@ class _AddDataScreenState extends State<AddDataScreen> {
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                     hintText: 'Item & Description',
-                    label: Text('Item & Description'),
+                    label: const Text('Item & Description'),
                     alignLabelWithHint: true,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 ElevatedButton.icon(
@@ -203,7 +202,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                         'Error',
                         'Please fill all fields',
                         snackPosition: SnackPosition.BOTTOM,
-                        margin: EdgeInsets.all(10),
+                        margin: const EdgeInsets.all(10),
                         backgroundColor: Colors.red,
                         colorText: Colors.white,
                       );
@@ -231,7 +230,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                           'Error',
                           'Please add some items to see preview',
                           snackPosition: SnackPosition.BOTTOM,
-                          margin: EdgeInsets.all(10),
+                          margin: const EdgeInsets.all(10),
                           backgroundColor: Colors.red,
                           colorText: Colors.white,
                         );
@@ -266,7 +265,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                           'Error',
                           'Please add some items to generate invoice',
                           snackPosition: SnackPosition.BOTTOM,
-                          margin: EdgeInsets.all(10),
+                          margin: const EdgeInsets.all(10),
                           backgroundColor: Colors.red,
                           colorText: Colors.white,
                         );
@@ -277,8 +276,8 @@ class _AddDataScreenState extends State<AddDataScreen> {
                         context: bcontext,
                         builder: (_) {
                           return AlertDialog(
-                            title: Center(child: Text('Enter File Name')),
-                            contentPadding: EdgeInsets.all(10),
+                            title: const Center(child: Text('Enter File Name')),
+                            contentPadding: const EdgeInsets.all(10),
                             content: TextField(
                               controller: context.fileNameController,
                               decoration: InputDecoration(
@@ -294,7 +293,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                 onPressed: () {
                                   Get.back();
                                 },
-                                child: Text('Cancel'),
+                                child: const Text('Cancel'),
                               ),
                               ElevatedButton(
                                 onPressed: () {
@@ -303,7 +302,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                       'Error',
                                       'Please enter file name',
                                       snackPosition: SnackPosition.BOTTOM,
-                                      margin: EdgeInsets.all(10),
+                                      margin: const EdgeInsets.all(10),
                                       backgroundColor: Colors.red,
                                       colorText: Colors.white,
                                     );
@@ -320,14 +319,14 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                           'Done',
                                           'PDF file Saved on Download folder',
                                           snackPosition: SnackPosition.BOTTOM,
-                                          margin: EdgeInsets.all(10),
+                                          margin: const EdgeInsets.all(10),
                                           backgroundColor: Colors.green,
                                           colorText: Colors.white,
                                         );
                                     FileHandleApi.openFile(pdfFile);
                                   });
                                 },
-                                child: Text('Save'),
+                                child: const Text('Save'),
                               ),
                             ],
                           );
@@ -346,7 +345,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                     label: const Text('Download Invoice PDF'),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 //header of datatable
@@ -388,7 +387,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                   DataCell(Text(data[3])),
                                   DataCell(
                                     IconButton(
-                                      icon: Icon(Icons.edit),
+                                      icon: const Icon(Icons.edit),
                                       onPressed: () {
                                         //create showbottomsheet to update value
                                         context.srnoControlleru.text = data[0];
@@ -405,7 +404,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                     key: key2,
                                                     child: Column(
                                                       children: [
-                                                        SizedBox(
+                                                        const SizedBox(
                                                           height: 10,
                                                         ),
                                                         Row(
@@ -430,14 +429,14 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                               10)),
                                                                   hintText:
                                                                       'Sr No',
-                                                                  label: Text(
+                                                                  label: const Text(
                                                                       'Sr No'),
                                                                   alignLabelWithHint:
                                                                       true,
                                                                 ),
                                                               ),
                                                             ),
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               width: 10,
                                                             ),
                                                             Expanded(
@@ -474,14 +473,14 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                               10)),
                                                                   hintText:
                                                                       'Qty',
-                                                                  label: Text(
+                                                                  label: const Text(
                                                                       'Qty'),
                                                                   alignLabelWithHint:
                                                                       true,
                                                                 ),
                                                               ),
                                                             ),
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               width: 10,
                                                             ),
                                                             Expanded(
@@ -518,7 +517,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                               10)),
                                                                   hintText:
                                                                       'Amount',
-                                                                  label: Text(
+                                                                  label: const Text(
                                                                       'Amount'),
                                                                   alignLabelWithHint:
                                                                       true,
@@ -527,7 +526,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                             ),
                                                           ],
                                                         ),
-                                                        SizedBox(
+                                                        const SizedBox(
                                                           height: 10,
                                                         ),
                                                         TextFormField(
@@ -552,7 +551,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                             10)),
                                                             hintText:
                                                                 'Item & Description',
-                                                            label: Text(
+                                                            label: const Text(
                                                                 'Item & Description'),
                                                             alignLabelWithHint:
                                                                 true,
@@ -584,7 +583,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                     SnackPosition
                                                                         .BOTTOM,
                                                                 margin:
-                                                                    EdgeInsets
+                                                                    const EdgeInsets
                                                                         .all(
                                                                             10),
                                                                 backgroundColor:

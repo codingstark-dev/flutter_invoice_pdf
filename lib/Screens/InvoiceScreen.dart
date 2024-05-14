@@ -10,7 +10,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import '../Controller/pdfController.dart';
-import '../Controller/sqlController.dart';
+import '../Controller/sharedController.dart';
 
 class InvoiceScreen extends StatefulWidget {
   const InvoiceScreen({Key? key}) : super(key: key);
@@ -23,7 +23,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   PdfColor themeColor = PdfColors.black;
   pw.Font font = pw.Font.courier();
   final pdfController = Get.put(PdfController());
-  final sqlDatabase = Get.put(SqlDb());
   final key = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {

@@ -13,10 +13,11 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:invoice_pdf_generate/Controller/pdfController.dart';
-import 'package:invoice_pdf_generate/Controller/sqlController.dart';
+import 'package:invoice_pdf_generate/Controller/sharedController.dart';
 import 'package:invoice_pdf_generate/Screens/InvoiceScreen.dart';
 import 'package:invoice_pdf_generate/Utils/Enums.dart';
 import 'package:invoice_pdf_generate/style/ConstStyle.dart';
+
 
 class CompanyScreen extends StatefulWidget {
   const CompanyScreen({super.key});
@@ -27,7 +28,7 @@ class CompanyScreen extends StatefulWidget {
 
 class _CompanyScreenState extends State<CompanyScreen> {
   final pdfController = Get.put(PdfController());
-  final sqfliteController = Get.put(SqlDb());
+  final sharedPref = Get.put(SharedPref());
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -72,8 +73,12 @@ class _CompanyScreenState extends State<CompanyScreen> {
                           backgroundImage:
                               pdfController.companyPickedImageFile != null
                                   ? FileImage(File(
-                                      pdfController.companyPickedImageFile!.path))
+                                      pdfController.companyPickedImageFile!.path ))
+                                  : 
+                                  sharedPref.getData(key: 'logo') != null
+                                  ? FileImage(File(sharedPref.getData(key: 'logo')!))
                                   : null,
+                                  
                           shape: GFAvatarShape.circle,
                           radius: 50,
                           child: pdfController.companyPickedImageFile == null
@@ -96,6 +101,8 @@ class _CompanyScreenState extends State<CompanyScreen> {
                           }
                           return null;
                         },
+                        controller: TextEditingController()
+                          ..text = sharedPref.getData(key: 'company_name') ?? '',
                         decoration: InputDecoration(
                           isDense: true,
         
@@ -325,24 +332,32 @@ class _CompanyScreenState extends State<CompanyScreen> {
                           icon: const Icon(Icons.arrow_back_ios),
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              sqfliteController.insert('company', {
-                                'name': pdfController.companyName.value,
-                                'logo': pdfController.companyPickedImageFile !=
-                                        null
-                                    ? pdfController.companyPickedImageFile!.path
-                                    : '',
-                                'address': pdfController.companyAddress.value,
-                                'qr_code': pdfController.qrCodePickedImageFile !=
-                                        null
-                                    ? pdfController.qrCodePickedImageFile!.path
-                                    : '',
-                                'signature':
-                                    pdfController.signatureCodePickedImageFile !=
-                                            null
-                                        ? pdfController
-                                            .signatureCodePickedImageFile!.path
-                                        : '',
-                              });
+                              sharedPref.saveData(
+                                  key: 'company_name',
+                                  value: pdfController.companyName.value);
+                                  sharedPref.saveData(
+                                  key: 'company_address',
+                                  value: pdfController.companyAddress.value);
+                                  sharedPref.saveData(
+                                  key: 'gst_type',
+                                  value: pdfController.gstType.value.toString());
+                                  sharedPref.saveData(
+                                  key: 'qr_code',
+                                  value: pdfController.qrCodePickedImageFile != null
+                                      ? pdfController.qrCodePickedImageFile!.path
+                                      : '');
+                                  sharedPref.saveData(
+                                  key: 'signature',
+                                  value: pdfController.signatureCodePickedImageFile != null
+                                      ? pdfController.signatureCodePickedImageFile!.path
+                                      : '');
+                                      
+                                  sharedPref.saveData(
+                                  key: 'logo',
+                                  value: pdfController.companyPickedImageFile != null
+                                      ? pdfController.companyPickedImageFile!.path
+                                      : '');
+                             
                               Get.to(
                                 () => const InvoiceScreen(),
                               );

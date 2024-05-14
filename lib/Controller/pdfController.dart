@@ -44,6 +44,7 @@ class PdfController extends GetxController {
   File? companyPickedImageFile;
   File? qrCodePickedImageFile;
   File? signatureCodePickedImageFile;
+  
   companyPickImage() async {
     final picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: ImageSource.gallery);
