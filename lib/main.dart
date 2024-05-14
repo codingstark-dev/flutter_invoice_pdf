@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:invoice_pdf_generate/Controller/pdfController.dart';
 import 'package:invoice_pdf_generate/Controller/sqlController.dart';
@@ -11,6 +12,8 @@ import 'file_handle_api.dart';
 import 'pdf_invoice_api.dart';
 
 void main() {
+  //  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  // FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   runApp(const MainApp());
 }
 
