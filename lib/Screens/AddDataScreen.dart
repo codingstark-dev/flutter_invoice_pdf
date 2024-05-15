@@ -242,7 +242,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                       Get.to(
                         PdfPreview(build: (format) {
                           return pdfController
-                              .generate(themeColor, pw.Font.courier(), true)
+                              .generate( true)
                               .then((file) => file.readAsBytesSync());
                         }),
                       );
@@ -320,7 +320,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                   // generate pdf file
                                   pdfController
                                       .generate(
-                                          themeColor, pw.Font.courier(), false)
+                                         false)
                                       .then((pdfFile) {
                                         Get.snackbar(
                                           'Done',

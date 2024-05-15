@@ -19,8 +19,7 @@ final  pw.Font font ;
     return PdfPreview(build: (format) {
       return pdfController
           .generate(
-            themeColor,
-            pw.Font.courier(),
+          
             true
           )
           .then((file) => file.readAsBytesSync());

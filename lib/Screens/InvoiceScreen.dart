@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_null_comparison, unused_import
 
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -22,8 +23,6 @@ class InvoiceScreen extends StatefulWidget {
 }
 
 class _InvoiceScreenState extends State<InvoiceScreen> {
-  PdfColor themeColor = PdfColors.black;
-  pw.Font font = pw.Font.courier();
   final pdfController = Get.put(PdfController());
   final key = GlobalKey<FormState>();
   @override
@@ -31,7 +30,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        elevation: 2,
+          elevation: 2,
           title: const Text('Invoice Details'),
           centerTitle: true,
           leading: IconButton(
@@ -78,7 +77,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                   ],
                   onChanged: (value) {
                     setState(() {
-                      themeColor = value as PdfColor;
+                      pdfController.color.value = value!;
                     });
                   },
                 ),
@@ -116,7 +115,26 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                   onChanged: (value) {
                     if (value != null) {
                       setState(() {
-                        font = value();
+                        switch (value) {
+                          case pw.Font.courier:
+
+                            pdfController.fontFamily.value = pw.Font.courier();
+                            break;
+                          case pw.Font.helvetica:
+                            pdfController.fontFamily.value =
+                                pw.Font.helvetica();
+                            break;
+                          case pw.Font.times:
+                            pdfController.fontFamily.value = pw.Font.times();
+                            break;
+                          case pw.Font.zapfDingbats:
+                            pdfController.fontFamily.value =
+                                pw.Font.zapfDingbats();
+                            break;
+
+                          default:
+                            pdfController.fontFamily.value = pw.Font.courier();
+                        }
                       });
                     }
                   },
@@ -127,6 +145,27 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 //               Invoice To Name
                 // Invoice To Address (optional)
                 // Invoice To Contact Number (optional)
+                //Invoice Number (auto generated)
+                TextFormField(
+                  controller: TextEditingController()
+                    ..text = pdfController.invoiceNumber.value,
+                  onChanged: (value) {
+                    pdfController.invoiceNumber.value = value;
+                  },
+                  decoration: InputDecoration(
+                    isDense: true,
+
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    hintText: 'Invoice Number',
+                    label: Text('Invoice Number'),
+                    // errorText: 'Please enter company name',
+                    alignLabelWithHint: true,
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
                 TextFormField(
                   onChanged: (value) {
                     pdfController.invoiceToName.value = value;
@@ -174,7 +213,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     pdfController.invoiceToContactNumber.value = value;
                   },
                   keyboardType: TextInputType.number,
-
                   decoration: InputDecoration(
                     isDense: true,
 
@@ -186,11 +224,31 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     alignLabelWithHint: true,
                   ),
                 ),
-              SizedBox(
+                SizedBox(
+                  height: 10,
+                ),
+                //email
+                TextFormField(
+                  onChanged: (value) {
+                    pdfController.invoiceToEmail.value = value;
+                  },
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    isDense: true,
+
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    hintText: "Invoice To Email (optional)",
+                    label: Text('Invoice To Email'),
+                    // errorText: 'Please enter company name',
+                    alignLabelWithHint: true,
+                  ),
+                ),
+                SizedBox(
                   height: 10,
                 ),
                 //date picker
-               ElevatedButton.icon(
+                ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     foregroundColor: secondaryColor,
                     backgroundColor: primaryColor,
@@ -206,8 +264,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       lastDate: DateTime(2025),
                     ).then((value) {
                       if (value != null) {
-                        setState(() {
-                        });
+                        setState(() {});
                         pdfController.invoiceDate.value = value;
                       }
                     });
@@ -219,42 +276,42 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                           'Invoice Date: ${pdfController.invoiceDate.value!.day}/${pdfController.invoiceDate.value!.month}/${pdfController.invoiceDate.value!.year}'),
                 ),
                 Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: secondaryColor,
-                          backgroundColor: primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                  onPressed: () async {
-                    if (!key.currentState!.validate()) {
-                      Get.snackbar(
-                        '',
-                        'Please enter invoice to name',
-                        snackPosition: SnackPosition.BOTTOM,
-                        margin: EdgeInsets.all(10),
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white,
-                            titleText: Container(),
+                  textDirection: TextDirection.rtl,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: secondaryColor,
+                      backgroundColor: primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () async {
+                      if (!key.currentState!.validate()) {
+                        Get.snackbar(
+                          '',
+                          'Please enter invoice to name',
+                          snackPosition: SnackPosition.BOTTOM,
+                          margin: EdgeInsets.all(10),
+                          backgroundColor: Colors.red,
+                          colorText: Colors.white,
+                          titleText: Container(),
+                        );
+                        return;
+                      }
+                      Get.to(() => AddDataScreen());
+                      // generate pdf file
+                      // final pdfFile = await pdfController.generate(
+                      //   themeColor,
+                      //   pw.Font.courier(),
+                      // );
 
-                      );
-                      return;
-                    }
-                    Get.to(() => AddDataScreen());
-                    // generate pdf file
-                    // final pdfFile = await pdfController.generate(
-                    //   themeColor,
-                    //   pw.Font.courier(),
-                    // );
-
-                    // opening the pdf file
-                    // FileHandleApi.openFile(pdfFile);
-                  },
-                  icon: const Icon(Icons.arrow_back_ios_new),
-                  label: const Text('Add Invoice Content'),
-                ),)
+                      // opening the pdf file
+                      // FileHandleApi.openFile(pdfFile);
+                    },
+                    icon: const Icon(Icons.arrow_back_ios_new),
+                    label: const Text('Add Invoice Content'),
+                  ),
+                )
               ],
             ),
           ),

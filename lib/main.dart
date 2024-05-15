@@ -14,43 +14,47 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'file_handle_api.dart';
 import 'pdf_invoice_api.dart';
 
-void main() async{
+void main() async {
   //  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   // FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-    WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-  runApp(MainApp(prefs: prefs));
-  runApp( MainApp(
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await Future.delayed(const Duration(seconds: 2));
+
+  runApp(MainApp(
     prefs: prefs,
   ));
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key,
+  const MainApp({
+    super.key,
     required this.prefs,
   });
   final SharedPreferences prefs;
 
   @override
   Widget build(BuildContext context) {
-
     return GetMaterialApp(
       initialBinding: BindingsBuilder(() {
         Get.lazyPut<PdfController>(() => PdfController());
         Get.lazyPut<SharedPref>(() => SharedPref(
-          prefs: prefs,
-        ));
+              prefs: prefs,
+            ));
         Get.lazyPut<PdfInvoiceApi>(() => PdfInvoiceApi());
       }),
-      initialRoute:   '/',
+      initialRoute: '/',
       getPages: [
-        GetPage(name: '/', page: () => CompanyScreen(),),
+        GetPage(
+          name: '/',
+          page: () => CompanyScreen(),
+        ),
         GetPage(name: '/add', page: () => AddDataScreen()),
         GetPage(name: '/invoice', page: () => InvoiceScreen()),
       ],
       theme: ThemeData(
-        colorScheme:  ColorScheme(
+        colorScheme: ColorScheme(
           background: Colors.white,
           brightness: Brightness.light,
           primary: primaryColor,
@@ -68,8 +72,6 @@ class MainApp extends StatelessWidget {
       // title: 'Invoice PDF Generate',
       // home:
       //       CompanyScreen(),
-        
     );
   }
 }
-
