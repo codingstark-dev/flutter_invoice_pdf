@@ -12,7 +12,6 @@ import 'package:invoice_pdf_generate/style/ConstStyle.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-
 import '../Controller/pdfController.dart';
 import '../Controller/sharedController.dart';
 
@@ -199,12 +198,14 @@ class _AddDataScreenState extends State<AddDataScreen> {
                   onPressed: () {
                     if (!key.currentState!.validate()) {
                       Get.snackbar(
-                        'Error',
+                        '',
                         'Please fill all fields',
                         snackPosition: SnackPosition.BOTTOM,
                         margin: const EdgeInsets.all(10),
                         backgroundColor: Colors.red,
                         colorText: Colors.white,
+                                                    titleText: Container(),
+
                       );
                       return;
                     }
@@ -227,12 +228,14 @@ class _AddDataScreenState extends State<AddDataScreen> {
                     onPressed: () async {
                       if (context.tableData.isEmpty) {
                         Get.snackbar(
-                          'Error',
+                          '',
                           'Please add some items to see preview',
                           snackPosition: SnackPosition.BOTTOM,
                           margin: const EdgeInsets.all(10),
                           backgroundColor: Colors.red,
                           colorText: Colors.white,
+                                                    titleText: Container(),
+
                         );
                         return;
                       }
@@ -262,12 +265,14 @@ class _AddDataScreenState extends State<AddDataScreen> {
                     onPressed: () async {
                       if (context.tableData.isEmpty) {
                         Get.snackbar(
-                          'Error',
+                          '',
                           'Please add some items to generate invoice',
                           snackPosition: SnackPosition.BOTTOM,
                           margin: const EdgeInsets.all(10),
                           backgroundColor: Colors.red,
                           colorText: Colors.white,
+                                                    titleText: Container(),
+
                         );
                         return;
                       }
@@ -299,12 +304,14 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                 onPressed: () {
                                   if (context.fileNameController.text.isEmpty) {
                                     Get.snackbar(
-                                      'Error',
+                                      '',
                                       'Please enter file name',
                                       snackPosition: SnackPosition.BOTTOM,
                                       margin: const EdgeInsets.all(10),
                                       backgroundColor: Colors.red,
                                       colorText: Colors.white,
+                                                                  titleText: Container(),
+
                                     );
                                     return;
                                   }
@@ -577,7 +584,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                 .currentState!
                                                                 .validate()) {
                                                               Get.snackbar(
-                                                                'Error',
+                                                                '',
                                                                 'Please fill all fields',
                                                                 snackPosition:
                                                                     SnackPosition
@@ -590,7 +597,8 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                     Colors.red,
                                                                 colorText:
                                                                     Colors
-                                                                        .white,
+                                                                        .white,                            titleText: Container(),
+
                                                               );
                                                               return;
                                                             }

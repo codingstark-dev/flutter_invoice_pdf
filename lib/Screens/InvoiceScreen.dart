@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_null_comparison, unused_import
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -25,7 +27,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   final pdfController = Get.put(PdfController());
   final key = GlobalKey<FormState>();
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext bcontext) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -127,7 +129,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 // Invoice To Contact Number (optional)
                 TextFormField(
                   onChanged: (value) {
-                    // pdfController.invoiceToName.value = value;
+                    pdfController.invoiceToName.value = value;
                   },
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -150,6 +152,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                   height: 10,
                 ),
                 TextFormField(
+                  onChanged: (value) {
+                    pdfController.invoiceToAddress.value = value;
+                  },
                   decoration: InputDecoration(
                     isDense: true,
 
@@ -165,6 +170,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                   height: 10,
                 ),
                 TextFormField(
+                  onChanged: (value) {
+                    pdfController.invoiceToContactNumber.value = value;
+                  },
+                  keyboardType: TextInputType.number,
+
                   decoration: InputDecoration(
                     isDense: true,
 
@@ -176,7 +186,38 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     alignLabelWithHint: true,
                   ),
                 ),
-
+              SizedBox(
+                  height: 10,
+                ),
+                //date picker
+               ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: secondaryColor,
+                    backgroundColor: primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: () {
+                    showDatePicker(
+                      context: bcontext,
+                      initialDate: pdfController.invoiceDate.value,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2025),
+                    ).then((value) {
+                      if (value != null) {
+                        setState(() {
+                        });
+                        pdfController.invoiceDate.value = value;
+                      }
+                    });
+                  },
+                  icon: const Icon(Icons.calendar_today),
+                  label: pdfController.invoiceDate.value == null
+                      ? const Text('Select Invoice Date')
+                      : Text(
+                          'Invoice Date: ${pdfController.invoiceDate.value!.day}/${pdfController.invoiceDate.value!.month}/${pdfController.invoiceDate.value!.year}'),
+                ),
                 Directionality(
                       textDirection: TextDirection.rtl,
                       child: ElevatedButton.icon(
@@ -190,12 +231,14 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                   onPressed: () async {
                     if (!key.currentState!.validate()) {
                       Get.snackbar(
-                        'Error',
-                        'Please fill invoivr to name',
+                        '',
+                        'Please enter invoice to name',
                         snackPosition: SnackPosition.BOTTOM,
                         margin: EdgeInsets.all(10),
                         backgroundColor: Colors.red,
                         colorText: Colors.white,
+                            titleText: Container(),
+
                       );
                       return;
                     }

@@ -5,3 +5,12 @@ enum GstType {
     GST_18,
     GST_28,
 }
+
+enum GstVar {
+  NONE,
+  GST,
+  IGST,
+  CGST,
+  SGST,
+  UTGST,
+}

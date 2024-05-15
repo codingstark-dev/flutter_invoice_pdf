@@ -9,6 +9,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:getwidget/getwidget.dart';
@@ -51,8 +52,6 @@ class _CompanyScreenState extends State<CompanyScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                     
-
                       Row(
                         children: [
                           Expanded(
@@ -64,41 +63,43 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                 backgroundImage: pdfController
                                             .companyPickedImageFile !=
                                         null
-                                    ? FileImage(File(
-                                        pdfController.companyPickedImageFile!.path))
+                                    ? FileImage(File(pdfController
+                                        .companyPickedImageFile!.path))
                                     : sharedPref.getData(key: 'logo') != null
-                                        ? FileImage(
-                                            File(sharedPref.getData(key: 'logo')!))
+                                        ? FileImage(File(
+                                            sharedPref.getData(key: 'logo')!))
                                         : null,
                                 shape: GFAvatarShape.circle,
                                 radius: 50,
-                                child: pdfController.companyPickedImageFile == null
+                                child: pdfController.companyPickedImageFile ==
+                                        null
                                     ? sharedPref.getData(key: 'logo') == null
                                         ? const Icon(
                                             Icons.add_a_photo,
                                             size: 50,
                                           )
-                                        : null  : null,
+                                        : null
+                                    : null,
                               ),
                             ),
-                          ), Expanded(
-                            flex: 2,
-                            child: const Row(
-                                                    children: [
-                            Expanded(
-                              child: Divider(color: Colors.black38),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text('Choose Company Image'),
-                            ),
-                            Expanded(
-                              child: Divider(color: Colors.black38),
-                            ),
-                                                    ],
-                                                  ),
                           ),
-                          
+                          const Expanded(
+                            flex: 2,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Divider(color: Colors.black38),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text('Choose Company Image'),
+                                ),
+                                Expanded(
+                                  child: Divider(color: Colors.black38),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(
@@ -157,172 +158,416 @@ class _CompanyScreenState extends State<CompanyScreen> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      // Choose Font
-                      DropdownButtonFormField(
-                        isDense: true,
-                        style: TextStyle(
-                          color: primaryColor,
-                        ),
-                        value: pdfController.gstType.value,
-                        decoration: const InputDecoration(
-                          isDense: true,
-                          hintText: 'Select GST Type',
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                        ),
-                        items: const [
-                          DropdownMenuItem(
-                              value: GstType.NONE, child: Text('None')),
-                          DropdownMenuItem(
-                              value: GstType.GST_5, child: Text('GST 5%')),
-                          DropdownMenuItem(
-                              value: GstType.GST_12, child: Text('GST 12%')),
-                          DropdownMenuItem(
-                              value: GstType.GST_18, child: Text('GST 18%')),
-                          DropdownMenuItem(
-                              value: GstType.GST_28, child: Text('GST 28%')),
-                        ],
+                     TextFormField(
+                        controller: TextEditingController()
+                          ..text =
+                              sharedPref.getData(key: 'company_email') ?? '',
                         onChanged: (value) {
-                          if (value != null) {
-                            pdfController.gstType.value = value;
-                          }
+                          pdfController.companyEmail.value = value;
+                        },
+                        // validator: (value) {
+                        //   if (value?.contains('@') == false) {
+                        //     return 'Please enter valid email';
+                        //   }
+                        //   return null;
+                        // },
+                        decoration: InputDecoration(
+                          isDense: true,
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          hintText: 'Company Email',
+                          label: const Text('Company Email'),
+                          alignLabelWithHint: true,
+                          // errorText: 'Please enter company address',
+                        ),
+                      ),
+                      const SizedBox(height: 10), SegmentedButton(
+                        // selectedIcon: const Icon(Icons.check),
+                        showSelectedIcon: false,
+                        style: ButtonStyle(
+                          padding: MaterialStateProperty.all(
+                            const EdgeInsets.symmetric(
+                                horizontal: 2, vertical: 2),
+                          ),
+                          shape: MaterialStateProperty.all(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                        segments: const [
+                          ButtonSegment(
+                            value: GstVar.NONE,
+                            label: Text('None'),
+                          ),
+                          ButtonSegment(
+                            value: GstVar.GST,
+                            label: Text('GST'),
+                          ),
+                          ButtonSegment(
+                            value: GstVar.IGST,
+                            label: Text('IGST'),
+                          ),
+                          ButtonSegment(
+                            value: GstVar.CGST,
+                            label: Text('CGST'),
+                          ),
+                          ButtonSegment(
+                            value: GstVar.SGST,
+                            label: Text('SGST'),
+                          ),
+                          ButtonSegment(
+                            value: GstVar.UTGST,
+                            label: Text('UTGST'),
+                          ),
+                        ],
+
+                        selected: pdfController.gstVar.value == GstVar.NONE
+                            ? {
+                                GstVar.NONE,
+                            }
+                            :sharedPref.getData(key: 'gst_type') == null
+                                ? {
+                                    pdfController.gstVar.value,
+                                  }
+                                : {GstVar.values.firstWhere(
+                                    (element) =>
+                                        element.toString().split('.').last ==
+                                        sharedPref.getData(key: 'gst_type'))},
+                        
+                        onSelectionChanged: (value) {
+                          setState(() {});
+                          // on same value selection again deselect the value
+                          if (pdfController.gstVar.value == value.first) {
+                            pdfController.gstVar.value = GstVar.NONE;
+                            // sharedPref.saveData(key: 'gst_type', value: '');
+                            return;
+                          } else
+                            pdfController.gstVar.value = value.first;
+                          sharedPref.saveData(
+                              key: 'gst_type',
+                              value: pdfController.gstVar.value
+                                  .toString()
+                                  .split('.')
+                                  .last);
                         },
                       ),
-
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Row(
-                        children: [
-                          Expanded(
-                            child: Divider(color: Colors.black38),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text('Choose QR Code'),
-                          ),
-                          Expanded(
-                            child: Divider(color: Colors.black38),
-                          ),
-                        ],
-                      ),
-
                       const SizedBox(
                         height: 10,
                       ),
 
-                      pdfController.qrCodePickedImageFile != null
-                          ? Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Stack(
-                                  alignment: Alignment.topRight,
-                                  children: [
-                                    Image.file(
-                                      File(pdfController
-                                          .qrCodePickedImageFile!.path),
-                                      height: 100,
-                                      width: 100,
-                                    ),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey[200],
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      child: IconButton(
-                                          padding: const EdgeInsets.all(0),
-                                          iconSize: 10,
-                                          onPressed: () {
-                                            pdfController.qrCodePickImage();
-                                          },
-                                          icon: const Icon(
-                                            Icons.edit,
-                                            size: 20,
-                                          )),
-                                    ),
-                                  ],
-                                ),
+                      pdfController.gstVar.value == GstVar.NONE
+                          ? Container()
+                          : TextFormField(
+                              keyboardType: TextInputType.number,
+                              textInputAction: TextInputAction.next,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(50),
                               ],
-                            )
-                          : Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: IconButton(
-                                onPressed: () async {
-                                  pdfController.qrCodePickImage();
-                                },
-                                icon: const Icon(Icons.qr_code),
+                              controller: pdfController.gstController
+                                ..text =
+                                    sharedPref.getData(key: 'gstVal') ?? '',
+                              // onChanged: (value) {
+                              //   pdfController.companyAddress.value = value;
+                              // },
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Please enter ${pdfController.gstVar.value == GstVar.NONE ? "" : pdfController.gstVar.value}';
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                isDense: true,
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                hintText:
+                                    'Enter ${pdfController.gstVar.value == GstVar.NONE ? "" : pdfController.gstVar.value.toString().split('.').last}',
+                                label: Text(
+                                    'Enter ${pdfController.gstVar.value == GstVar.NONE ? "" : pdfController.gstVar.value.toString().split('.').last}'),
+                                alignLabelWithHint: true,
+                                // errorText: 'Please enter company address',
                               ),
                             ),
+
+                      // DropdownButtonFormField(
+                      //   isDense: true,
+                      //   style: TextStyle(
+                      //     color: primaryColor,
+                      //   ),
+                      //   value: pdfController.gstType.value,
+                      //   decoration: const InputDecoration(
+                      //     isDense: true,
+                      //     hintText: 'Select GST Type',
+                      //     border: OutlineInputBorder(
+                      //         borderRadius:
+                      //             BorderRadius.all(Radius.circular(10))),
+                      //   ),
+                      //   items: const [
+                      //     DropdownMenuItem(
+                      //         value: GstType.NONE, child: Text('None')),
+                      //     DropdownMenuItem(
+                      //         value: GstType.GST_5, child: Text('GST 5%')),
+                      //     DropdownMenuItem(
+                      //         value: GstType.GST_12, child: Text('GST 12%')),
+                      //     DropdownMenuItem(
+                      //         value: GstType.GST_18, child: Text('GST 18%')),
+                      //     DropdownMenuItem(
+                      //         value: GstType.GST_28, child: Text('GST 28%')),
+                      //   ],
+                      //   onChanged: (value) {
+                      //     if (value != null) {
+                      //       pdfController.gstType.value = value;
+                      //     }
+                      //   },
+                      // ),
+
                       const SizedBox(
                         height: 10,
                       ),
 
-                      const Row(
+                      Row(
                         children: [
-                          Expanded(
-                            child: Divider(color: Colors.black38),
+                          pdfController.qrCodePickedImageFile != null
+                              ? Expanded(
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Stack(
+                                        alignment: Alignment.topRight,
+                                        children: [
+                                          Image.file(
+                                            File(pdfController
+                                                .qrCodePickedImageFile!.path),
+                                            height: 100,
+                                            width: 100,
+                                          ),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.grey[200],
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            child: IconButton(
+                                                padding:
+                                                    const EdgeInsets.all(0),
+                                                iconSize: 10,
+                                                onPressed: () {
+                                                  pdfController
+                                                      .qrCodePickImage();
+                                                },
+                                                icon: const Icon(
+                                                  Icons.edit,
+                                                  size: 20,
+                                                )),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : sharedPref.getData(key: 'qr_code') != null
+                                  ? Expanded(
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Stack(
+                                            alignment: Alignment.topRight,
+                                            children: [
+                                              Image.file(
+                                                File(sharedPref.getData(
+                                                    key: 'qr_code')!),
+                                                height: 100,
+                                                width: 100,
+                                              ),
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                    color: Colors.grey[200],
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10)),
+                                                child: IconButton(
+                                                    padding:
+                                                        const EdgeInsets.all(0),
+                                                    iconSize: 10,
+                                                    onPressed: () {
+                                                      pdfController
+                                                          .qrCodePickImage();
+                                                    },
+                                                    icon: const Icon(
+                                                      Icons.edit,
+                                                      size: 20,
+                                                    )),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : Expanded(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey[200],
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: IconButton(
+                                          onPressed: () async {
+                                            pdfController.qrCodePickImage();
+                                          },
+                                          icon: const Icon(Icons.qr_code),
+                                        ),
+                                      ),
+                                    ),
+                          const SizedBox(
+                            width: 10,
                           ),
-                          Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text('Choose Signature Image'),
-                          ),
-                          Expanded(
-                            child: Divider(color: Colors.black38),
+                          const Expanded(
+                            flex: 2,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Divider(color: Colors.black38),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text('Choose QR Code'),
+                                ),
+                                Expanded(
+                                  child: Divider(color: Colors.black38),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+
                       // company address
 
-                      pdfController.signatureCodePickedImageFile != null
-                          ? Column(
+                      Row(
+                        children: [
+                          pdfController.signatureCodePickedImageFile != null
+                              ? Expanded(
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Stack(
+                                        alignment: Alignment.topRight,
+                                        children: [
+                                          Image.file(
+                                            File(pdfController
+                                                .signatureCodePickedImageFile!
+                                                .path),
+                                            height: 100,
+                                            width: 100,
+                                          ),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.grey[200],
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            child: IconButton(
+                                                padding:
+                                                    const EdgeInsets.all(0),
+                                                iconSize: 10,
+                                                onPressed: () {
+                                                  pdfController
+                                                      .signaturePickImage();
+                                                },
+                                                icon: const Icon(
+                                                  Icons.edit,
+                                                  size: 20,
+                                                )),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : sharedPref.getData(key: 'signature') != null
+                                  ? Expanded(
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Stack(
+                                            alignment: Alignment.topRight,
+                                            children: [
+                                              Image.file(
+                                                File(sharedPref.getData(
+                                                    key: 'signature')!),
+                                                height: 100,
+                                                width: 100,
+                                              ),
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                    color: Colors.grey[200],
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10)),
+                                                child: IconButton(
+                                                    padding:
+                                                        const EdgeInsets.all(0),
+                                                    iconSize: 10,
+                                                    onPressed: () {
+                                                      pdfController
+                                                          .signaturePickImage();
+                                                    },
+                                                    icon: const Icon(
+                                                      Icons.edit,
+                                                      size: 20,
+                                                    )),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : Expanded(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey[200],
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: IconButton(
+                                            onPressed: () async {
+                                              pdfController
+                                                  .signaturePickImage();
+                                            },
+                                            icon: const Icon(
+                                                Icons.edit_document)),
+                                      ),
+                                    ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          const Expanded(
+                            flex: 2,
+                            child: Row(
                               children: [
-                                const SizedBox(
-                                  height: 10,
+                                Expanded(
+                                  child: Divider(color: Colors.black38),
                                 ),
-                                Stack(
-                                  alignment: Alignment.topRight,
-                                  children: [
-                                    Image.file(
-                                      File(pdfController
-                                          .signatureCodePickedImageFile!.path),
-                                      height: 100,
-                                      width: 100,
-                                    ),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey[200],
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      child: IconButton(
-                                          padding: const EdgeInsets.all(0),
-                                          iconSize: 10,
-                                          onPressed: () {
-                                            pdfController.signaturePickImage();
-                                          },
-                                          icon: const Icon(
-                                            Icons.edit,
-                                            size: 20,
-                                          )),
-                                    ),
-                                  ],
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text('Choose Signature Image'),
+                                ),
+                                Expanded(
+                                  child: Divider(color: Colors.black38),
                                 ),
                               ],
-                            )
-                          : Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: IconButton(
-                                  onPressed: () async {
-                                    pdfController.signaturePickImage();
-                                  },
-                                  icon: const Icon(Icons.edit_document)),
                             ),
+                          ),
+                        ],
+                      ),
                       const SizedBox(
                         height: 20,
                       ),
@@ -347,21 +592,33 @@ class _CompanyScreenState extends State<CompanyScreen> {
                             if (_formKey.currentState!.validate()) {
                               sharedPref.saveData(
                                   key: 'company_name',
-                                  value: pdfController.companyName.value);
+                                  value: pdfController.companyName.value.isEmpty
+                                      ? sharedPref.getData(
+                                              key: 'company_name') ??
+                                          ''
+                                      : pdfController.companyName.value);
                               sharedPref.saveData(
                                   key: 'company_address',
-                                  value: pdfController.companyAddress.value);
+                                  value:
+                                      pdfController.companyAddress.value.isEmpty
+                                          ? sharedPref.getData(
+                                                  key: 'company_address') ??
+                                              ''
+                                          : pdfController.companyAddress.value);
                               sharedPref.saveData(
                                   key: 'gst_type',
-                                  value:
-                                      pdfController.gstType.value.toString());
+                                  value: pdfController.gstVar.value
+                                      .toString()
+                                      .split('.')
+                                      .last);
                               sharedPref.saveData(
                                   key: 'qr_code',
                                   value: pdfController.qrCodePickedImageFile !=
                                           null
                                       ? pdfController
                                           .qrCodePickedImageFile!.path
-                                      : '');
+                                      : sharedPref.getData(key: 'qr_code') ??
+                                          '');
                               sharedPref.saveData(
                                   key: 'signature',
                                   value: pdfController
@@ -369,7 +626,8 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                           null
                                       ? pdfController
                                           .signatureCodePickedImageFile!.path
-                                      : '');
+                                      : sharedPref.getData(key: 'signature') ??
+                                          "");
 
                               sharedPref.saveData(
                                   key: 'logo',
@@ -377,7 +635,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                           null
                                       ? pdfController
                                           .companyPickedImageFile!.path
-                                      : '');
+                                      : sharedPref.getData(key: 'logo') ?? '');
 
                               Get.to(
                                 () => const InvoiceScreen(),
@@ -385,12 +643,13 @@ class _CompanyScreenState extends State<CompanyScreen> {
                               _formKey.currentState!.save();
                             } else {
                               Get.snackbar(
-                                'Error',
+                                '',
                                 'Please fill all the fields',
                                 snackPosition: SnackPosition.BOTTOM,
                                 margin: const EdgeInsets.all(10),
                                 backgroundColor: Colors.red,
                                 colorText: Colors.white,
+                                titleText: Container()
                               );
                             }
                           },

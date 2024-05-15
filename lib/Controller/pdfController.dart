@@ -4,7 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
+import 'package:get/get_rx/get_rx.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:invoice_pdf_generate/Controller/sharedController.dart';
 import 'package:invoice_pdf_generate/Utils/Enums.dart';
 import 'package:invoice_pdf_generate/file_handle_api.dart';
 import 'package:pdf/pdf.dart';
@@ -12,6 +15,7 @@ import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 class PdfController extends GetxController {
+  final shared = Get.find<SharedPref>();
   var themeColor = PdfColors.black.obs;
   var font = pw.Font.courier().obs;
   //company name
@@ -20,8 +24,12 @@ class PdfController extends GetxController {
   var companyAddress = "".obs;
   //company email
   var companyEmail = ''.obs;
+  
+  var invoiceNo = "".obs;
+  //invoicedate
+    Rx<DateTime> invoiceDate = DateTime.now().obs;
   late List<List<String>> tableData = [];
-  Rx<GstType> gstType = GstType.NONE.obs;
+  Rx<GstVar> gstVar = GstVar.NONE.obs;
 
   TextEditingController itemController = TextEditingController();
   TextEditingController srnoController = TextEditingController();
@@ -32,6 +40,9 @@ class PdfController extends GetxController {
   TextEditingController qtyControlleru = TextEditingController();
   TextEditingController amountControlleru = TextEditingController();
   TextEditingController fileNameController = TextEditingController();
+  TextEditingController gstController = TextEditingController(
+    text: '0',
+  );
 
 //  Invoice To Name
 // Invoice To Address (optional)
@@ -173,6 +184,7 @@ class PdfController extends GetxController {
     final font = await PdfGoogleFonts.firaSansCondensedRegular();
     pdf.addPage(
       pw.MultiPage(
+        margin: pw.EdgeInsets.all(40),
         theme: pw.ThemeData.withFont(
           fontFallback: [
             await PdfGoogleFonts.materialIcons(),
@@ -182,7 +194,9 @@ class PdfController extends GetxController {
         pageFormat: PdfPageFormat.a4,
         build: (context) {
           return [
+            //company 
             pw.Row(
+              
               children: [
                 iconImage != null
                     ? pw.Image(
@@ -197,7 +211,7 @@ class PdfController extends GetxController {
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Text(
-                      'INVOICE',
+                    companyName.value.isEmpty ? '' : companyName.value,
                       style: pw.TextStyle(
                         fontSize: 17.0,
                         fontWeight: pw.FontWeight.bold,
@@ -205,14 +219,14 @@ class PdfController extends GetxController {
                         font: fontFamily,
                       ),
                     ),
-                    pw.Text(
-                      'Test',
-                      style: pw.TextStyle(
-                        fontSize: 15.0,
-                        color: color,
-                        font: fontFamily,
-                      ),
-                    ),
+                    // pw.Text(
+                    //   'Test',
+                    //   style: pw.TextStyle(
+                    //     fontSize: 15.0,
+                    //     color: color,
+                    //     font: fontFamily,
+                    //   ),
+                    // ),
                   ],
                 ),
                 pw.Spacer(),
@@ -221,7 +235,7 @@ class PdfController extends GetxController {
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Text(
-                      companyName.value.isEmpty ? 'Test' : companyName.value,
+                      companyName.value.isEmpty ? '' : companyName.value,
                       style: pw.TextStyle(
                         fontSize: 15.5,
                         fontWeight: pw.FontWeight.bold,
@@ -237,8 +251,98 @@ class PdfController extends GetxController {
                         font: fontFamily,
                       ),
                     ),
+                    // pw.Text(
+                    //   DateTime.now().toString().split(' ')[0],
+                    //   style: pw.TextStyle(
+                    //     fontSize: 14.0,
+                    //     color: color,
+                    //     font: fontFamily,
+                    //   ),
+                    // ),
+                  ],
+                ),
+              ],
+            ),
+            pw.SizedBox(height: 1 * PdfPageFormat.mm),
+            pw.Divider(),
+            pw.SizedBox(height: 1 * PdfPageFormat.mm),
+           //to bill to
+            pw.Row(
+              children: [
+                pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
                     pw.Text(
-                      DateTime.now().toString(),
+                      'Bill To',
+                      style: pw.TextStyle(
+                        fontSize: 15.0,
+                        fontWeight: pw.FontWeight.bold,
+                        color: color,
+                        font: fontFamily,
+                      ),
+                    ),
+                    pw.Text(
+                      invoiceToName.value.isEmpty ? '' : invoiceToName.value,
+                      style: pw.TextStyle(
+                        fontSize: 14.0,
+                        color: color,
+                        font: fontFamily,
+                      ),
+                    ),
+                    pw.Text(
+                      invoiceToAddress.value.isEmpty
+                          ? ''
+                          : invoiceToAddress.value,
+                      style: pw.TextStyle(
+                        fontSize: 14.0,
+                        color: color,
+                        font: fontFamily,
+                      ),
+                    ),
+                    pw.Text(
+                      invoiceToContactNumber.value.isEmpty
+                          ? ''
+                          : invoiceToContactNumber.value,
+                      style: pw.TextStyle(
+                        fontSize: 14.0,
+                        color: color,
+                        font: fontFamily,
+                      ),
+                    ),
+                  ],
+                ),
+                pw.Spacer(),
+                pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Text(
+                      'Invoice No',
+                      style: pw.TextStyle(
+                        fontSize: 15.0,
+                        fontWeight: pw.FontWeight.bold,
+                        color: color,
+                        font: fontFamily,
+                      ),
+                    ),
+                    pw.Text(
+                      invoiceNo.value.isEmpty ? '' : invoiceNo.value,
+                      style: pw.TextStyle(
+                        fontSize: 14.0,
+                        color: color,
+                        font: fontFamily,
+                      ),
+                    ),
+                    pw.Text(
+                      'Date',
+                      style: pw.TextStyle(
+                        fontSize: 15.0,
+                        fontWeight: pw.FontWeight.bold,
+                        color: color,
+                        font: fontFamily,
+                      ),
+                    ),
+                    pw.Text(
+                      DateTime.now().toString().split(' ')[0],
                       style: pw.TextStyle(
                         fontSize: 14.0,
                         color: color,
@@ -251,16 +355,6 @@ class PdfController extends GetxController {
             ),
             pw.SizedBox(height: 1 * PdfPageFormat.mm),
             pw.Divider(),
-            pw.SizedBox(height: 1 * PdfPageFormat.mm),
-            // pw.Text(
-            //   'Dear textss,\nLorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia, molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium optio, eaque rerum! Provident similique accusantium nemo autem. Veritatis obcaecati tenetur iure eius earum ut molestias architecto voluptate aliquam nihil, eveniet aliquid culpa officia aut! Impedit sit sunt quaerat, odit, tenetur error',
-            //   textAlign: pw.TextAlign.justify,
-            //   style: pw.TextStyle(
-            //     fontSize: 14.0,
-            //     color: color,
-            //     font: fontFamily,
-            //   ),
-            // ),
 
             pw.SizedBox(height: 5 * PdfPageFormat.mm),
 
@@ -318,11 +412,11 @@ class PdfController extends GetxController {
                         ),
                         pw.Row(
                           children: [
-                            (gstType.value == GstType.NONE)
+                            (gstVar.value == GstVar.NONE)
                                 ? pw.Container()
                                 : pw.Expanded(
                                     child: pw.Text(
-                                      'GST ${gstType.value.toString().split('_').last}%',
+                                      '${gstVar.value.toString().split('.').last} ${gstController.text}%',
                                       style: pw.TextStyle(
                                         fontWeight: pw.FontWeight.bold,
                                         color: color,
@@ -331,7 +425,7 @@ class PdfController extends GetxController {
                                     ),
                                   ),
                             pw.Text(
-                              '\₹ ${tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse( gstType.value.toString().split('_').last) / 100)}',
+                              '\₹ ${tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse(gstController.text.toString().isEmpty ? '0' : gstController.text.toString())  / 100)}',
                               style: pw.TextStyle(
                                 fontWeight: pw.FontWeight.bold,
                                 color: color,
@@ -355,7 +449,7 @@ class PdfController extends GetxController {
                               ),
                             ),
                             pw.Text(
-                              '\₹ ${tableData.fold(0, (prev, element) => prev + int.parse(element[3])) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse( gstType.value.toString().split('_').last) / 100))}',
+                              '\₹ ${tableData.fold(0, (prev, element) => prev + int.parse(element[3])) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse(gstController.text.toString().isEmpty ? '0' : gstController.text.toString()) / 100))}',
                               style: pw.TextStyle(
                                 fontWeight: pw.FontWeight.bold,
                                 color: color,
