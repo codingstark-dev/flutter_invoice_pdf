@@ -3,12 +3,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPref extends GetxController {
   //save image logo, company name,company address, signature image, qrcode image, gst percentage
-   late  SharedPreferences prefs;
-  @override
-    onInit() async {
-    prefs = await SharedPreferences.getInstance();
-    super.onInit();
-  }
+ final SharedPreferences prefs;
+
+  SharedPref({required this.prefs});
+
+ 
 
   void saveData({
     required String key,

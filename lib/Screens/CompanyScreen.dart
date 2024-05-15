@@ -18,7 +18,6 @@ import 'package:invoice_pdf_generate/Screens/InvoiceScreen.dart';
 import 'package:invoice_pdf_generate/Utils/Enums.dart';
 import 'package:invoice_pdf_generate/style/ConstStyle.dart';
 
-
 class CompanyScreen extends StatefulWidget {
   const CompanyScreen({super.key});
 
@@ -28,8 +27,9 @@ class CompanyScreen extends StatefulWidget {
 
 class _CompanyScreenState extends State<CompanyScreen> {
   final pdfController = Get.put(PdfController());
-  final sharedPref = Get.put(SharedPref());
+  final sharedPref = Get.find<SharedPref>();
   final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,50 +45,64 @@ class _CompanyScreenState extends State<CompanyScreen> {
             init: pdfController,
             builder: (context) {
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     children: [
-                      const Row(
+                     
+
+                      Row(
                         children: [
                           Expanded(
-                            child: Divider(color: Colors.black38),
+                            child: InkWell(
+                              onTap: () {
+                                pdfController.companypickImage();
+                              },
+                              child: GFAvatar(
+                                backgroundImage: pdfController
+                                            .companyPickedImageFile !=
+                                        null
+                                    ? FileImage(File(
+                                        pdfController.companyPickedImageFile!.path))
+                                    : sharedPref.getData(key: 'logo') != null
+                                        ? FileImage(
+                                            File(sharedPref.getData(key: 'logo')!))
+                                        : null,
+                                shape: GFAvatarShape.circle,
+                                radius: 50,
+                                child: pdfController.companyPickedImageFile == null
+                                    ? sharedPref.getData(key: 'logo') == null
+                                        ? const Icon(
+                                            Icons.add_a_photo,
+                                            size: 50,
+                                          )
+                                        : null  : null,
+                              ),
+                            ),
+                          ), Expanded(
+                            flex: 2,
+                            child: const Row(
+                                                    children: [
+                            Expanded(
+                              child: Divider(color: Colors.black38),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text('Choose Company Image'),
+                            ),
+                            Expanded(
+                              child: Divider(color: Colors.black38),
+                            ),
+                                                    ],
+                                                  ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text('Choose Company Image'),
-                          ),
-                          Expanded(
-                            child: Divider(color: Colors.black38),
-                          ),
+                          
                         ],
                       ),
-        
-                      InkWell(
-                        onTap: () {
-                          pdfController.companypickImage();
-                        },
-                        child: GFAvatar(
-                          backgroundImage:
-                              pdfController.companyPickedImageFile != null
-                                  ? FileImage(File(
-                                      pdfController.companyPickedImageFile!.path ))
-                                  : 
-                                  sharedPref.getData(key: 'logo') != null
-                                  ? FileImage(File(sharedPref.getData(key: 'logo')!))
-                                  : null,
-                                  
-                          shape: GFAvatarShape.circle,
-                          radius: 50,
-                          child: pdfController.companyPickedImageFile == null
-                              ? const Icon(Icons.person,
-                                  size: 50, color: Colors.white)
-                              : null,
-                        ),
-                      ),
                       const SizedBox(
-                        height: 10,
+                        height: 20,
                       ),
                       //company name
                       TextFormField(
@@ -102,10 +116,11 @@ class _CompanyScreenState extends State<CompanyScreen> {
                           return null;
                         },
                         controller: TextEditingController()
-                          ..text = sharedPref.getData(key: 'company_name') ?? '',
+                          ..text =
+                              sharedPref.getData(key: 'company_name') ?? '',
                         decoration: InputDecoration(
                           isDense: true,
-        
+
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10)),
                           hintText: 'Company Name',
@@ -119,6 +134,9 @@ class _CompanyScreenState extends State<CompanyScreen> {
                         height: 10,
                       ),
                       TextFormField(
+                        controller: TextEditingController()
+                          ..text =
+                              sharedPref.getData(key: 'company_address') ?? '',
                         onChanged: (value) {
                           pdfController.companyAddress.value = value;
                         },
@@ -155,28 +173,23 @@ class _CompanyScreenState extends State<CompanyScreen> {
                         ),
                         items: const [
                           DropdownMenuItem(
-                              value: GstType.NONE,
-                              child: Text('None')),
+                              value: GstType.NONE, child: Text('None')),
                           DropdownMenuItem(
-                              value: GstType.GST_5,
-                              child: Text('GST 5%')),
+                              value: GstType.GST_5, child: Text('GST 5%')),
                           DropdownMenuItem(
-                              value: GstType.GST_12,
-                              child: Text('GST 12%')),
+                              value: GstType.GST_12, child: Text('GST 12%')),
                           DropdownMenuItem(
-                              value: GstType.GST_18,
-                              child: Text('GST 18%')),
+                              value: GstType.GST_18, child: Text('GST 18%')),
                           DropdownMenuItem(
-                              value: GstType.GST_28,
-                              child: Text('GST 28%')),
+                              value: GstType.GST_28, child: Text('GST 28%')),
                         ],
                         onChanged: (value) {
                           if (value != null) {
-                              pdfController.gstType.value = value;
+                            pdfController.gstType.value = value;
                           }
                         },
                       ),
-        
+
                       const SizedBox(
                         height: 10,
                       ),
@@ -194,11 +207,11 @@ class _CompanyScreenState extends State<CompanyScreen> {
                           ),
                         ],
                       ),
-        
+
                       const SizedBox(
                         height: 10,
                       ),
-        
+
                       pdfController.qrCodePickedImageFile != null
                           ? Column(
                               children: [
@@ -248,7 +261,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                       const SizedBox(
                         height: 10,
                       ),
-        
+
                       const Row(
                         children: [
                           Expanded(
@@ -264,7 +277,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                         ],
                       ),
                       // company address
-        
+
                       pdfController.signatureCodePickedImageFile != null
                           ? Column(
                               children: [
@@ -335,29 +348,37 @@ class _CompanyScreenState extends State<CompanyScreen> {
                               sharedPref.saveData(
                                   key: 'company_name',
                                   value: pdfController.companyName.value);
-                                  sharedPref.saveData(
+                              sharedPref.saveData(
                                   key: 'company_address',
                                   value: pdfController.companyAddress.value);
-                                  sharedPref.saveData(
+                              sharedPref.saveData(
                                   key: 'gst_type',
-                                  value: pdfController.gstType.value.toString());
-                                  sharedPref.saveData(
+                                  value:
+                                      pdfController.gstType.value.toString());
+                              sharedPref.saveData(
                                   key: 'qr_code',
-                                  value: pdfController.qrCodePickedImageFile != null
-                                      ? pdfController.qrCodePickedImageFile!.path
+                                  value: pdfController.qrCodePickedImageFile !=
+                                          null
+                                      ? pdfController
+                                          .qrCodePickedImageFile!.path
                                       : '');
-                                  sharedPref.saveData(
+                              sharedPref.saveData(
                                   key: 'signature',
-                                  value: pdfController.signatureCodePickedImageFile != null
-                                      ? pdfController.signatureCodePickedImageFile!.path
+                                  value: pdfController
+                                              .signatureCodePickedImageFile !=
+                                          null
+                                      ? pdfController
+                                          .signatureCodePickedImageFile!.path
                                       : '');
-                                      
-                                  sharedPref.saveData(
+
+                              sharedPref.saveData(
                                   key: 'logo',
-                                  value: pdfController.companyPickedImageFile != null
-                                      ? pdfController.companyPickedImageFile!.path
+                                  value: pdfController.companyPickedImageFile !=
+                                          null
+                                      ? pdfController
+                                          .companyPickedImageFile!.path
                                       : '');
-                             
+
                               Get.to(
                                 () => const InvoiceScreen(),
                               );
