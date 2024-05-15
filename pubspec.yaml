@@ -31,12 +31,12 @@ dev_dependencies:
   flutter_launcher_icons: "^0.13.1"
 
 flutter_native_splash:
-  color: "#ffffff"
-  image: assets/logoapp.png
-  branding: assets/logoapp.png
+  color: "#FBCD08"
+  image: assets/logo.png
+  branding: assets/logo.png
   android_12:
-    image: assets/logoapp.png
-    icon_background_color: "#ffffff"
+    image: assets/logo.png
+    icon_background_color: "#FBCD08"
   ios: true
 
 flutter_launcher_icons:
