@@ -1,10 +1,7 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:get/get_rx/get_rx.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:invoice_pdf_generate/Controller/sharedController.dart';
@@ -41,9 +38,9 @@ class PdfController extends GetxController {
   TextEditingController qtyControlleru = TextEditingController();
   TextEditingController amountControlleru = TextEditingController();
   TextEditingController fileNameController = TextEditingController();
-  TextEditingController gstController = TextEditingController(
-    text: '0',
-  );
+  List<TextEditingController> gstController = List.generate(5, (index) => TextEditingController(
+    text: "0"
+  ));
 
 //  Invoice To Name
 // Invoice To Address (optional)
@@ -420,26 +417,29 @@ class PdfController extends GetxController {
                         (gstVar.value == GstVar.NONE)
                                 ? pw.Container()
                                 :  pw.Row(
-                          children: [
-                           pw.Expanded(
-                                    child: pw.Text(
-                                      '${gstVar.value.toString().split('.').last} ${gstController.text}%',
-                                      style: pw.TextStyle(
-                                        fontWeight: pw.FontWeight.bold,
-                                        color: color.value,
-                                        font: fontFamily.value,
-                                      ),
-                                    ),
+                          children: gstController.asMap().entries.map((e) => pw.Row(
+                            children: [
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'GST ${e.key + 1}',
+                                  style: pw.TextStyle(
+                                    fontSize: 14.0,
+                                    fontWeight: pw.FontWeight.bold,
+                                    color: color.value,
+                                    font: fontFamily.value,
                                   ),
-                            pw.Text(
-                              '\₹ ${tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse(gstController.text.toString().isEmpty ? '0' : gstController.text.toString()) / 100)}',
-                              style: pw.TextStyle(
-                                fontWeight: pw.FontWeight.bold,
-                                color: color.value,
-                                font: font,
+                                ),
                               ),
-                            ),
-                          ],
+                              pw.Text(
+                                '\₹ ${tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse(e.value.text.toString().isEmpty ? '0' : e.value.text.toString()) / 100)}',
+                                style: pw.TextStyle(
+                                  fontWeight: pw.FontWeight.bold,
+                                  color: color.value,
+                                  font: font,
+                                ),
+                              ),
+                            ],
+                          )).toList(),
                         ),
                         pw.Divider(),
                         pw.Row(
@@ -456,7 +456,7 @@ class PdfController extends GetxController {
                               ),
                             ),
                             pw.Text(
-                              '\₹ ${tableData.fold(0, (prev, element) => prev + int.parse(element[3])) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse(gstController.text.toString().isEmpty ? '0' : gstController.text.toString()) / 100))}',
+                              '\₹ ${tableData.fold(0, (prev, element) => prev + int.parse(element[3])) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse(gstController[0].text.toString().isEmpty ? '0' : gstController[0].text.toString()) / 100)) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse(gstController[1].text.toString().isEmpty ? '0' : gstController[1].text.toString()) / 100)) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse(gstController[2].text.toString().isEmpty ? '0' : gstController[2].text.toString()) / 100)) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse(gstController[3].text.toString().isEmpty ? '0' : gstController[3].text.toString()) / 100)) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse(gstController[4].text.toString().isEmpty ? '0' : gstController[4].text.toString()) / 100))}',
                               style: pw.TextStyle(
                                 fontWeight: pw.FontWeight.bold,
                                 color: color.value,
