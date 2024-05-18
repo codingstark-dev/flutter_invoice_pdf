@@ -332,7 +332,7 @@ class PdfController extends GetxController {
                       ),
                     ),
                     pw.Text(
-                      invoiceNumber.value.isEmpty ? '' : invoiceNumber.value,
+                      invoiceNumber.value.isEmpty ? '' : "#"+ invoiceNumber.value,
                       style: pw.TextStyle(
                         fontSize: 14.0,
                         color: color.value,

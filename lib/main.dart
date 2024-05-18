@@ -8,6 +8,8 @@ import 'package:invoice_pdf_generate/Controller/sharedController.dart';
 import 'package:invoice_pdf_generate/Screens/AddDataScreen.dart';
 import 'package:invoice_pdf_generate/Screens/CompanyScreen.dart';
 import 'package:invoice_pdf_generate/Screens/InvoiceScreen.dart';
+import 'package:invoice_pdf_generate/Screens/OnboardingScreen.dart';
+import 'package:invoice_pdf_generate/Utils/PermissionUtil.dart';
 import 'package:invoice_pdf_generate/style/ConstStyle.dart';
 import 'package:pdf/pdf.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,7 +23,7 @@ void main() async {
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await Future.delayed(const Duration(seconds: 2));
-
+  await storagePermission();
   runApp(MainApp(
     prefs: prefs,
   ));
@@ -48,6 +50,10 @@ class MainApp extends StatelessWidget {
       getPages: [
         GetPage(
           name: '/',
+          page: () => Onboardingscreen(),
+        ),
+        GetPage(
+          name: '/company',
           page: () => CompanyScreen(),
         ),
         GetPage(name: '/add', page: () => AddDataScreen()),
@@ -55,13 +61,11 @@ class MainApp extends StatelessWidget {
       ],
       theme: ThemeData(
         colorScheme: ColorScheme(
-          background: Colors.white,
           brightness: Brightness.light,
           primary: primaryColor,
           secondary: secondaryColor,
           onPrimary: Colors.white,
           onSecondary: Colors.white,
-          onBackground: Colors.black,
           onError: Colors.white,
           onSurface: Colors.black,
           error: Colors.red,

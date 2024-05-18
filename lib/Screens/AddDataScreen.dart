@@ -26,6 +26,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
   PdfColor themeColor = PdfColors.black;
   pw.Font font = pw.Font.courier();
   final pdfController = Get.put(PdfController());
+  final shared = Get.find<SharedPref>();
   final key = GlobalKey<FormState>();
   final key2 = GlobalKey<FormState>();
   // final TextEditingController _qtyController = TextEditingController();
@@ -204,8 +205,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                         margin: const EdgeInsets.all(10),
                         backgroundColor: Colors.red,
                         colorText: Colors.white,
-                                                    titleText: Container(),
-
+                        titleText: Container(),
                       );
                       return;
                     }
@@ -234,15 +234,19 @@ class _AddDataScreenState extends State<AddDataScreen> {
                           margin: const EdgeInsets.all(10),
                           backgroundColor: Colors.red,
                           colorText: Colors.white,
-                                                    titleText: Container(),
-
+                          titleText: Container(),
                         );
                         return;
                       }
                       Get.to(
-                        PdfPreview(build: (format) {
+                        PdfPreview(
+                          enableScrollToPage: true,
+                          // previewPageMargin: EdgeInsets.all(0),
+                          // padding: EdgeInsets.all(0),
+                          useActions: true,
+                          build: (format) {
                           return pdfController
-                              .generate( true)
+                              .generate(true)
                               .then((file) => file.readAsBytesSync());
                         }),
                       );
@@ -271,8 +275,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                           margin: const EdgeInsets.all(10),
                           backgroundColor: Colors.red,
                           colorText: Colors.white,
-                                                    titleText: Container(),
-
+                          titleText: Container(),
                         );
                         return;
                       }
@@ -310,26 +313,32 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                       margin: const EdgeInsets.all(10),
                                       backgroundColor: Colors.red,
                                       colorText: Colors.white,
-                                                                  titleText: Container(),
-
+                                      titleText: Container(),
                                     );
                                     return;
                                   }
                                   Get.back();
 
                                   // generate pdf file
-                                  pdfController
-                                      .generate(
-                                         false)
-                                      .then((pdfFile) {
-                                        Get.snackbar(
-                                          'Done',
-                                          'PDF file Saved on Download folder',
-                                          snackPosition: SnackPosition.BOTTOM,
-                                          margin: const EdgeInsets.all(10),
-                                          backgroundColor: Colors.green,
-                                          colorText: Colors.white,
-                                        );
+                                  pdfController.generate(false).then((pdfFile) {
+                                    shared.saveData(
+                                        key: "invoice_gen",
+                                        value: shared
+                                                .getData(key: "invoice_gen") == null
+                                            ? "1"
+                                            : (int.parse(shared.getData(
+                                                        key: "invoice_gen")!) +
+                                                    1)
+                                                .toString());
+
+                                    Get.snackbar(
+                                      'Done',
+                                      'PDF file Saved on Download folder',
+                                      snackPosition: SnackPosition.BOTTOM,
+                                      margin: const EdgeInsets.all(10),
+                                      backgroundColor: Colors.green,
+                                      colorText: Colors.white,
+                                    );
                                     FileHandleApi.openFile(pdfFile);
                                   });
                                 },
@@ -480,8 +489,9 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                               10)),
                                                                   hintText:
                                                                       'Qty',
-                                                                  label: const Text(
-                                                                      'Qty'),
+                                                                  label:
+                                                                      const Text(
+                                                                          'Qty'),
                                                                   alignLabelWithHint:
                                                                       true,
                                                                 ),
@@ -592,13 +602,14 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                 margin:
                                                                     const EdgeInsets
                                                                         .all(
-                                                                            10),
+                                                                        10),
                                                                 backgroundColor:
                                                                     Colors.red,
                                                                 colorText:
                                                                     Colors
-                                                                        .white,                            titleText: Container(),
-
+                                                                        .white,
+                                                                titleText:
+                                                                    Container(),
                                                               );
                                                               return;
                                                             }
