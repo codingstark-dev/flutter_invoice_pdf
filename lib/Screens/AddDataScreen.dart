@@ -241,7 +241,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                       Get.to(
                         PdfPreview(
                           enableScrollToPage: true,
-                          // previewPageMargin: EdgeInsets.all(0),
+                          // previewPageMargin: EdgeInsets.all(0), 
                           // padding: EdgeInsets.all(0),
                           useActions: true,
                           build: (format) {
