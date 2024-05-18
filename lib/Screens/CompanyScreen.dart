@@ -31,6 +31,14 @@ class _CompanyScreenState extends State<CompanyScreen> {
   final sharedPref = Get.find<SharedPref>();
   final _formKey = GlobalKey<FormState>();
 
+  final indexOfGst = {
+    GstVar.GST: 0,
+    GstVar.IGST: 1,
+    GstVar.CGST: 1,
+    GstVar.SGST: 1,
+    GstVar.UTGST: 1,
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -158,7 +166,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                     TextFormField(
+                      TextFormField(
                         controller: TextEditingController()
                           ..text =
                               sharedPref.getData(key: 'company_email') ?? '',
@@ -181,11 +189,12 @@ class _CompanyScreenState extends State<CompanyScreen> {
                           // errorText: 'Please enter company address',
                         ),
                       ),
-                      const SizedBox(height: 10), SegmentedButton(
+                      const SizedBox(height: 10),
+                      SegmentedButton(
                         // selectedIcon: const Icon(Icons.check),
                         showSelectedIcon: false,
                         style: ButtonStyle(
-                          padding: MaterialStateProperty.all(
+                          padding: WidgetStateProperty.all(
                             const EdgeInsets.symmetric(
                                 horizontal: 2, vertical: 2),
                           ),
@@ -225,16 +234,17 @@ class _CompanyScreenState extends State<CompanyScreen> {
                         selected: pdfController.gstVar.value == GstVar.NONE
                             ? {
                                 GstVar.NONE,
-                            }
-                            :sharedPref.getData(key: 'gst_type') == null
+                              }
+                            : sharedPref.getData(key: 'gst_type') == null
                                 ? {
                                     pdfController.gstVar.value,
                                   }
-                                : {GstVar.values.firstWhere(
-                                    (element) =>
+                                : {
+                                    GstVar.values.firstWhere((element) =>
                                         element.toString().split('.').last ==
-                                        sharedPref.getData(key: 'gst_type'))},
-                        
+                                        sharedPref.getData(key: 'gst_type'))
+                                  },
+
                         onSelectionChanged: (value) {
                           setState(() {});
                           // on same value selection again deselect the value
@@ -265,9 +275,11 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                 FilteringTextInputFormatter.digitsOnly,
                                 LengthLimitingTextInputFormatter(50),
                               ],
-                              controller: pdfController.gstController
-                                ..text =
-                                    sharedPref.getData(key: 'gstVal') ?? '',
+                              controller:
+                                  pdfController.gstController[pdfController.gstVar.value.index -1]
+                                    ..text = sharedPref.getData(key: 'gstVal') != null
+                                        ? sharedPref.getData(key: 'gstVal')!.split(',')[indexOfGst[pdfController.gstVar.value]!]
+                                        :   pdfController.gstController[pdfController.gstVar.value.index -1] .text,
                               // onChanged: (value) {
                               //   pdfController.companyAddress.value = value;
                               // },
@@ -598,6 +610,26 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                           ''
                                       : pdfController.companyName.value);
                               sharedPref.saveData(
+                                  key: 'company_email',
+                                  value:
+                                      pdfController.companyEmail.value.isEmpty
+                                          ? sharedPref.getData(
+                                                  key: 'company_email') ??
+                                              ''
+                                          : pdfController.companyEmail.value);
+                                          sharedPref.saveData(
+                                  key: 'gstVal',
+                                  value:
+                                      [
+                                        pdfController.gstController[GstVar.GST.index -1].text,
+                                        pdfController.gstController[GstVar.IGST.index -1].text,
+                                        pdfController.gstController[GstVar.CGST.index -1].text,
+                                        pdfController.gstController[GstVar.SGST.index -1].text,
+                                        pdfController.gstController[GstVar.UTGST.index -1].text,
+                                      ]
+                                          .toString(),
+                                  );
+                              sharedPref.saveData(
                                   key: 'company_address',
                                   value:
                                       pdfController.companyAddress.value.isEmpty
@@ -642,15 +674,12 @@ class _CompanyScreenState extends State<CompanyScreen> {
                               );
                               _formKey.currentState!.save();
                             } else {
-                              Get.snackbar(
-                                '',
-                                'Please fill all the fields',
-                                snackPosition: SnackPosition.BOTTOM,
-                                margin: const EdgeInsets.all(10),
-                                backgroundColor: Colors.red,
-                                colorText: Colors.white,
-                                titleText: Container()
-                              );
+                              Get.snackbar('', 'Please fill all the fields',
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  margin: const EdgeInsets.all(10),
+                                  backgroundColor: Colors.red,
+                                  colorText: Colors.white,
+                                  titleText: Container());
                             }
                           },
                           label: const Text('Go to Invoice Screen'),
