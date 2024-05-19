@@ -22,7 +22,7 @@ class PdfController extends GetxController {
   //company email
   var companyEmail = ''.obs;
 
-  var invoiceNumber = "".obs;
+  // var invoiceNumber = "".obs;
   var invoiceToEmail = "".obs;
   //invoicedate
   Rx<DateTime> invoiceDate = DateTime.now().obs;
@@ -38,9 +38,9 @@ class PdfController extends GetxController {
   TextEditingController qtyControlleru = TextEditingController();
   TextEditingController amountControlleru = TextEditingController();
   TextEditingController fileNameController = TextEditingController();
-  List<TextEditingController> gstController = List.generate(5, (index) => TextEditingController(
-    text: "0"
-  ));
+  TextEditingController invoiceNumber = TextEditingController();
+  List<TextEditingController> gstController =
+      List.generate(5, (index) => TextEditingController(text: "0"));
 
 //  Invoice To Name
 // Invoice To Address (optional)
@@ -54,6 +54,21 @@ class PdfController extends GetxController {
   File? qrCodePickedImageFile;
   File? signatureCodePickedImageFile;
 
+  File updateCompanyImage(File file){
+    companyPickedImageFile = file;
+    update();
+    return file;
+  }
+ File updateQrCodeImage(File file){
+    qrCodePickedImageFile = file;
+    update();
+    return file;
+  }
+  File updateSignatureImage(File file){
+    signatureCodePickedImageFile = file;
+    update();
+    return file;
+  }
   companyPickImage() async {
     final picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: ImageSource.gallery);
@@ -165,8 +180,7 @@ class PdfController extends GetxController {
       ]),
     );
 
-    final iconImage =
-        (await companyPickedImageFile?.readAsBytes())?.buffer.asUint8List();
+  
 // Item & Description (editable)
 // Qty (editable)
 // Amount
@@ -194,13 +208,14 @@ class PdfController extends GetxController {
             //company
             pw.Row(
               children: [
-                iconImage != null
+                companyPickedImageFile != null && companyPickedImageFile!.existsSync()
                     ? pw.Image(
-                        pw.MemoryImage(iconImage),
+                        pw.MemoryImage(companyPickedImageFile!.readAsBytesSync()),
                         height: 72,
                         width: 72,
                       )
                     : pw.Container(),
+                
                 pw.SizedBox(width: 1 * PdfPageFormat.mm),
                 pw.Column(
                   mainAxisSize: pw.MainAxisSize.min,
@@ -320,7 +335,7 @@ class PdfController extends GetxController {
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Text(
-                      'Invoice No',
+                      'Invoice No:',
                       style: pw.TextStyle(
                         fontSize: 15.0,
                         fontWeight: pw.FontWeight.bold,
@@ -329,7 +344,9 @@ class PdfController extends GetxController {
                       ),
                     ),
                     pw.Text(
-                      invoiceNumber.value.isEmpty ? '' : "#"+ invoiceNumber.value,
+                      invoiceNumber.text.isEmpty
+                          ? ''
+                          : "#" + invoiceNumber.text,
                       style: pw.TextStyle(
                         fontSize: 14.0,
                         color: color.value,
@@ -337,7 +354,7 @@ class PdfController extends GetxController {
                       ),
                     ),
                     pw.Text(
-                      'Date',
+                      'Date:',
                       style: pw.TextStyle(
                         fontSize: 15.0,
                         fontWeight: pw.FontWeight.bold,
@@ -346,7 +363,7 @@ class PdfController extends GetxController {
                       ),
                     ),
                     pw.Text(
-                      DateTime.now().toString().split(' ')[0],
+                      invoiceDate.value.toString().split(' ')[0],
                       style: pw.TextStyle(
                         fontSize: 14.0,
                         color: color.value,
@@ -400,6 +417,7 @@ class PdfController extends GetxController {
                                 style: pw.TextStyle(
                                   fontWeight: pw.FontWeight.bold,
                                   color: color.value,
+
                                   font: fontFamily.value,
                                 ),
                               ),
@@ -414,33 +432,41 @@ class PdfController extends GetxController {
                             ),
                           ],
                         ),
-                        (gstVar.value == GstVar.NONE)
-                                ? pw.Container()
-                                :  pw.Row(
-                          children: gstController.asMap().entries.map((e) => pw.Row(
-                            children: [
-                              pw.Expanded(
-                                child: pw.Text(
-                                  'GST ${e.key + 1}',
-                                  style: pw.TextStyle(
-                                    fontSize: 14.0,
-                                    fontWeight: pw.FontWeight.bold,
-                                    color: color.value,
-                                    font: fontFamily.value,
+                        pw.Column(
+                            mainAxisSize: pw.MainAxisSize.min,
+                            children: List.generate(
+                              gstController.length,
+                              (index) {
+                                if(gstController[index].text.trim() == '0'){
+                                  return pw.Container();
+                                }
+                                return pw.Row(
+                                children: [
+                                  pw.Text(
+                                    GstVar.values[index + 1]
+                                        .toString()
+                                        .split('.')
+                                        .last,
+                                    style: pw.TextStyle(
+                                      // fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      color: color.value,
+                                      font: fontFamily.value,
+                                    ),
                                   ),
-                                ),
-                              ),
-                              pw.Text(
-                                '\₹ ${tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse(e.value.text.toString().isEmpty ? '0' : e.value.text.toString()) / 100)}',
-                                style: pw.TextStyle(
-                                  fontWeight: pw.FontWeight.bold,
-                                  color: color.value,
-                                  font: font,
-                                ),
-                              ),
-                            ],
-                          )).toList(),
-                        ),
+                                  pw.Spacer(),
+                                  pw.Text(
+                                    '${gstController[index].text.isEmpty ? '0' : gstController[index].text.trim()}%',
+                                    style: pw.TextStyle(
+                                      fontWeight: pw.FontWeight.bold,
+                                      color: color.value,
+                                      font: font,
+                                    ),
+                                  ),
+                                ],
+                              );
+                              },
+                            ).toList()),
                         pw.Divider(),
                         pw.Row(
                           children: [
@@ -456,7 +482,8 @@ class PdfController extends GetxController {
                               ),
                             ),
                             pw.Text(
-                              '\₹ ${tableData.fold(0, (prev, element) => prev + int.parse(element[3])) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse(gstController[0].text.toString().isEmpty ? '0' : gstController[0].text.toString()) / 100)) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse(gstController[1].text.toString().isEmpty ? '0' : gstController[1].text.toString()) / 100)) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse(gstController[2].text.toString().isEmpty ? '0' : gstController[2].text.toString()) / 100)) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse(gstController[3].text.toString().isEmpty ? '0' : gstController[3].text.toString()) / 100)) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * (double.parse(gstController[4].text.toString().isEmpty ? '0' : gstController[4].text.toString()) / 100))}',
+                              '\₹ ${(tableData.fold(0, (prev, element) => prev + int.parse(element[3])) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * gstController.fold(0, (prev, element) => prev + int.parse(element.text.trim()) / 100))).toStringAsFixed(2)}',
+
                               style: pw.TextStyle(
                                 fontWeight: pw.FontWeight.bold,
                                 color: color.value,
@@ -470,8 +497,7 @@ class PdfController extends GetxController {
                         pw.SizedBox(height: 0.5 * PdfPageFormat.mm),
                         pw.Container(height: 1, color: PdfColors.grey400),
                         pw.SizedBox(height: 2 * PdfPageFormat.mm),
-                        
-                        signatureCodePickedImageFile != null
+                        signatureCodePickedImageFile != null && signatureCodePickedImageFile!.existsSync()
                             ? pw.Image(
                                 pw.MemoryImage(
                                   signatureCodePickedImageFile!
@@ -487,6 +513,16 @@ class PdfController extends GetxController {
                 ],
               ),
             ),
+            pw.Spacer(),
+            qrCodePickedImageFile != null && qrCodePickedImageFile!.existsSync()
+                ? pw.Image(
+                    pw.MemoryImage(
+                      qrCodePickedImageFile!.readAsBytesSync(),
+                    ),
+                    width: 100,
+                    height: 100,
+                  )
+                : pw.Container(),
           ];
         },
         footer: (context) {
@@ -494,16 +530,6 @@ class PdfController extends GetxController {
             mainAxisSize: pw.MainAxisSize.min,
             children: [
               pw.Divider(),
-              pw.SizedBox(height: 2 * PdfPageFormat.mm),
-              qrCodePickedImageFile != null
-                  ? pw.Image(
-                      pw.MemoryImage(
-                        qrCodePickedImageFile!.readAsBytesSync(),
-                      ),
-                      width: 100,
-                      height: 100,
-                    )
-                  : pw.Container(),
               pw.SizedBox(height: 1 * PdfPageFormat.mm),
               pw.Text(
                 'Test',
@@ -533,23 +559,25 @@ class PdfController extends GetxController {
                 ],
               ),
               pw.SizedBox(height: 1 * PdfPageFormat.mm),
-              pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.center,
-                children: [
-                  pw.Text(
-                    'Email: ',
-                    style: pw.TextStyle(
-                        fontWeight: pw.FontWeight.bold,
-                        color: color.value,
-                        font: fontFamily.value),
-                  ),
-                  pw.Text(
-                    'test@gmail.com',
-                    style: pw.TextStyle(
-                        color: color.value, font: pw.Font.courier()),
-                  ),
-                ],
-              ),
+              companyEmail.isEmpty
+                  ? pw.Container()
+                  : pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.center,
+                      children: [
+                        pw.Text(
+                          'Email: ',
+                          style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              color: color.value,
+                              font: fontFamily.value),
+                        ),
+                        pw.Text(
+                          companyEmail.value.isEmpty ? '' : companyEmail.value,
+                          style: pw.TextStyle(
+                              color: color.value, font: pw.Font.courier()),
+                        ),
+                      ],
+                    ),
             ],
           );
         },
