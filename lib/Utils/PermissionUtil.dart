@@ -45,13 +45,19 @@ Future<bool> storagePermission() async {
   if (androidVersion >= 13) {
     final request = await [
       Permission.photos,
+      // Permission.storage,
+      Permission.manageExternalStorage,
       //..... as needed
     ].request(); //import 'package:permission_handler/permission_handler.dart';
-
-    havePermission = request.values.every((status) => status == PermissionStatus.granted);
+  request.values.forEach((status) {
+      debugPrint('Permission status: $status');
+    });
+    havePermission = request.values.every((status) => status == PermissionStatus.granted || status == PermissionStatus.limited);
   } else {
     final status = await Permission.storage.request();
     havePermission = status.isGranted;
+        debugPrint('Permission status: $status');
+
   }
 
   if (!havePermission) {
