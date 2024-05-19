@@ -12,10 +12,10 @@ class FileHandleApi {
     required String name,
     required pw.Document pdf,
   }) async {
-    await requestPermission();
-    
+    await storagePermission();
+
     Directory _directory = Directory("");
-        Directory downloadDirectory = await getDownloadDirectory();
+    Directory downloadDirectory = await getDownloadDirectory();
 
     if (Platform.isAndroid) {
       // Redirects it to download folder in android
@@ -32,8 +32,9 @@ class FileHandleApi {
     // final dir = await getExternalStorageDirectory();
     final file = File("$exPath/$name");
     await file.writeAsBytes(bytes);
-    await openDownloadFolder();
-    
+    // await openDownloadFolder();
+   await openFile(file);
+
     //open pdf file
     return file;
   }
@@ -55,25 +56,15 @@ class FileHandleApi {
   // open pdf file function
   static Future openFile(File file) async {
     try {
-      await requestPermission();
+      await storagePermission();
       final url = file.path;
 
-
-      await OpenFile.open(url,
-          type: 'application/pdf',
+      await OpenFile.open(
+        url,
+        type: 'application/pdf',
       );
     } on Exception catch (e) {
       print('error: $e');
-    }
-  }
-
-  static Future requestPermission() async {
-    var status = await Permission.storage.status;
-    if (!status.isGranted) {
-      await Permission.storage.request();
-    }
-    else if (status.isPermanentlyDenied) {
-      openAppSettings();
     }
   }
 }
