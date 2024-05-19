@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:downloadsfolder/downloadsfolder.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:invoice_pdf_generate/Utils/PermissionUtil.dart';
 import 'package:invoice_pdf_generate/file_handle_api.dart';
 import 'package:invoice_pdf_generate/style/ConstStyle.dart';
 import 'package:pdf/pdf.dart';
@@ -41,6 +43,14 @@ class _AddDataScreenState extends State<AddDataScreen> {
           elevation: 2,
           title: const Text('Invoice Details'),
           centerTitle: true,
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  storagePermission();
+                  await openDownloadFolder();
+                },
+                icon: const Icon(Icons.download))
+          ],
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
@@ -240,15 +250,15 @@ class _AddDataScreenState extends State<AddDataScreen> {
                       }
                       Get.to(
                         PdfPreview(
-                          enableScrollToPage: true,
-                          // previewPageMargin: EdgeInsets.all(0), 
-                          // padding: EdgeInsets.all(0),
-                          useActions: true,
-                          build: (format) {
-                          return pdfController
-                              .generate(true)
-                              .then((file) => file.readAsBytesSync());
-                        }),
+                            enableScrollToPage: true,
+                            // previewPageMargin: EdgeInsets.all(0),
+                            // padding: EdgeInsets.all(0),
+                            useActions: true,
+                            build: (format) {
+                              return pdfController
+                                  .generate(true)
+                                  .then((file) => file.readAsBytesSync());
+                            }),
                       );
                     },
                     icon: const Icon(Icons.remove_red_eye),
@@ -320,11 +330,13 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                   Get.back();
 
                                   // generate pdf file
+
                                   pdfController.generate(false).then((pdfFile) {
                                     shared.saveData(
                                         key: "invoice_gen",
-                                        value: shared
-                                                .getData(key: "invoice_gen") == null
+                                        value: shared.getData(
+                                                    key: "invoice_gen") ==
+                                                null
                                             ? "1"
                                             : (int.parse(shared.getData(
                                                         key: "invoice_gen")!) +
@@ -341,6 +353,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                     );
                                     FileHandleApi.openFile(pdfFile);
                                   });
+                                  // Get .back();
                                 },
                                 child: const Text('Save'),
                               ),
