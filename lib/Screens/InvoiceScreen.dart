@@ -24,6 +24,7 @@ class InvoiceScreen extends StatefulWidget {
 
 class _InvoiceScreenState extends State<InvoiceScreen> {
   final pdfController = Get.put(PdfController());
+  final shared = Get.find<SharedPref>();
   final key = GlobalKey<FormState>();
   @override
   Widget build(BuildContext bcontext) {
@@ -117,7 +118,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       setState(() {
                         switch (value) {
                           case pw.Font.courier:
-
                             pdfController.fontFamily.value = pw.Font.courier();
                             break;
                           case pw.Font.helvetica:
@@ -147,11 +147,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 // Invoice To Contact Number (optional)
                 //Invoice Number (auto generated)
                 TextFormField(
-                  controller: TextEditingController()
-                    ..text = pdfController.invoiceNumber.value,
-                  onChanged: (value) {
-                    pdfController.invoiceNumber.value = value;
-                  },
+                  controller: pdfController.invoiceNumber
+                    ..text = (int.parse(shared.getData(key: "invoice_gen") ?? "0") + 1)
+                        .toString()
+                        .padLeft(6, '0'),
+                 
                   decoration: InputDecoration(
                     isDense: true,
 
