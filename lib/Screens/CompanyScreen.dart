@@ -73,9 +73,13 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                         null
                                     ? FileImage(File(pdfController
                                         .companyPickedImageFile!.path))
-                                    : sharedPref.getData(key: 'logo') != null
+                                    : 
+
+                                    sharedPref.getData(key: 'logo') != null
                                         ? FileImage(File(
-                                            sharedPref.getData(key: 'logo')!))
+                                            pdfController.updateCompanyImage(
+                                                File(sharedPref.getData(
+                                                    key: 'logo')!)).path))
                                         : null,
                                 shape: GFAvatarShape.circle,
                                 radius: 50,
@@ -275,11 +279,26 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                 FilteringTextInputFormatter.digitsOnly,
                                 LengthLimitingTextInputFormatter(50),
                               ],
-                              controller:
-                                  pdfController.gstController[pdfController.gstVar.value.index -1]
-                                    ..text = sharedPref.getData(key: 'gstVal') != null
-                                        ? sharedPref.getData(key: 'gstVal')!.split(',')[indexOfGst[pdfController.gstVar.value]!]
-                                        :   pdfController.gstController[pdfController.gstVar.value.index -1] .text,
+                              controller: pdfController.gstController[
+                                  pdfController.gstVar.value.index - 1]
+                                ..text = pdfController
+                                        .gstController[
+                                            pdfController.gstVar.value.index -
+                                                1]
+                                        .text
+                                        .isEmpty
+                                    ? sharedPref.getData(key: 'gstVal') != null
+                                        ? sharedPref
+                                            .getData(key: 'gstVal')!
+                                            .split(',')[indexOfGst[
+                                                pdfController.gstVar.value]!]
+                                            .replaceAll('[', '')
+                                            .replaceAll(']', '')
+                                        : pdfController
+                                            .gstController[
+                                                pdfController.gstVar.value.index - 1]
+                                            .text
+                                    : pdfController.gstController[pdfController.gstVar.value.index - 1].text,
                               // onChanged: (value) {
                               //   pdfController.companyAddress.value = value;
                               // },
@@ -390,8 +409,13 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                             alignment: Alignment.topRight,
                                             children: [
                                               Image.file(
-                                                File(sharedPref.getData(
-                                                    key: 'qr_code')!),
+                                                File(
+                                                  pdfController
+                                                      .updateQrCodeImage(File(
+                                                          sharedPref.getData(
+                                                              key:
+                                                                  'qr_code')!)).path,
+                                                ),
                                                 height: 100,
                                                 width: 100,
                                               ),
@@ -514,8 +538,13 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                             alignment: Alignment.topRight,
                                             children: [
                                               Image.file(
-                                                File(sharedPref.getData(
-                                                    key: 'signature')!),
+                                                File(
+                                                  pdfController
+                                                      .updateSignatureImage(File(
+                                                          sharedPref.getData(
+                                                              key:
+                                                                  'signature')!)).path
+                                                ),
                                                 height: 100,
                                                 width: 100,
                                               ),
@@ -617,18 +646,25 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                                   key: 'company_email') ??
                                               ''
                                           : pdfController.companyEmail.value);
-                                          sharedPref.saveData(
-                                  key: 'gstVal',
-                                  value:
-                                      [
-                                        pdfController.gstController[GstVar.GST.index -1].text,
-                                        pdfController.gstController[GstVar.IGST.index -1].text,
-                                        pdfController.gstController[GstVar.CGST.index -1].text,
-                                        pdfController.gstController[GstVar.SGST.index -1].text,
-                                        pdfController.gstController[GstVar.UTGST.index -1].text,
-                                      ]
-                                          .toString(),
-                                  );
+                              sharedPref.saveData(
+                                key: 'gstVal',
+                                value: [
+                                  pdfController
+                                      .gstController[GstVar.GST.index - 1].text,
+                                  pdfController
+                                      .gstController[GstVar.IGST.index - 1]
+                                      .text,
+                                  pdfController
+                                      .gstController[GstVar.CGST.index - 1]
+                                      .text,
+                                  pdfController
+                                      .gstController[GstVar.SGST.index - 1]
+                                      .text,
+                                  pdfController
+                                      .gstController[GstVar.UTGST.index - 1]
+                                      .text,
+                                ].toString(),
+                              );
                               sharedPref.saveData(
                                   key: 'company_address',
                                   value:
