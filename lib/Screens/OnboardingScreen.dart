@@ -25,7 +25,7 @@ void initState() {
 @override
 Widget build(BuildContext context) {
   return GFIntroScreen(
-    color: Colors.blueGrey,
+    color: primaryColor,
     slides: slides(),
     pageController: _pageController,
     currentIndex: 0,
@@ -62,22 +62,17 @@ Widget build(BuildContext context) {
 List<Widget> slides() {
   slideList = [
    Container(
+    padding: const EdgeInsets.all(40),
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(0),
-          image: DecorationImage(
-            image: AssetImage('assets/onboarding/hello.png'),
-            fit: BoxFit.cover,
-            
-          )),
+      child : Image.asset('assets/onboarding/hello.png'),
     ),
     Container(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(0),
-          image: DecorationImage(
+          image: const DecorationImage(
             image: AssetImage('assets/onboarding/company.png'),
             fit: BoxFit.cover,
             
@@ -88,7 +83,7 @@ List<Widget> slides() {
       height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(0),
-          image: DecorationImage(
+          image: const DecorationImage(
             image: AssetImage('assets/onboarding/add.png'),
             fit: BoxFit.cover,
             
@@ -98,7 +93,7 @@ List<Widget> slides() {
       height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(0),
-          image: DecorationImage(
+          image: const DecorationImage(
             image: AssetImage('assets/onboarding/your.png'),
             fit: BoxFit.cover,
             
