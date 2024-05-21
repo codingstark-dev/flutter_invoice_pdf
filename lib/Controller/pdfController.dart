@@ -16,7 +16,7 @@ class PdfController extends GetxController {
   var color = PdfColors.black.obs;
   Rx<pw.Font> fontFamily = pw.Font().obs;
   //company name
-  TextEditingController companyNameController = TextEditingController(text: 'Test');
+  TextEditingController companyNameController = TextEditingController();
   TextEditingController companyAddressController = TextEditingController();
   TextEditingController companyEmailController = TextEditingController();
   TextEditingController invoiceToEmailController = TextEditingController();
