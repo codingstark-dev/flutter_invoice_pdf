@@ -13,6 +13,8 @@ class SharedPref extends GetxController {
     required String key,
     required String value,
   }) async {
+    //clearData();
+    await prefs.remove(key);
     await prefs.setString(key, value);
   }
   //get image logo, company name,company address, signature image, qrcode image, gst percentage
