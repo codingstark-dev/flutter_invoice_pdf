@@ -22,13 +22,13 @@ Future<void> requestPermission() async {
     await openAppSettings();
   }
   else if (permissionStatus.isGranted) {
-  Get.showSnackbar(GetBar(
+  Get.showSnackbar(const GetBar(
     message: 'Permission granted',
     duration: Duration(seconds: 2),
   ));
   }
   else {
-    Get.showSnackbar(GetBar(
+    Get.showSnackbar(const GetBar(
       message: 'Permission denied',
       duration: Duration(seconds: 2),
     ));
@@ -47,7 +47,6 @@ Future<bool> storagePermission() async {
       Permission.photos,
       // Permission.storage,
       Permission.manageExternalStorage,
-      //..... as needed
     ].request(); //import 'package:permission_handler/permission_handler.dart';
   request.values.forEach((status) {
       debugPrint('Permission status: $status');
@@ -61,7 +60,10 @@ Future<bool> storagePermission() async {
   }
 
   if (!havePermission) {
-    // if no permission then open app-setting
+    Get.showSnackbar(const GetSnackBar(
+      message: 'Permission denied to access storage files. Please enable it from settings.',
+      duration: Duration(seconds: 2),
+    ));
     await openAppSettings();
   }
 
