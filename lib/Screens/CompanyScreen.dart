@@ -637,7 +637,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                           icon: const Icon(Icons.arrow_back_ios),
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              sharedPref.clearData();
+                              // sharedPref.clearData();
                               sharedPref.saveData(
                                   key: 'company_name',
                                   value: pdfController
