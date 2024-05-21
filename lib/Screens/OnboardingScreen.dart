@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:invoice_pdf_generate/Utils/PermissionUtil.dart';
 import 'package:invoice_pdf_generate/style/ConstStyle.dart';
 
 class Onboardingscreen extends StatefulWidget {
@@ -55,7 +56,8 @@ class _OnboardingscreenState extends State<Onboardingscreen> {
           // width: 100,
           height: 40,
           child: GFButton(
-            onPressed: () {
+            onPressed: () async {
+              await storagePermission();
               Get.offAndToNamed('/company');
             },
             text: 'Skip',
@@ -89,7 +91,9 @@ class _OnboardingscreenState extends State<Onboardingscreen> {
           // width: 100,
           height: 40,
           child: GFButton(
-            onPressed: () {
+            onPressed: () async {
+              await storagePermission();
+
               Get.offAndToNamed('/company');
             },
             text: 'Done',
