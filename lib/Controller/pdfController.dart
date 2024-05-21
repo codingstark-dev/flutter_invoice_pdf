@@ -16,14 +16,10 @@ class PdfController extends GetxController {
   var color = PdfColors.black.obs;
   Rx<pw.Font> fontFamily = pw.Font().obs;
   //company name
-  var companyName = 'Test'.obs;
-  //company address
-  var companyAddress = "".obs;
-  //company email
-  var companyEmail = ''.obs;
-
-  // var invoiceNumber = "".obs;
-  var invoiceToEmail = "".obs;
+  TextEditingController companyNameController = TextEditingController(text: 'Test');
+  TextEditingController companyAddressController = TextEditingController();
+  TextEditingController companyEmailController = TextEditingController();
+  TextEditingController invoiceToEmailController = TextEditingController();
   //invoicedate
   Rx<DateTime> invoiceDate = DateTime.now().obs;
   late List<List<String>> tableData = [];
@@ -40,7 +36,7 @@ class PdfController extends GetxController {
   TextEditingController fileNameController = TextEditingController();
   TextEditingController invoiceNumber = TextEditingController();
   List<TextEditingController> gstController =
-      List.generate(5, (index) => TextEditingController(text: "0"));
+      List.generate(6, (index) => TextEditingController(text: "0"));
 
 //  Invoice To Name
 // Invoice To Address (optional)
@@ -222,7 +218,9 @@ class PdfController extends GetxController {
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Text(
-                      companyName.value.isEmpty ? '' : companyName.value,
+                      companyNameController.text.isEmpty
+                          ? ''
+                          : companyNameController.text,
                       style: pw.TextStyle(
                         fontSize: 17.0,
                         fontWeight: pw.FontWeight.bold,
@@ -246,7 +244,9 @@ class PdfController extends GetxController {
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Text(
-                      companyName.value.isEmpty ? '' : companyName.value,
+                      companyNameController.text.isEmpty
+                          ? ''
+                          : companyNameController.text,
                       style: pw.TextStyle(
                         fontSize: 15.5,
                         fontWeight: pw.FontWeight.bold,
@@ -255,7 +255,7 @@ class PdfController extends GetxController {
                       ),
                     ),
                     pw.Text(
-                      'test@gmail.com',
+                     companyEmailController.text.isEmpty?'': companyEmailController.text,
                       style: pw.TextStyle(
                         fontSize: 14.0,
                         color: color.value,
@@ -321,7 +321,9 @@ class PdfController extends GetxController {
                       ),
                     ),
                     pw.Text(
-                      invoiceToEmail.value.isEmpty ? '' : invoiceToEmail.value,
+                      invoiceToEmailController.text.isEmpty
+                          ? ''
+                          : invoiceToEmailController.text,
                       style: pw.TextStyle(
                         fontSize: 14.0,
                         color: color.value,
@@ -532,14 +534,20 @@ class PdfController extends GetxController {
               pw.Divider(),
               pw.SizedBox(height: 1 * PdfPageFormat.mm),
               pw.Text(
-                'Test',
+               companyNameController.text.isEmpty?'': companyNameController.text,
                 style: pw.TextStyle(
                     fontWeight: pw.FontWeight.bold,
                     color: color.value,
                     font: fontFamily.value),
               ),
               pw.SizedBox(height: 1 * PdfPageFormat.mm),
-              pw.Row(
+               companyAddressController.text.isEmpty?
+               pw.Container():
+              
+              companyAddressController.text.isEmpty
+                  ? pw.Container()
+                  :
+                 pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.center,
                 children: [
                   pw.Text(
@@ -550,16 +558,16 @@ class PdfController extends GetxController {
                         font: fontFamily.value),
                   ),
                   pw.Text(
-                    companyAddress.value.isEmpty
-                        ? 'Test Address'
-                        : companyAddress.value,
+                    companyAddressController.text.isEmpty
+                        ? ''
+                        :   companyAddressController.text,
                     style: pw.TextStyle(
                         color: color.value, font: fontFamily.value),
                   ),
                 ],
               ),
               pw.SizedBox(height: 1 * PdfPageFormat.mm),
-              companyEmail.isEmpty
+              companyEmailController.text.isEmpty
                   ? pw.Container()
                   : pw.Row(
                       mainAxisAlignment: pw.MainAxisAlignment.center,
@@ -572,7 +580,7 @@ class PdfController extends GetxController {
                               font: fontFamily.value),
                         ),
                         pw.Text(
-                          companyEmail.value.isEmpty ? '' : companyEmail.value,
+                          companyEmailController.text,
                           style: pw.TextStyle(
                               color: color.value, font: pw.Font.courier()),
                         ),

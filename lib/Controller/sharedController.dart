@@ -27,4 +27,8 @@ class SharedPref extends GetxController {
   }) async {
     await prefs.remove(key);
   }
+  //clear all data
+  void clearData() async {
+    await prefs.clear();
+  }
 }

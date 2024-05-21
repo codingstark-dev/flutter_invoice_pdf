@@ -32,11 +32,12 @@ class _CompanyScreenState extends State<CompanyScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final indexOfGst = {
-    GstVar.GST: 0,
-    GstVar.IGST: 1,
-    GstVar.CGST: 1,
-    GstVar.SGST: 1,
-    GstVar.UTGST: 1,
+    GstVar.NONE: 0,
+    GstVar.GST: 1,
+    GstVar.IGST: 2,
+    GstVar.CGST: 3,
+    GstVar.SGST: 4,
+    GstVar.UTGST: 5,
   };
 
   @override
@@ -73,13 +74,11 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                         null
                                     ? FileImage(File(pdfController
                                         .companyPickedImageFile!.path))
-                                    : 
-
-                                    sharedPref.getData(key: 'logo') != null
-                                        ? FileImage(File(
-                                            pdfController.updateCompanyImage(
-                                                File(sharedPref.getData(
-                                                    key: 'logo')!)).path))
+                                    : sharedPref.getData(key: 'logo') != null
+                                        ? FileImage(File(pdfController
+                                            .updateCompanyImage(File(sharedPref
+                                                .getData(key: 'logo')!))
+                                            .path))
                                         : null,
                                 shape: GFAvatarShape.circle,
                                 radius: 50,
@@ -119,18 +118,20 @@ class _CompanyScreenState extends State<CompanyScreen> {
                       ),
                       //company name
                       TextFormField(
-                        onChanged: (value) {
-                          pdfController.companyName.value = value;
-                        },
+                        // onChanged: (value) {
+                        //   pdfController.companyName.value = value;
+                        // },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return 'Please enter company name';
                           }
                           return null;
                         },
-                        controller: TextEditingController()
+                        controller: pdfController.companyNameController
                           ..text =
-                              sharedPref.getData(key: 'company_name') ?? '',
+                              pdfController.companyNameController.text.isEmpty
+                                  ? sharedPref.getData(key: 'company_name') ?? ""
+                                  : pdfController.companyNameController.text,
                         decoration: InputDecoration(
                           isDense: true,
 
@@ -147,12 +148,16 @@ class _CompanyScreenState extends State<CompanyScreen> {
                         height: 10,
                       ),
                       TextFormField(
-                        controller: TextEditingController()
+                        controller: pdfController.companyAddressController
                           ..text =
-                              sharedPref.getData(key: 'company_address') ?? '',
-                        onChanged: (value) {
-                          pdfController.companyAddress.value = value;
-                        },
+                          pdfController.companyAddressController.text.isEmpty
+                          ?
+                              sharedPref.getData(key: 'company_address') ?? ''
+                              : 
+                              pdfController.companyAddressController.text,
+                        // onChanged: (value) {
+                        //   pdfController.companyAddress.value = value;
+                        // },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return 'Please enter company address';
@@ -171,12 +176,14 @@ class _CompanyScreenState extends State<CompanyScreen> {
                       ),
                       const SizedBox(height: 10),
                       TextFormField(
-                        controller: TextEditingController()
+                        controller: pdfController.companyEmailController
                           ..text =
-                              sharedPref.getData(key: 'company_email') ?? '',
-                        onChanged: (value) {
-                          pdfController.companyEmail.value = value;
-                        },
+                          pdfController.companyEmailController.text.isEmpty?
+                              sharedPref.getData(key: 'company_email') ?? ''
+                              : pdfController.companyEmailController.text,
+                        // onChanged: (value) {
+                        //   pdfController.companyEmail.value = value;
+                        // },
                         // validator: (value) {
                         //   if (value?.contains('@') == false) {
                         //     return 'Please enter valid email';
@@ -202,7 +209,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                             const EdgeInsets.symmetric(
                                 horizontal: 2, vertical: 2),
                           ),
-                          shape: MaterialStateProperty.all(
+                          shape: WidgetStateProperty.all(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -280,25 +287,26 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                 LengthLimitingTextInputFormatter(50),
                               ],
                               controller: pdfController.gstController[
-                                  pdfController.gstVar.value.index - 1]
+                                  pdfController.gstVar.value.index]
                                 ..text = pdfController
-                                        .gstController[
-                                            pdfController.gstVar.value.index -
-                                                1]
-                                        .text
-                                        .isEmpty
+                                            .gstController[pdfController
+                                                .gstVar.value.index]
+                                            .text
+                                            .isEmpty ||
+                                        pdfController
+                                                .gstController[pdfController
+                                                    .gstVar.value.index]
+                                                .text ==
+                                            '0'
                                     ? sharedPref.getData(key: 'gstVal') != null
                                         ? sharedPref
                                             .getData(key: 'gstVal')!
-                                            .split(',')[indexOfGst[
-                                                pdfController.gstVar.value]!]
+                                            .split(',')[pdfController.gstVar.value.index - 1]
+                                            .trim()
                                             .replaceAll('[', '')
                                             .replaceAll(']', '')
-                                        : pdfController
-                                            .gstController[
-                                                pdfController.gstVar.value.index - 1]
-                                            .text
-                                    : pdfController.gstController[pdfController.gstVar.value.index - 1].text,
+                                        : pdfController.gstController[pdfController.gstVar.value.index].text
+                                    : pdfController.gstController[pdfController.gstVar.value.index].text,
                               // onChanged: (value) {
                               //   pdfController.companyAddress.value = value;
                               // },
@@ -413,8 +421,8 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                                   pdfController
                                                       .updateQrCodeImage(File(
                                                           sharedPref.getData(
-                                                              key:
-                                                                  'qr_code')!)).path,
+                                                              key: 'qr_code')!))
+                                                      .path,
                                                 ),
                                                 height: 100,
                                                 width: 100,
@@ -538,13 +546,11 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                             alignment: Alignment.topRight,
                                             children: [
                                               Image.file(
-                                                File(
-                                                  pdfController
-                                                      .updateSignatureImage(File(
-                                                          sharedPref.getData(
-                                                              key:
-                                                                  'signature')!)).path
-                                                ),
+                                                File(pdfController
+                                                    .updateSignatureImage(File(
+                                                        sharedPref.getData(
+                                                            key: 'signature')!))
+                                                    .path),
                                                 height: 100,
                                                 width: 100,
                                               ),
@@ -631,48 +637,49 @@ class _CompanyScreenState extends State<CompanyScreen> {
                           icon: const Icon(Icons.arrow_back_ios),
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
+                              sharedPref.clearData();
                               sharedPref.saveData(
                                   key: 'company_name',
-                                  value: pdfController.companyName.value.isEmpty
+                                  value: pdfController
+                                          .companyNameController.text.isEmpty
                                       ? sharedPref.getData(
                                               key: 'company_name') ??
                                           ''
-                                      : pdfController.companyName.value);
+                                      : pdfController
+                                          .companyNameController.text);
                               sharedPref.saveData(
                                   key: 'company_email',
-                                  value:
-                                      pdfController.companyEmail.value.isEmpty
-                                          ? sharedPref.getData(
-                                                  key: 'company_email') ??
-                                              ''
-                                          : pdfController.companyEmail.value);
+                                  value: pdfController
+                                          .companyEmailController.text.isEmpty
+                                      ? sharedPref.getData(
+                                              key: 'company_email') ??
+                                          ''
+                                      : pdfController
+                                          .companyEmailController.text);
                               sharedPref.saveData(
                                 key: 'gstVal',
                                 value: [
                                   pdfController
-                                      .gstController[GstVar.GST.index - 1].text,
+                                      .gstController[GstVar.GST.index].text,
                                   pdfController
-                                      .gstController[GstVar.IGST.index - 1]
-                                      .text,
+                                      .gstController[GstVar.IGST.index].text,
                                   pdfController
-                                      .gstController[GstVar.CGST.index - 1]
-                                      .text,
+                                      .gstController[GstVar.CGST.index].text,
                                   pdfController
-                                      .gstController[GstVar.SGST.index - 1]
-                                      .text,
+                                      .gstController[GstVar.SGST.index].text,
                                   pdfController
-                                      .gstController[GstVar.UTGST.index - 1]
-                                      .text,
+                                      .gstController[GstVar.UTGST.index].text,
                                 ].toString(),
                               );
                               sharedPref.saveData(
                                   key: 'company_address',
-                                  value:
-                                      pdfController.companyAddress.value.isEmpty
-                                          ? sharedPref.getData(
-                                                  key: 'company_address') ??
-                                              ''
-                                          : pdfController.companyAddress.value);
+                                  value: pdfController
+                                          .companyAddressController.text.isEmpty
+                                      ? sharedPref.getData(
+                                              key: 'company_address') ??
+                                          ''
+                                      : pdfController
+                                          .companyAddressController.text);
                               sharedPref.saveData(
                                   key: 'gst_type',
                                   value: pdfController.gstVar.value
