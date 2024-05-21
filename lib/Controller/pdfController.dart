@@ -430,6 +430,7 @@ class PdfController extends GetxController {
                                 fontWeight: pw.FontWeight.bold,
                                 color: color.value,
                                 font: font,
+                                fontFallback: [pw.Font.courier()],
                               ),
                             ),
                           ],
