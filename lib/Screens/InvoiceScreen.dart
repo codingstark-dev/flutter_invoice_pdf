@@ -158,12 +158,12 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                     hintText: 'Invoice Number',
-                    label: Text('Invoice Number'),
+                    label: const Text('Invoice Number'),
                     // errorText: 'Please enter company name',
                     alignLabelWithHint: true,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 TextFormField(
@@ -182,12 +182,12 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                     hintText: 'Invoice To Name',
-                    label: Text('Invoice To Name'),
+                    label: const Text('Invoice To Name'),
                     // errorText: 'Please enter company name',
                     alignLabelWithHint: true,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 TextFormField(
@@ -200,12 +200,12 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                     hintText: 'Invoice To Address (optional)',
-                    label: Text('Invoice To Address'),
+                    label: const Text('Invoice To Address'),
                     // errorText: 'Please enter company name',
                     alignLabelWithHint: true,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 TextFormField(
@@ -219,12 +219,12 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                     hintText: "Invoice To Contact Number (optional)",
-                    label: Text('Invoice To Contact Number'),
+                    label: const Text('Invoice To Contact Number'),
                     // errorText: 'Please enter company name',
                     alignLabelWithHint: true,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 //email
@@ -240,12 +240,12 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                     hintText: "Invoice To Email (optional)",
-                    label: Text('Invoice To Email'),
+                    label: const Text('Invoice To Email'),
                     // errorText: 'Please enter company name',
                     alignLabelWithHint: true,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 //date picker
@@ -292,14 +292,14 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                           '',
                           'Please enter invoice to name',
                           snackPosition: SnackPosition.BOTTOM,
-                          margin: EdgeInsets.all(10),
+                          margin: const EdgeInsets.all(10),
                           backgroundColor: Colors.red,
                           colorText: Colors.white,
                           titleText: Container(),
                         );
                         return;
                       }
-                      Get.to(() => AddDataScreen());
+                      Get.to(() => const AddDataScreen());
                       // generate pdf file
                       // final pdfFile = await pdfController.generate(
                       //   themeColor,
