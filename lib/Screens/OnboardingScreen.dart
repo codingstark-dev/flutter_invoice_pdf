@@ -57,7 +57,7 @@ class _OnboardingscreenState extends State<Onboardingscreen> {
           height: 40,
           child: GFButton(
             onPressed: () async {
-              await storagePermission();
+              // await storagePermission();
               Get.offAndToNamed('/company');
             },
             text: 'Skip',
@@ -92,7 +92,7 @@ class _OnboardingscreenState extends State<Onboardingscreen> {
           height: 40,
           child: GFButton(
             onPressed: () async {
-              await storagePermission();
+              // await storagePermission();
 
               Get.offAndToNamed('/company');
             },
