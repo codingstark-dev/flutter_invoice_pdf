@@ -44,7 +44,7 @@ Future<bool> storagePermission() async {
 
   if (androidVersion >= 13) {
     final request = await [
-      Permission.photos,
+      // Permission.photos,
       // Permission.storage,
       Permission.manageExternalStorage,
     ].request(); //import 'package:permission_handler/permission_handler.dart';
