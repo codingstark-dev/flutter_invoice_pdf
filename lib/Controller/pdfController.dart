@@ -37,6 +37,9 @@ class PdfController extends GetxController {
   TextEditingController invoiceNumber = TextEditingController();
   List<TextEditingController> gstController =
       List.generate(6, (index) => TextEditingController(text: "0"));
+  //gstControllerfocusnode
+  List<FocusNode> gstControllerFocusNode =
+      List.generate(6, (index) => FocusNode());
 
 //  Invoice To Name
 // Invoice To Address (optional)
@@ -50,21 +53,24 @@ class PdfController extends GetxController {
   File? qrCodePickedImageFile;
   File? signatureCodePickedImageFile;
 
-  File updateCompanyImage(File file){
+  File updateCompanyImage(File file) {
     companyPickedImageFile = file;
     update();
     return file;
   }
- File updateQrCodeImage(File file){
+
+  File updateQrCodeImage(File file) {
     qrCodePickedImageFile = file;
     update();
     return file;
   }
-  File updateSignatureImage(File file){
+
+  File updateSignatureImage(File file) {
     signatureCodePickedImageFile = file;
     update();
     return file;
   }
+
   companyPickImage() async {
     final picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: ImageSource.gallery);
@@ -90,6 +96,29 @@ class PdfController extends GetxController {
     amountControlleru.clear();
 
     update();
+  }
+
+  void clearAllData() {
+  
+    invoiceToEmailController.clear();
+    invoiceToName.value = '';
+    invoiceToAddress.value = '';
+    invoiceToContactNumber.value = '';
+    invoiceDate(DateTime.now());
+    tableData.clear();
+   
+    itemController.clear();
+    srnoController.clear();
+    qtyController.clear();
+    amountController.clear();
+    itemControlleru.clear();
+    srnoControlleru.clear();
+    qtyControlleru.clear();
+    amountControlleru.clear();
+    fileNameController.clear();
+
+    // update();
+    Get.offAndToNamed('/company' );
   }
 
   void updateTableData() {
@@ -176,7 +205,6 @@ class PdfController extends GetxController {
       ]),
     );
 
-  
 // Item & Description (editable)
 // Qty (editable)
 // Amount
@@ -204,14 +232,15 @@ class PdfController extends GetxController {
             //company
             pw.Row(
               children: [
-                companyPickedImageFile != null && companyPickedImageFile!.existsSync()
+                companyPickedImageFile != null &&
+                        companyPickedImageFile!.existsSync()
                     ? pw.Image(
-                        pw.MemoryImage(companyPickedImageFile!.readAsBytesSync()),
+                        pw.MemoryImage(
+                            companyPickedImageFile!.readAsBytesSync()),
                         height: 72,
                         width: 72,
                       )
                     : pw.Container(),
-                
                 pw.SizedBox(width: 1 * PdfPageFormat.mm),
                 pw.Column(
                   mainAxisSize: pw.MainAxisSize.min,
@@ -255,7 +284,9 @@ class PdfController extends GetxController {
                       ),
                     ),
                     pw.Text(
-                     companyEmailController.text.isEmpty?'': companyEmailController.text,
+                      companyEmailController.text.isEmpty
+                          ? ''
+                          : companyEmailController.text,
                       style: pw.TextStyle(
                         fontSize: 14.0,
                         color: color.value,
@@ -419,7 +450,6 @@ class PdfController extends GetxController {
                                 style: pw.TextStyle(
                                   fontWeight: pw.FontWeight.bold,
                                   color: color.value,
-
                                   font: fontFamily.value,
                                 ),
                               ),
@@ -440,34 +470,34 @@ class PdfController extends GetxController {
                             children: List.generate(
                               gstController.length,
                               (index) {
-                                if(gstController[index].text.trim() == '0'){
+                                if (gstController[index].text.trim() == '0') {
                                   return pw.Container();
                                 }
                                 return pw.Row(
-                                children: [
-                                  pw.Text(
-                                    GstVar.values[index + 1]
-                                        .toString()
-                                        .split('.')
-                                        .last,
-                                    style: pw.TextStyle(
-                                      // fontSize: 14.0,
-                                      fontWeight: pw.FontWeight.bold,
-                                      color: color.value,
-                                      font: fontFamily.value,
+                                  children: [
+                                    pw.Text(
+                                      GstVar.values[index + 1]
+                                          .toString()
+                                          .split('.')
+                                          .last,
+                                      style: pw.TextStyle(
+                                        // fontSize: 14.0,
+                                        fontWeight: pw.FontWeight.bold,
+                                        color: color.value,
+                                        font: fontFamily.value,
+                                      ),
                                     ),
-                                  ),
-                                  pw.Spacer(),
-                                  pw.Text(
-                                    '${gstController[index].text.isEmpty ? '0' : gstController[index].text.trim()}%',
-                                    style: pw.TextStyle(
-                                      fontWeight: pw.FontWeight.bold,
-                                      color: color.value,
-                                      font: font,
+                                    pw.Spacer(),
+                                    pw.Text(
+                                      '${gstController[index].text.isEmpty ? '0' : gstController[index].text.trim()}%',
+                                      style: pw.TextStyle(
+                                        fontWeight: pw.FontWeight.bold,
+                                        color: color.value,
+                                        font: font,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              );
+                                  ],
+                                );
                               },
                             ).toList()),
                         pw.Divider(),
@@ -486,7 +516,6 @@ class PdfController extends GetxController {
                             ),
                             pw.Text(
                               '\₹ ${(tableData.fold(0, (prev, element) => prev + int.parse(element[3])) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * gstController.fold(0, (prev, element) => prev + int.parse(element.text.trim()) / 100))).toStringAsFixed(2)}',
-
                               style: pw.TextStyle(
                                 fontWeight: pw.FontWeight.bold,
                                 color: color.value,
@@ -500,7 +529,8 @@ class PdfController extends GetxController {
                         pw.SizedBox(height: 0.5 * PdfPageFormat.mm),
                         pw.Container(height: 1, color: PdfColors.grey400),
                         pw.SizedBox(height: 2 * PdfPageFormat.mm),
-                        signatureCodePickedImageFile != null && signatureCodePickedImageFile!.existsSync()
+                        signatureCodePickedImageFile != null &&
+                                signatureCodePickedImageFile!.existsSync()
                             ? pw.Image(
                                 pw.MemoryImage(
                                   signatureCodePickedImageFile!
@@ -535,38 +565,38 @@ class PdfController extends GetxController {
               pw.Divider(),
               pw.SizedBox(height: 1 * PdfPageFormat.mm),
               pw.Text(
-               companyNameController.text.isEmpty?'': companyNameController.text,
+                companyNameController.text.isEmpty
+                    ? ''
+                    : companyNameController.text,
                 style: pw.TextStyle(
                     fontWeight: pw.FontWeight.bold,
                     color: color.value,
                     font: fontFamily.value),
               ),
               pw.SizedBox(height: 1 * PdfPageFormat.mm),
-               companyAddressController.text.isEmpty?
-               pw.Container():
-              
               companyAddressController.text.isEmpty
                   ? pw.Container()
-                  :
-                 pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.center,
-                children: [
-                  pw.Text(
-                    'Address: ',
-                    style: pw.TextStyle(
-                        fontWeight: pw.FontWeight.bold,
-                        color: color.value,
-                        font: fontFamily.value),
-                  ),
-                  pw.Text(
-                    companyAddressController.text.isEmpty
-                        ? ''
-                        :   companyAddressController.text,
-                    style: pw.TextStyle(
-                        color: color.value, font: fontFamily.value),
-                  ),
-                ],
-              ),
+                  : companyAddressController.text.isEmpty
+                      ? pw.Container()
+                      : pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.center,
+                          children: [
+                            pw.Text(
+                              'Address: ',
+                              style: pw.TextStyle(
+                                  fontWeight: pw.FontWeight.bold,
+                                  color: color.value,
+                                  font: fontFamily.value),
+                            ),
+                            pw.Text(
+                              companyAddressController.text.isEmpty
+                                  ? ''
+                                  : companyAddressController.text,
+                              style: pw.TextStyle(
+                                  color: color.value, font: fontFamily.value),
+                            ),
+                          ],
+                        ),
               pw.SizedBox(height: 1 * PdfPageFormat.mm),
               companyEmailController.text.isEmpty
                   ? pw.Container()
