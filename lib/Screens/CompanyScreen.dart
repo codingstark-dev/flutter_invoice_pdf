@@ -176,6 +176,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                       ),
                       const SizedBox(height: 10),
                       TextFormField(
+                        
                         controller: pdfController.companyEmailController
                           ..text =
                           pdfController.companyEmailController.text.isEmpty?
@@ -265,6 +266,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                             return;
                           } else
                             pdfController.gstVar.value = value.first;
+                            pdfController.gstControllerFocusNode[pdfController.gstVar.value.index].requestFocus();
                           sharedPref.saveData(
                               key: 'gst_type',
                               value: pdfController.gstVar.value
@@ -280,6 +282,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                       pdfController.gstVar.value == GstVar.NONE
                           ? Container()
                           : TextFormField(
+                            focusNode: pdfController.gstControllerFocusNode[pdfController.gstVar.value.index],
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.next,
                               inputFormatters: [
