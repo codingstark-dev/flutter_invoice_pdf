@@ -43,14 +43,14 @@ class _AddDataScreenState extends State<AddDataScreen> {
           elevation: 2,
           title: const Text('Invoice Details'),
           centerTitle: true,
-          actions: [
-            IconButton(
-                onPressed: () async {
-                  storagePermission();
-                  await openDownloadFolder();
-                },
-                icon: const Icon(Icons.download))
-          ],
+          // actions: [
+          //   IconButton(
+          //       onPressed: () async {
+          //         storagePermission();
+          //         await openDownloadFolder();
+          //       },
+          //       icon: const Icon(Icons.download))
+          // ],
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
@@ -58,217 +58,148 @@ class _AddDataScreenState extends State<AddDataScreen> {
             },
           )),
       body: GetBuilder<PdfController>(builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: key,
-            child: ListView(
-              children: [
-                //info alert that you can delete datatable by clicking long press
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  margin: const EdgeInsets.only(bottom: 10),
-                  decoration: BoxDecoration(
-                      color: primaryColor.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: primaryColor.withOpacity(0.5))),
-                  child: Row(
+        return Scrollbar(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: key,
+              child: ListView(
+                children: [
+                  //info alert that you can delete datatable by clicking long press
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    margin: const EdgeInsets.only(bottom: 10),
+                    decoration: BoxDecoration(
+                        color: primaryColor.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: primaryColor.withOpacity(0.5))),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.info,
+                          color: primaryColor,
+                        ),
+                        const SizedBox(width: 10),
+                        Flexible(
+                          child: Text(
+                            'You can delete row by Holding long press, and you can edit datatable by clicking on edit button by scrolling row to right side.',
+                            style: TextStyle(color: secondaryColor),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+          //                 Sr No
+          // Item & Description (editable) 10 items limit and 70 auto adjust based on length of text
+          // Qty (editable)
+          // Amount
+          // Total (auto-calculated)
+          // Add Item Button
+                  Row(
                     children: [
-                      Icon(
-                        Icons.info,
-                        color: primaryColor,
+                      Expanded(
+                        child: TextFormField(
+                          controller: context.srnoController,
+                          // validator: (value) {
+                          //   if (value!.isEmpty) {
+                          //     return 'Enter Sr No';
+                          //   }
+                          //   return null;
+                          // },
+                          decoration: InputDecoration(
+                            isDense: true,
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            hintText: 'Sr No',
+                            label: const Text('Sr No'),
+                            alignLabelWithHint: true,
+                          ),
+                        ),
                       ),
-                      const SizedBox(width: 10),
-                      Flexible(
-                        child: Text(
-                          'You can delete row by Holding long press, and you can edit datatable by clicking on edit button by scrolling row to right side.',
-                          style: TextStyle(color: secondaryColor),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: TextFormField(
+                          keyboardType: TextInputType.number,
+                          textInputAction: TextInputAction.next,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(50),
+                          ],
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Enter quantity';
+                            }
+                            return null;
+                          },
+                          controller: context.qtyController,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            hintText: 'Qty',
+                            label: const Text('Qty'),
+                            alignLabelWithHint: true,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Enter amount';
+                            }
+                            return null;
+                          },
+                          keyboardType: TextInputType.number,
+                          textInputAction: TextInputAction.next,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(50),
+                          ],
+                          controller: context.amountController,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            hintText: 'Amount',
+                            label: const Text('Amount'),
+                            alignLabelWithHint: true,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
-//                 Sr No
-// Item & Description (editable) 10 items limit and 70 auto adjust based on length of text
-// Qty (editable)
-// Amount
-// Total (auto-calculated)
-// Add Item Button
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: context.srnoController,
-                        // validator: (value) {
-                        //   if (value!.isEmpty) {
-                        //     return 'Enter Sr No';
-                        //   }
-                        //   return null;
-                        // },
-                        decoration: InputDecoration(
-                          isDense: true,
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          hintText: 'Sr No',
-                          label: const Text('Sr No'),
-                          alignLabelWithHint: true,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: TextFormField(
-                        keyboardType: TextInputType.number,
-                        textInputAction: TextInputAction.next,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(50),
-                        ],
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Enter quantity';
-                          }
-                          return null;
-                        },
-                        controller: context.qtyController,
-                        decoration: InputDecoration(
-                          isDense: true,
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          hintText: 'Qty',
-                          label: const Text('Qty'),
-                          alignLabelWithHint: true,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: TextFormField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Enter amount';
-                          }
-                          return null;
-                        },
-                        keyboardType: TextInputType.number,
-                        textInputAction: TextInputAction.next,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(50),
-                        ],
-                        controller: context.amountController,
-                        decoration: InputDecoration(
-                          isDense: true,
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          hintText: 'Amount',
-                          label: const Text('Amount'),
-                          alignLabelWithHint: true,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter item & description';
-                    }
-                    return null;
-                  },
-                  controller: context.itemController,
-                  maxLines: 3,
-                  maxLength: 70,
-                  decoration: InputDecoration(
-                    isDense: true,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    hintText: 'Item & Description',
-                    label: const Text('Item & Description'),
-                    alignLabelWithHint: true,
+                  const SizedBox(
+                    height: 10,
                   ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: secondaryColor,
-                    backgroundColor: primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  onPressed: () {
-                    if (!key.currentState!.validate()) {
-                      Get.snackbar(
-                        '',
-                        'Please fill all fields',
-                        snackPosition: SnackPosition.BOTTOM,
-                        margin: const EdgeInsets.all(10),
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white,
-                        titleText: Container(),
-                      );
-                      return;
-                    }
-                    context.updateTableData();
-                  },
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add Item'),
-                ),
-
-                Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: secondaryColor,
-                      backgroundColor: primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onPressed: () async {
-                      if (context.tableData.isEmpty) {
-                        Get.snackbar(
-                          '',
-                          'Please add some items to see preview',
-                          snackPosition: SnackPosition.BOTTOM,
-                          margin: const EdgeInsets.all(10),
-                          backgroundColor: Colors.red,
-                          colorText: Colors.white,
-                          titleText: Container(),
-                        );
-                        return;
+                  TextFormField(
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter item & description';
                       }
-                      Get.to(
-                        PdfPreview(
-                            enableScrollToPage: true,
-                            // previewPageMargin: EdgeInsets.all(0),
-                            // padding: EdgeInsets.all(0),
-                            useActions: true,
-                            build: (format) {
-                              return pdfController
-                                  .generate(true)
-                                  .then((file) => file.readAsBytesSync());
-                            }),
-                      );
+                      return null;
                     },
-                    icon: const Icon(Icons.remove_red_eye),
-                    label: const Text('Preview Invoice PDF'),
+                    controller: context.itemController,
+                    maxLines: 3,
+                    maxLength: 70,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      hintText: 'Item & Description',
+                      label: const Text('Item & Description'),
+                      alignLabelWithHint: true,
+                    ),
                   ),
-                ),
-
-                Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: ElevatedButton.icon(
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       foregroundColor: secondaryColor,
                       backgroundColor: primaryColor,
@@ -276,11 +207,11 @@ class _AddDataScreenState extends State<AddDataScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    onPressed: () async {
-                      if (context.tableData.isEmpty) {
+                    onPressed: () {
+                      if (!key.currentState!.validate()) {
                         Get.snackbar(
                           '',
-                          'Please add some items to generate invoice',
+                          'Please fill all fields',
                           snackPosition: SnackPosition.BOTTOM,
                           margin: const EdgeInsets.all(10),
                           backgroundColor: Colors.red,
@@ -289,417 +220,507 @@ class _AddDataScreenState extends State<AddDataScreen> {
                         );
                         return;
                       }
-                      //ask for file name
-                      showDialog(
-                        context: bcontext,
-                        builder: (_) {
-                          return AlertDialog(
-                            title: const Center(child: Text('Enter File Name')),
-                            contentPadding: const EdgeInsets.all(10),
-                            content: TextField(
-                              controller: context.fileNameController,
-                              decoration: InputDecoration(
-                                isDense: true,
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                hintText: 'Enter File Name',
-                              ),
-                            ),
-                            actionsAlignment: MainAxisAlignment.spaceAround,
-                            actions: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  Get.back();
-                                },
-                                child: const Text('Cancel'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  if (context.fileNameController.text.isEmpty) {
-                                    Get.snackbar(
-                                      '',
-                                      'Please enter file name',
-                                      snackPosition: SnackPosition.BOTTOM,
-                                      margin: const EdgeInsets.all(10),
-                                      backgroundColor: Colors.red,
-                                      colorText: Colors.white,
-                                      titleText: Container(),
-                                    );
-                                    return;
-                                  }
-                                  Get.back();
-
-                                  // generate pdf file
-
-                                  pdfController.generate(false).then((pdfFile) {
-                                    shared.saveData(
-                                        key: "invoice_gen",
-                                        value: shared.getData(
-                                                    key: "invoice_gen") ==
-                                                null
-                                            ? "1"
-                                            : (int.parse(shared.getData(
-                                                        key: "invoice_gen")!) +
-                                                    1)
-                                                .toString());
-
-                                    Get.snackbar(
-                                      'Done',
-                                      'PDF file Saved on Download folder',
-                                      snackPosition: SnackPosition.BOTTOM,
-                                      margin: const EdgeInsets.all(10),
-                                      backgroundColor: Colors.green,
-                                      colorText: Colors.white,
-                                    );
-                                    FileHandleApi.openFile(pdfFile);
-                                  });
-                                  // Get .back();
-                                },
-                                child: const Text('Save'),
-                              ),
-                            ],
+                      context.updateTableData();
+                    },
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Item'),
+                  ),
+          
+                  Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: secondaryColor,
+                        backgroundColor: primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () async {
+                        if (context.tableData.isEmpty) {
+                          Get.snackbar(
+                            '',
+                            'Please add some items to see preview',
+                            snackPosition: SnackPosition.BOTTOM,
+                            margin: const EdgeInsets.all(10),
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                            titleText: Container(),
                           );
-                        },
-                      );
-                      // // generate pdf file
-                      // final pdfFile = await pdfController.generate(
-                      //   themeColor,
-                      //   pw.Font.courier(),
-                      // );
-
-                      // // opening the pdf file
-                      // FileHandleApi.openFile(pdfFile);
-                    },
-                    icon: const Icon(Icons.arrow_back_ios_new),
-                    label: const Text('Download Invoice PDF'),
+                          return;
+                        }
+                        Get.to(
+                          PdfPreview(
+                              enableScrollToPage: true,
+                              // previewPageMargin: EdgeInsets.all(0),
+                              // padding: EdgeInsets.all(0),
+                              useActions: true,
+                              build: (format) {
+                                return pdfController
+                                    .generate(true)
+                                    .then((file) => file.readAsBytesSync());
+                              }),
+                        );
+                      },
+                      icon: const Icon(Icons.remove_red_eye),
+                      label: const Text('Preview Invoice PDF'),
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                //header of datatable
-                (context.tableData.isEmpty)
-                    ? Container()
-                    : SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          columns: const [
-                            DataColumn(label: Text('Sr \nNo')),
-                            DataColumn(label: Text('Item &\nDescription')),
-                            DataColumn(label: Text('Qty')),
-                            DataColumn(label: Text('Amount')),
-                            DataColumn(label: Text(""))
-                          ],
-                          rows: context.tableData.map<DataRow>(
-                            (data) {
-                              final index = context.tableData.indexOf(data);
-                              return DataRow(
-                                onLongPress: () {
-                                  context.tableData.remove(data);
-                                  context.update();
-                                },
-                                cells: [
-                                  DataCell(Text(data[0])),
-                                  DataCell(
-                                    SingleChildScrollView(
-                                      child: SizedBox(
-                                        width: 200,
-                                        child: ExpandableText(data[1],
-                                            expandText: 'more',
-                                            collapseText: 'less',
-                                            maxLines: 2,
-                                            linkColor: primaryColor),
-                                      ),
-                                    ),
+                  
+               (pdfController.tableData.isEmpty)?Container():
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: secondaryColor,
+                          backgroundColor: primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () async {
+                          if (context.tableData.isEmpty) {
+                            Get.snackbar(
+                              '',
+                              'Please add some items to generate invoice',
+                              snackPosition: SnackPosition.BOTTOM,
+                              margin: const EdgeInsets.all(10),
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white,
+                              titleText: Container(),
+                            );
+                            return;
+                          }
+                          //ask for file name
+                          showDialog(
+                            context: bcontext,
+                            builder: (_) {
+                              return AlertDialog(
+                                title: const Center(child: Text('Enter File Name')),
+                                contentPadding: const EdgeInsets.all(10),
+                                content: TextField(
+                                  controller: context.fileNameController,
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10)),
+                                    hintText: 'Enter File Name',
                                   ),
-                                  DataCell(Text(data[2])),
-                                  DataCell(Text(data[3])),
-                                  DataCell(
-                                    IconButton(
-                                      icon: const Icon(Icons.edit),
-                                      onPressed: () {
-                                        //create showbottomsheet to update value
-                                        context.srnoControlleru.text = data[0];
-                                        context.itemControlleru.text = data[1];
-                                        context.qtyControlleru.text = data[2];
-                                        context.amountControlleru.text =
-                                            data[3];
-                                        showModalBottomSheet(
-                                            context: bcontext,
-                                            builder: (s) => Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Form(
-                                                    key: key2,
-                                                    child: Column(
-                                                      children: [
-                                                        const SizedBox(
-                                                          height: 10,
-                                                        ),
-                                                        Row(
-                                                          children: [
-                                                            Expanded(
-                                                              child:
-                                                                  TextFormField(
-                                                                controller: context
-                                                                    .srnoControlleru,
-                                                                // validator: (value) {
-                                                                //   if (value!.isEmpty) {
-                                                                //     return 'Enter Sr No';
-                                                                //   }
-                                                                //   return null;
-                                                                // },
-                                                                decoration:
-                                                                    InputDecoration(
-                                                                  isDense: true,
-                                                                  border: OutlineInputBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              10)),
-                                                                  hintText:
-                                                                      'Sr No',
-                                                                  label: const Text(
-                                                                      'Sr No'),
-                                                                  alignLabelWithHint:
-                                                                      true,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                              width: 10,
-                                                            ),
-                                                            Expanded(
-                                                              child:
-                                                                  TextFormField(
-                                                                keyboardType:
-                                                                    TextInputType
-                                                                        .number,
-                                                                textInputAction:
-                                                                    TextInputAction
-                                                                        .next,
-                                                                inputFormatters: [
-                                                                  FilteringTextInputFormatter
-                                                                      .digitsOnly,
-                                                                  LengthLimitingTextInputFormatter(
-                                                                      50),
-                                                                ],
-                                                                validator:
-                                                                    (value) {
-                                                                  if (value!
-                                                                      .isEmpty) {
-                                                                    return 'Enter quantity';
-                                                                  }
-                                                                  return null;
-                                                                },
-                                                                controller: context
-                                                                    .qtyControlleru,
-                                                                decoration:
-                                                                    InputDecoration(
-                                                                  isDense: true,
-                                                                  border: OutlineInputBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              10)),
-                                                                  hintText:
-                                                                      'Qty',
-                                                                  label:
-                                                                      const Text(
-                                                                          'Qty'),
-                                                                  alignLabelWithHint:
-                                                                      true,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                              width: 10,
-                                                            ),
-                                                            Expanded(
-                                                              child:
-                                                                  TextFormField(
-                                                                validator:
-                                                                    (value) {
-                                                                  if (value!
-                                                                      .isEmpty) {
-                                                                    return 'Enter amount';
-                                                                  }
-                                                                  return null;
-                                                                },
-                                                                keyboardType:
-                                                                    TextInputType
-                                                                        .number,
-                                                                textInputAction:
-                                                                    TextInputAction
-                                                                        .next,
-                                                                inputFormatters: [
-                                                                  FilteringTextInputFormatter
-                                                                      .digitsOnly,
-                                                                  LengthLimitingTextInputFormatter(
-                                                                      50),
-                                                                ],
-                                                                controller: context
-                                                                    .amountControlleru,
-                                                                decoration:
-                                                                    InputDecoration(
-                                                                  isDense: true,
-                                                                  border: OutlineInputBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              10)),
-                                                                  hintText:
-                                                                      'Amount',
-                                                                  label: const Text(
-                                                                      'Amount'),
-                                                                  alignLabelWithHint:
-                                                                      true,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        const SizedBox(
-                                                          height: 10,
-                                                        ),
-                                                        TextFormField(
-                                                          validator: (value) {
-                                                            if (value!
-                                                                .isEmpty) {
-                                                              return 'Please enter item & description';
-                                                            }
-                                                            return null;
-                                                          },
-                                                          controller: context
-                                                              .itemControlleru,
-                                                          maxLines: 3,
-                                                          maxLength: 70,
-                                                          decoration:
-                                                              InputDecoration(
-                                                            isDense: true,
-                                                            border: OutlineInputBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            10)),
-                                                            hintText:
-                                                                'Item & Description',
-                                                            label: const Text(
-                                                                'Item & Description'),
-                                                            alignLabelWithHint:
-                                                                true,
-                                                          ),
-                                                        ),
-                                                        ElevatedButton.icon(
-                                                          style: ElevatedButton
-                                                              .styleFrom(
-                                                            foregroundColor:
-                                                                secondaryColor,
-                                                            backgroundColor:
-                                                                primaryColor,
-                                                            shape:
-                                                                RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          10),
-                                                            ),
-                                                          ),
-                                                          onPressed: () {
-                                                            if (!key2
-                                                                .currentState!
-                                                                .validate()) {
-                                                              Get.snackbar(
-                                                                '',
-                                                                'Please fill all fields',
-                                                                snackPosition:
-                                                                    SnackPosition
-                                                                        .BOTTOM,
-                                                                margin:
-                                                                    const EdgeInsets
-                                                                        .all(
-                                                                        10),
-                                                                backgroundColor:
-                                                                    Colors.red,
-                                                                colorText:
-                                                                    Colors
-                                                                        .white,
-                                                                titleText:
-                                                                    Container(),
-                                                              );
-                                                              return;
-                                                            }
-                                                            context
-                                                                .updateTableBasedOnIndex(
-                                                                    index);
-                                                          },
-                                                          icon: const Icon(
-                                                              Icons.add),
-                                                          label: const Text(
-                                                              'Update Item'),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ));
-                                      },
-                                    ),
-                                  )
+                                ),
+                                actionsAlignment: MainAxisAlignment.spaceAround,
+                                actions: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Get.back();
+                                    },
+                                    child: const Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      if (context.fileNameController.text.isEmpty) {
+                                        Get.snackbar(
+                                          '',
+                                          'Please enter file name',
+                                          snackPosition: SnackPosition.BOTTOM,
+                                          margin: const EdgeInsets.all(10),
+                                          backgroundColor: Colors.red,
+                                          colorText: Colors.white,
+                                          titleText: Container(),
+                                        );
+                                        return;
+                                      }
+                                      Get.back();
+                              
+                                      // generate pdf file
+                              
+                                      pdfController.generate(false).then((pdfFile) {
+                                        shared.saveData(
+                                            key: "invoice_gen",
+                                            value: shared.getData(
+                                                        key: "invoice_gen") ==
+                                                    null
+                                                ? "1"
+                                                : (int.parse(shared.getData(
+                                                            key: "invoice_gen")!) +
+                                                        1)
+                                                    .toString());
+                              
+                                        Get.snackbar(
+                                          'Done',
+                                          'PDF file Saved on Download folder',
+                                          snackPosition: SnackPosition.BOTTOM,
+                                          margin: const EdgeInsets.all(10),
+                                          backgroundColor: Colors.green,
+                                          colorText: Colors.white,
+                                        );
+                                        FileHandleApi.openFile(pdfFile);
+                                      });
+                                      // Get .back();
+                                    },
+                                    child: const Text('Save'),
+                                  ),
                                 ],
                               );
                             },
-                          ).toList(),
+                          );
+                          // // generate pdf file
+                          // final pdfFile = await pdfController.generate(
+                          //   themeColor,
+                          //   pw.Font.courier(),
+                          // );
+                              
+                          // // opening the pdf file
+                          // FileHandleApi.openFile(pdfFile);
+                        },
+                        child: const Text('Download Invoice PDF'),
+                      ),
+                    //create restart process 
+                   SizedBox(width: 10),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: secondaryColor,
+                        backgroundColor: primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                // (context.tableData.isEmpty)
-                // ? Container()
-                // :
-                // SizedBox(
-                //   height: 200,
-                //   child: PdfPreview(build: (format) {
-                //     return pdfController.generate(
-                //       themeColor,
-                //       pw.Font.courier(),
-                //     ).then((file) => file.readAsBytesSync());
-                //   }),
-                // ),
-
-                //   Row(
-                //   children: [
-                //     Expanded(
-                //       child: Text('Sr No'),
-                //     ),
-                //     Expanded(
-                //       child: Text('Item & Description'),
-                //     ),
-                //     Expanded(
-                //       child: Text('Qty'),
-                //     ),
-                //     Expanded(
-                //       child: Text('Amount'),
-                //     ),
-                //   ],
-                // ),
-                // ListView.builder(
-                //   itemCount: context.tableData.length,
-                //   shrinkWrap: true,
-                //   itemBuilder: (_, index) {
-                //     return  Row(
-                //       children: [
-                //         Expanded(
-                //           child: Text(context.tableData[index][0])
-                //         ),
-                //         Expanded(
-                //           child: Text(context.tableData[index][1]),
-                //         ),
-                //         Expanded(
-                //           child: Text(context.tableData[index][2]),
-                //         ),
-                //         Expanded(
-                //           child: Text(context.tableData[index][3]),
-                //         ),
-                //       ],
-                //     );
-                //   },
-                // ),
-              ],
+                      onPressed: () {
+                        pdfController.clearAllData();
+                      },
+                      child: const Text('Start New Invoice'),
+                    ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  //header of datatable
+                  (context.tableData.isEmpty)
+                      ? Container()
+                      : Scrollbar(
+                        child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: DataTable(
+                              columns: const [
+                                DataColumn(label: Text('Sr \nNo')),
+                                DataColumn(label: Text('Item &\nDescription')),
+                                DataColumn(label: Text('Qty')),
+                                DataColumn(label: Text('Amount')),
+                                DataColumn(label: Text(""))
+                              ],
+                              rows: context.tableData.map<DataRow>(
+                                (data) {
+                                  final index = context.tableData.indexOf(data);
+                                  return DataRow(
+                                    onLongPress: () {
+                                      context.tableData.remove(data);
+                                      context.update();
+                                    },
+                                    cells: [
+                                      DataCell(Text(data[0])),
+                                      DataCell(
+                                        SingleChildScrollView(
+                                          child: SizedBox(
+                                            width: 200,
+                                            child: ExpandableText(data[1],
+                                                expandText: 'more',
+                                                collapseText: 'less',
+                                                maxLines: 2,
+                                                linkColor: primaryColor),
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(Text(data[2])),
+                                      DataCell(Text(data[3])),
+                                      DataCell(
+                                        IconButton(
+                                          icon: const Icon(Icons.edit),
+                                          onPressed: () {
+                                            //create showbottomsheet to update value
+                                            context.srnoControlleru.text = data[0];
+                                            context.itemControlleru.text = data[1];
+                                            context.qtyControlleru.text = data[2];
+                                            context.amountControlleru.text =
+                                                data[3];
+                                            showModalBottomSheet(
+                                                context: bcontext,
+                                                builder: (s) => Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(8.0),
+                                                      child: Form(
+                                                        key: key2,
+                                                        child: Column(
+                                                          children: [
+                                                            const SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Expanded(
+                                                                  child:
+                                                                      TextFormField(
+                                                                    controller: context
+                                                                        .srnoControlleru,
+                                                                    // validator: (value) {
+                                                                    //   if (value!.isEmpty) {
+                                                                    //     return 'Enter Sr No';
+                                                                    //   }
+                                                                    //   return null;
+                                                                    // },
+                                                                    decoration:
+                                                                        InputDecoration(
+                                                                      isDense: true,
+                                                                      border: OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(
+                                                                                  10)),
+                                                                      hintText:
+                                                                          'Sr No',
+                                                                      label: const Text(
+                                                                          'Sr No'),
+                                                                      alignLabelWithHint:
+                                                                          true,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(
+                                                                  width: 10,
+                                                                ),
+                                                                Expanded(
+                                                                  child:
+                                                                      TextFormField(
+                                                                    keyboardType:
+                                                                        TextInputType
+                                                                            .number,
+                                                                    textInputAction:
+                                                                        TextInputAction
+                                                                            .next,
+                                                                    inputFormatters: [
+                                                                      FilteringTextInputFormatter
+                                                                          .digitsOnly,
+                                                                      LengthLimitingTextInputFormatter(
+                                                                          50),
+                                                                    ],
+                                                                    validator:
+                                                                        (value) {
+                                                                      if (value!
+                                                                          .isEmpty) {
+                                                                        return 'Enter quantity';
+                                                                      }
+                                                                      return null;
+                                                                    },
+                                                                    controller: context
+                                                                        .qtyControlleru,
+                                                                    decoration:
+                                                                        InputDecoration(
+                                                                      isDense: true,
+                                                                      border: OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(
+                                                                                  10)),
+                                                                      hintText:
+                                                                          'Qty',
+                                                                      label:
+                                                                          const Text(
+                                                                              'Qty'),
+                                                                      alignLabelWithHint:
+                                                                          true,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(
+                                                                  width: 10,
+                                                                ),
+                                                                Expanded(
+                                                                  child:
+                                                                      TextFormField(
+                                                                    validator:
+                                                                        (value) {
+                                                                      if (value!
+                                                                          .isEmpty) {
+                                                                        return 'Enter amount';
+                                                                      }
+                                                                      return null;
+                                                                    },
+                                                                    keyboardType:
+                                                                        TextInputType
+                                                                            .number,
+                                                                    textInputAction:
+                                                                        TextInputAction
+                                                                            .next,
+                                                                    inputFormatters: [
+                                                                      FilteringTextInputFormatter
+                                                                          .digitsOnly,
+                                                                      LengthLimitingTextInputFormatter(
+                                                                          50),
+                                                                    ],
+                                                                    controller: context
+                                                                        .amountControlleru,
+                                                                    decoration:
+                                                                        InputDecoration(
+                                                                      isDense: true,
+                                                                      border: OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(
+                                                                                  10)),
+                                                                      hintText:
+                                                                          'Amount',
+                                                                      label: const Text(
+                                                                          'Amount'),
+                                                                      alignLabelWithHint:
+                                                                          true,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            const SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            TextFormField(
+                                                              validator: (value) {
+                                                                if (value!
+                                                                    .isEmpty) {
+                                                                  return 'Please enter item & description';
+                                                                }
+                                                                return null;
+                                                              },
+                                                              controller: context
+                                                                  .itemControlleru,
+                                                              maxLines: 3,
+                                                              maxLength: 70,
+                                                              decoration:
+                                                                  InputDecoration(
+                                                                isDense: true,
+                                                                border: OutlineInputBorder(
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(
+                                                                                10)),
+                                                                hintText:
+                                                                    'Item & Description',
+                                                                label: const Text(
+                                                                    'Item & Description'),
+                                                                alignLabelWithHint:
+                                                                    true,
+                                                              ),
+                                                            ),
+                                                            ElevatedButton.icon(
+                                                              style: ElevatedButton
+                                                                  .styleFrom(
+                                                                foregroundColor:
+                                                                    secondaryColor,
+                                                                backgroundColor:
+                                                                    primaryColor,
+                                                                shape:
+                                                                    RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10),
+                                                                ),
+                                                              ),
+                                                              onPressed: () {
+                                                                if (!key2
+                                                                    .currentState!
+                                                                    .validate()) {
+                                                                  Get.snackbar(
+                                                                    '',
+                                                                    'Please fill all fields',
+                                                                    snackPosition:
+                                                                        SnackPosition
+                                                                            .BOTTOM,
+                                                                    margin:
+                                                                        const EdgeInsets
+                                                                            .all(
+                                                                            10),
+                                                                    backgroundColor:
+                                                                        Colors.red,
+                                                                    colorText:
+                                                                        Colors
+                                                                            .white,
+                                                                    titleText:
+                                                                        Container(),
+                                                                  );
+                                                                  return;
+                                                                }
+                                                                context
+                                                                    .updateTableBasedOnIndex(
+                                                                        index);
+                                                              },
+                                                              icon: const Icon(
+                                                                  Icons.add),
+                                                              label: const Text(
+                                                                  'Update Item'),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ));
+                                          },
+                                        ),
+                                      )
+                                    ],
+                                  );
+                                },
+                              ).toList(),
+                            ),
+                          ),
+                      ),
+                  // (context.tableData.isEmpty)
+                  // ? Container()
+                  // :
+                  // SizedBox(
+                  //   height: 200,
+                  //   child: PdfPreview(build: (format) {
+                  //     return pdfController.generate(
+                  //       themeColor,
+                  //       pw.Font.courier(),
+                  //     ).then((file) => file.readAsBytesSync());
+                  //   }),
+                  // ),
+          
+                  //   Row(
+                  //   children: [
+                  //     Expanded(
+                  //       child: Text('Sr No'),
+                  //     ),
+                  //     Expanded(
+                  //       child: Text('Item & Description'),
+                  //     ),
+                  //     Expanded(
+                  //       child: Text('Qty'),
+                  //     ),
+                  //     Expanded(
+                  //       child: Text('Amount'),
+                  //     ),
+                  //   ],
+                  // ),
+                  // ListView.builder(
+                  //   itemCount: context.tableData.length,
+                  //   shrinkWrap: true,
+                  //   itemBuilder: (_, index) {
+                  //     return  Row(
+                  //       children: [
+                  //         Expanded(
+                  //           child: Text(context.tableData[index][0])
+                  //         ),
+                  //         Expanded(
+                  //           child: Text(context.tableData[index][1]),
+                  //         ),
+                  //         Expanded(
+                  //           child: Text(context.tableData[index][2]),
+                  //         ),
+                  //         Expanded(
+                  //           child: Text(context.tableData[index][3]),
+                  //         ),
+                  //       ],
+                  //     );
+                  //   },
+                  // ),
+                ],
+              ),
             ),
           ),
         );
