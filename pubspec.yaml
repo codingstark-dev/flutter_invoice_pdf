@@ -31,20 +31,21 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   flutter_launcher_icons: "^0.13.1"
 
-flutter_native_splash:
-  color: "#FBCD08"
-  image: assets/splash.png
-  branding: assets/splash.png
-  android_12:
-    image: assets/splash.png
-    icon_background_color: "#FBCD08"
-  ios: true
+# flutter_native_splash:
+#   color: "#FBCD08"
+#   image: assets/splash.png
+#   branding: assets/splash.png
+#   android_12:
+#     image: assets/splash.png
+#     icon_background_color: "#FBCD08"
+#   ios: true
 
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/logo.jpg"
-  min_sdk_android: 16
+  image_path: "assets/logo.png"
+  adaptive_icon_background: "#FBCD08"
+  adaptive_icon_foreground: "assets/logo.png"
 
 flutter:
   uses-material-design: true
