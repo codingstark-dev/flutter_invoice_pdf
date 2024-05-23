@@ -376,7 +376,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                         child: const Text('Download Invoice PDF'),
                       ),
                     //create restart process 
-                   SizedBox(width: 10),
+                   const SizedBox(width: 10),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         foregroundColor: secondaryColor,

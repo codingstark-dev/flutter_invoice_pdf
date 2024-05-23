@@ -504,6 +504,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                           pdfController.signatureCodePickedImageFile != null && 
                           pdfController.signatureCodePickedImageFile!.path.isNotEmpty
                               ? Expanded(
+                                flex: 2,
                                   child: Column(
                                     children: [
                                       const SizedBox(
@@ -546,6 +547,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                               : sharedPref.getData(key: 'signature') != null
                               && sharedPref.getData(key: 'signature') != ''
                                   ? Expanded(
+                                    flex: 2,
                                       child: Column(
                                         children: [
                                           const SizedBox(
@@ -560,8 +562,8 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                                         sharedPref.getData(
                                                             key: 'signature')!))
                                                     .path),
-                                                height: 100,
-                                                width: 400,
+                                                height: 50,
+                                                width: 600,
                                                 fit: BoxFit.cover,
                                               ),
                                               Container(
