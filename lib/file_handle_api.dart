@@ -39,16 +39,39 @@ class FileHandleApi {
     return file;
   }
 
+static Future<File> saveTempDocument({
+    required String name,
+    required pw.Document pdf,
+  }) async {
+    // await storagePermission();
+
+    // Directory _directory = Directory("");
+  
+    // final exPath = _directory.path;
+    // print("Saved Path: $exPath");
+    // await Directory(exPath).create(recursive: true);
+    final bytes = await pdf.save();
+
+    final dir = await getApplicationDocumentsDirectory();
+    // final dir = await getExternalStorageDirectory();
+    final file = File("${dir.path}/$name");
+    await file.writeAsBytes(bytes);
+    // await openDownloadFolder();
+   // await openFile(file);
+
+    //open pdf file
+    return file;
+  }
   static Future<File> saveDocumentTolocal({
     required String name,
     required pw.Document pdf,
   }) async {
-    await requestPermission();
+    // await requestPermission();
     final bytes = await pdf.save();
 
     // final dir = await getApplicationDocumentsDirectory();
-    final dir = await getExternalStorageDirectory();
-    final file = File('${dir?.path}/$name');
+    final dir = await getTemporaryDirectory();
+    final file = File('${dir.path}/$name');
     await file.writeAsBytes(bytes);
     return file;
   }
