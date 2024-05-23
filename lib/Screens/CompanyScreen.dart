@@ -71,10 +71,11 @@ class _CompanyScreenState extends State<CompanyScreen> {
                               child: GFAvatar(
                                 backgroundImage: pdfController
                                             .companyPickedImageFile !=
-                                        null
+                                        null  && pdfController.companyPickedImageFile!.path.isNotEmpty
                                     ? FileImage(File(pdfController
                                         .companyPickedImageFile!.path))
-                                    : sharedPref.getData(key: 'logo') != null
+                                    : sharedPref.getData(key: 'logo') != null && 
+                                    sharedPref.getData(key: 'logo') != ''
                                         ? FileImage(File(pdfController
                                             .updateCompanyImage(File(sharedPref
                                                 .getData(key: 'logo')!))
@@ -83,8 +84,9 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                 shape: GFAvatarShape.circle,
                                 radius: 50,
                                 child: pdfController.companyPickedImageFile ==
-                                        null
-                                    ? sharedPref.getData(key: 'logo') == null
+                                        null && pdfController.companyPickedImageFile!.path.isEmpty
+                                    ? sharedPref.getData(key: 'logo') == null 
+                                    || sharedPref.getData(key: 'logo') == "" 
                                         ? const Icon(
                                             Icons.add_a_photo,
                                             size: 50,
@@ -370,7 +372,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
 
                       Row(
                         children: [
-                          pdfController.qrCodePickedImageFile != null
+                          pdfController.qrCodePickedImageFile != null && pdfController.qrCodePickedImageFile!.path.isNotEmpty
                               ? Expanded(
                                   child: Column(
                                     children: [
@@ -409,7 +411,8 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                     ],
                                   ),
                                 )
-                              : sharedPref.getData(key: 'qr_code') != null
+                              : sharedPref.getData(key: 'qr_code') != null 
+                              && sharedPref.getData(key: 'qr_code') != ''
                                   ? Expanded(
                                       child: Column(
                                         children: [
@@ -424,7 +427,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                                   pdfController
                                                       .updateQrCodeImage(File(
                                                           sharedPref.getData(
-                                                              key: 'qr_code')!))
+                                                              key: 'qr_code') ?? ""))
                                                       .path,
                                                 ),
                                                 height: 100,
@@ -498,7 +501,8 @@ class _CompanyScreenState extends State<CompanyScreen> {
 
                       Row(
                         children: [
-                          pdfController.signatureCodePickedImageFile != null
+                          pdfController.signatureCodePickedImageFile != null && 
+                          pdfController.signatureCodePickedImageFile!.path.isNotEmpty
                               ? Expanded(
                                   child: Column(
                                     children: [
@@ -512,8 +516,9 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                             File(pdfController
                                                 .signatureCodePickedImageFile!
                                                 .path),
-                                            height: 100,
-                                            width: 100,
+                                          height: 50,
+                                                width: 600,
+                                                fit: BoxFit.cover,
                                           ),
                                           Container(
                                             decoration: BoxDecoration(
@@ -539,6 +544,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                   ),
                                 )
                               : sharedPref.getData(key: 'signature') != null
+                              && sharedPref.getData(key: 'signature') != ''
                                   ? Expanded(
                                       child: Column(
                                         children: [
@@ -555,7 +561,8 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                                             key: 'signature')!))
                                                     .path),
                                                 height: 100,
-                                                width: 100,
+                                                width: 400,
+                                                fit: BoxFit.cover,
                                               ),
                                               Container(
                                                 decoration: BoxDecoration(
