@@ -237,11 +237,12 @@ class PdfController extends GetxController {
                     ? pw.Image(
                         pw.MemoryImage(
                             companyPickedImageFile!.readAsBytesSync()),
-                        height: 72,
-                        width: 72,
+                        height: 60,
+                        width: 60,
+                        fit: pw.BoxFit.cover,
                       )
                     : pw.Container(),
-                pw.SizedBox(width: 1 * PdfPageFormat.mm),
+                pw.SizedBox(width: 2 * PdfPageFormat.mm),
                 pw.Column(
                   mainAxisSize: pw.MainAxisSize.min,
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -433,13 +434,16 @@ class PdfController extends GetxController {
             ),
             pw.Divider(),
             pw.Container(
+              
               alignment: pw.Alignment.centerRight,
               child: pw.Row(
+                mainAxisSize: pw.MainAxisSize.min,
                 children: [
                   pw.Spacer(flex: 6),
                   pw.Expanded(
                     flex: 4,
                     child: pw.Column(
+                      mainAxisSize: pw.MainAxisSize.min,
                       crossAxisAlignment: pw.CrossAxisAlignment.end,
                       children: [
                         pw.Row(
@@ -536,8 +540,9 @@ class PdfController extends GetxController {
                                   signatureCodePickedImageFile!
                                       .readAsBytesSync(),
                                 ),
-                                width: 100,
-                                height: 100,
+                                width: 200,
+                                height: 50,
+                                fit: pw.BoxFit.cover,
                               )
                             : pw.Container(),
                       ],
@@ -547,15 +552,20 @@ class PdfController extends GetxController {
               ),
             ),
             pw.Spacer(),
-            qrCodePickedImageFile != null && qrCodePickedImageFile!.existsSync()
+            pw.Container(            
+                alignment: pw.Alignment.centerLeft,
+            child:   qrCodePickedImageFile != null && qrCodePickedImageFile!.existsSync()
                 ? pw.Image(
                     pw.MemoryImage(
                       qrCodePickedImageFile!.readAsBytesSync(),
                     ),
-                    width: 100,
-                    height: 100,
+                    width: 60,
+                    height: 60,
+                    fit: pw.BoxFit.cover,
                   )
                 : pw.Container(),
+)
+          
           ];
         },
         footer: (context) {
