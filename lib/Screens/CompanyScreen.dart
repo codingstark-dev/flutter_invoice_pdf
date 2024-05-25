@@ -72,12 +72,15 @@ class _CompanyScreenState extends State<CompanyScreen> {
                               },
                               child: GFAvatar(
                                 backgroundImage: pdfController
-                                            .companyPickedImageFile !=
-                                        null  && pdfController.companyPickedImageFile!.path.isNotEmpty
+                                                .companyPickedImageFile !=
+                                            null &&
+                                        pdfController.companyPickedImageFile!
+                                            .path.isNotEmpty
                                     ? FileImage(File(pdfController
                                         .companyPickedImageFile!.path))
-                                    : sharedPref.getData(key: 'logo') != null && 
-                                    sharedPref.getData(key: 'logo') != ''
+                                    : sharedPref.getData(key: 'logo') != null &&
+                                            sharedPref.getData(key: 'logo') !=
+                                                ''
                                         ? FileImage(File(pdfController
                                             .updateCompanyImage(File(sharedPref
                                                 .getData(key: 'logo')!))
@@ -86,16 +89,25 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                 shape: GFAvatarShape.circle,
                                 radius: 50,
                                 child: pdfController.companyPickedImageFile ==
-                                        null && (pdfController.companyPickedImageFile?.path.isEmpty) == null
+                                            null &&
+                                        (pdfController.companyPickedImageFile
+                                                ?.path.isEmpty) ==
+                                            null
                                     ? sharedPref.getData(key: 'logo') == null &&
-                                   sharedPref.getData(key: 'logo') == ""  && sharedPref.getData(key: 'logo').toString() == "null"
+                                            sharedPref.getData(key: 'logo') ==
+                                                "" &&
+                                            sharedPref
+                                                    .getData(key: 'logo')
+                                                    .toString() ==
+                                                "null"
                                         ? const Icon(
                                             Icons.add_a_photo,
                                             size: 50,
                                           )
                                         : Icon(
                                             Icons.add_a_photo,
-                                            size: 50,)
+                                            size: 50,
+                                          )
                                     : null,
                               ),
                             ),
@@ -134,10 +146,10 @@ class _CompanyScreenState extends State<CompanyScreen> {
                           return null;
                         },
                         controller: pdfController.companyNameController
-                          ..text =
-                              pdfController.companyNameController.text.isEmpty
-                                  ? sharedPref.getData(key: 'company_name') ?? ""
-                                  : pdfController.companyNameController.text,
+                          ..text = pdfController
+                                  .companyNameController.text.isEmpty
+                              ? sharedPref.getData(key: 'company_name') ?? ""
+                              : pdfController.companyNameController.text,
                         decoration: InputDecoration(
                           isDense: true,
 
@@ -155,12 +167,10 @@ class _CompanyScreenState extends State<CompanyScreen> {
                       ),
                       TextFormField(
                         controller: pdfController.companyAddressController
-                          ..text =
-                          pdfController.companyAddressController.text.isEmpty
-                          ?
-                              sharedPref.getData(key: 'company_address') ?? ''
-                              : 
-                              pdfController.companyAddressController.text,
+                          ..text = pdfController
+                                  .companyAddressController.text.isEmpty
+                              ? sharedPref.getData(key: 'company_address') ?? ''
+                              : pdfController.companyAddressController.text,
                         // onChanged: (value) {
                         //   pdfController.companyAddress.value = value;
                         // },
@@ -182,11 +192,10 @@ class _CompanyScreenState extends State<CompanyScreen> {
                       ),
                       const SizedBox(height: 10),
                       TextFormField(
-                        
                         controller: pdfController.companyEmailController
-                          ..text =
-                          pdfController.companyEmailController.text.isEmpty?
-                              sharedPref.getData(key: 'company_email') ?? ''
+                          ..text = pdfController
+                                  .companyEmailController.text.isEmpty
+                              ? sharedPref.getData(key: 'company_email') ?? ''
                               : pdfController.companyEmailController.text,
                         // onChanged: (value) {
                         //   pdfController.companyEmail.value = value;
@@ -272,7 +281,9 @@ class _CompanyScreenState extends State<CompanyScreen> {
                             return;
                           } else
                             pdfController.gstVar.value = value.first;
-                            pdfController.gstControllerFocusNode[pdfController.gstVar.value.index].requestFocus();
+                          pdfController.gstControllerFocusNode[
+                                  pdfController.gstVar.value.index]
+                              .requestFocus();
                           sharedPref.saveData(
                               key: 'gst_type',
                               value: pdfController.gstVar.value
@@ -288,7 +299,8 @@ class _CompanyScreenState extends State<CompanyScreen> {
                       pdfController.gstVar.value == GstVar.NONE
                           ? Container()
                           : TextFormField(
-                            focusNode: pdfController.gstControllerFocusNode[pdfController.gstVar.value.index],
+                              focusNode: pdfController.gstControllerFocusNode[
+                                  pdfController.gstVar.value.index],
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.next,
                               inputFormatters: [
@@ -376,7 +388,9 @@ class _CompanyScreenState extends State<CompanyScreen> {
 
                       Row(
                         children: [
-                          pdfController.qrCodePickedImageFile != null && pdfController.qrCodePickedImageFile!.path.isNotEmpty
+                          pdfController.qrCodePickedImageFile != null &&
+                                  pdfController
+                                      .qrCodePickedImageFile!.path.isNotEmpty
                               ? Expanded(
                                   child: Column(
                                     children: [
@@ -415,8 +429,8 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                     ],
                                   ),
                                 )
-                              : sharedPref.getData(key: 'qr_code') != null 
-                              && sharedPref.getData(key: 'qr_code') != ''
+                              : sharedPref.getData(key: 'qr_code') != null &&
+                                      sharedPref.getData(key: 'qr_code') != ''
                                   ? Expanded(
                                       child: Column(
                                         children: [
@@ -431,7 +445,9 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                                   pdfController
                                                       .updateQrCodeImage(File(
                                                           sharedPref.getData(
-                                                              key: 'qr_code') ?? ""))
+                                                                  key:
+                                                                      'qr_code') ??
+                                                              ""))
                                                       .path,
                                                 ),
                                                 height: 100,
@@ -505,10 +521,11 @@ class _CompanyScreenState extends State<CompanyScreen> {
 
                       Row(
                         children: [
-                          pdfController.signatureCodePickedImageFile != null && 
-                          pdfController.signatureCodePickedImageFile!.path.isNotEmpty
+                          pdfController.signatureCodePickedImageFile != null &&
+                                  pdfController.signatureCodePickedImageFile!
+                                      .path.isNotEmpty
                               ? Expanded(
-                                flex: 2,
+                                  flex: 2,
                                   child: Column(
                                     children: [
                                       const SizedBox(
@@ -521,9 +538,9 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                             File(pdfController
                                                 .signatureCodePickedImageFile!
                                                 .path),
-                                          height: 50,
-                                                width: 600,
-                                                fit: BoxFit.cover,
+                                            height: 50,
+                                            width: 600,
+                                            fit: BoxFit.fitWidth,
                                           ),
                                           Container(
                                             decoration: BoxDecoration(
@@ -548,10 +565,10 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                     ],
                                   ),
                                 )
-                              : sharedPref.getData(key: 'signature') != null
-                              && sharedPref.getData(key: 'signature') != ''
+                              : sharedPref.getData(key: 'signature') != null &&
+                                      sharedPref.getData(key: 'signature') != ''
                                   ? Expanded(
-                                    flex: 2,
+                                      flex: 2,
                                       child: Column(
                                         children: [
                                           const SizedBox(
@@ -568,7 +585,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                                     .path),
                                                 height: 50,
                                                 width: 600,
-                                                fit: BoxFit.cover,
+                                            fit: BoxFit.fitWidth,
                                               ),
                                               Container(
                                                 decoration: BoxDecoration(
