@@ -74,10 +74,22 @@ class PdfController extends GetxController {
   }
 
   companyPickImage() async {
-    final picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
-    companyPickedImageFile = File(pickedImage!.path);
-    update();
+    try {
+  final picker = ImagePicker();
+  final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+  companyPickedImageFile = File(pickedImage!.path);
+  update();
+} on Exception catch (e) {
+Get.snackbar(
+  'Error',
+  e.toString(),
+  snackPosition: SnackPosition.BOTTOM,
+  margin: const EdgeInsets.all(10),
+  duration: const Duration(seconds: 1),
+  backgroundColor: Colors.red,
+  colorText: Colors.white,
+  );
+  rethrow;}
   }
 
   deleteCompanyImage() {
@@ -171,42 +183,68 @@ class PdfController extends GetxController {
   }
 
   qrCodePickImage() async {
-    final picker = ImagePicker();
-    final pickedImage = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
-    qrCodePickedImageFile = File(pickedImage!.path);
-    update();
+    try {
+  final picker = ImagePicker();
+  final pickedImage = await picker.pickImage(
+    source: ImageSource.gallery,
+  );
+  qrCodePickedImageFile = File(pickedImage!.path);
+  update();
+} on Exception catch (e) {
+  Get.snackbar(
+    'Error',
+    e.toString(),
+    snackPosition: SnackPosition.BOTTOM,
+    margin: const EdgeInsets.all(10),
+    duration: const Duration(seconds: 1),
+    backgroundColor: Colors.red,
+    colorText: Colors.white,
+  );
+  rethrow;
+}
   }
 
 
   signaturePickImage() async {
-      final picker = ImagePicker();
-      final pickedImage = await picker.pickImage(
-        source: ImageSource.gallery,
-      );
-
-      if (pickedImage != null) {
-        CroppedFile? croppedFile = await ImageCropper().cropImage(
-          
-          aspectRatio: const CropAspectRatio(ratioX: 4, ratioY: 1),
-         uiSettings: [
-            AndroidUiSettings(
-              toolbarTitle: 'Crop Signature',
-              toolbarColor: primaryColor,
-              toolbarWidgetColor: Colors.white,
-              initAspectRatio: CropAspectRatioPreset.original,
-
-              lockAspectRatio: false,)
-         ],
-          sourcePath: pickedImage.path,
-        );
-
-        if (croppedFile != null) {
-          signatureCodePickedImageFile = File(croppedFile.path);
-          update();
-        }
-      }
+      try {
+  final picker = ImagePicker();
+  final pickedImage = await picker.pickImage(
+    source: ImageSource.gallery,
+  );
+  
+  if (pickedImage != null) {
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
+      
+      aspectRatio: const CropAspectRatio(ratioX: 4, ratioY: 1),
+     uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Signature',
+          toolbarColor: primaryColor,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.original,
+  
+          lockAspectRatio: false,)
+     ],
+      sourcePath: pickedImage.path,
+    );
+  
+    if (croppedFile != null) {
+      signatureCodePickedImageFile = File(croppedFile.path);
+      update();
+    }
+  }
+} on Exception catch (e) {
+  Get.snackbar(
+    'Error',
+    e.toString(),
+    snackPosition: SnackPosition.BOTTOM,
+    margin: const EdgeInsets.all(10),
+    duration: const Duration(seconds: 1),
+    backgroundColor: Colors.red,
+    colorText: Colors.white,
+  );
+  rethrow;
+}
     }
   void Function() get companypickImage => companyPickImage;
   void Function() get qrcodepickImage => qrCodePickImage;
