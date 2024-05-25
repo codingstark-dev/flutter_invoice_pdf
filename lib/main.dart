@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
@@ -11,6 +14,7 @@ import 'package:invoice_pdf_generate/Screens/InvoiceScreen.dart';
 import 'package:invoice_pdf_generate/Screens/OnboardingScreen.dart';
 import 'package:invoice_pdf_generate/Screens/SplashScreen.dart';
 import 'package:invoice_pdf_generate/Utils/PermissionUtil.dart';
+import 'package:invoice_pdf_generate/firebase_options.dart';
 import 'package:invoice_pdf_generate/style/ConstStyle.dart';
 import 'package:pdf/pdf.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,7 +25,17 @@ void main() async {
   //  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   // FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FlutterError.onError = (errorDetails) {
+    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+  };
 
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
   SharedPreferences prefs = await SharedPreferences.getInstance();
   runApp(MainApp(
     prefs: prefs,

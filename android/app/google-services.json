@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "321875669096",
+    "project_id": "invoicebuilder-49cf0",
+    "storage_bucket": "invoicebuilder-49cf0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:321875669096:android:97dbbb7123ce7495888bdd",
+        "android_client_info": {
+          "package_name": "com.gwebcircle.invoicebuilder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7YT4_5G7gFgYa4PkZKNL2AoNO0O1mm1o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
