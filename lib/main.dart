@@ -1,10 +1,8 @@
-import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:invoice_pdf_generate/Controller/pdfController.dart';
 import 'package:invoice_pdf_generate/Controller/sharedController.dart';
@@ -13,12 +11,9 @@ import 'package:invoice_pdf_generate/Screens/CompanyScreen.dart';
 import 'package:invoice_pdf_generate/Screens/InvoiceScreen.dart';
 import 'package:invoice_pdf_generate/Screens/OnboardingScreen.dart';
 import 'package:invoice_pdf_generate/Screens/SplashScreen.dart';
-import 'package:invoice_pdf_generate/Utils/PermissionUtil.dart';
 import 'package:invoice_pdf_generate/firebase_options.dart';
 import 'package:invoice_pdf_generate/style/ConstStyle.dart';
-import 'package:pdf/pdf.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'file_handle_api.dart';
 import 'pdf_invoice_api.dart';
 
 void main() async {
@@ -67,14 +62,14 @@ class MainApp extends StatelessWidget {
         ),
         GetPage(
           name: '/onboarding',
-          page: () => Onboardingscreen(),
+          page: () => const Onboardingscreen(),
         ),
         GetPage(
           name: '/company',
-          page: () => CompanyScreen(),
+          page: () => const CompanyScreen(),
         ),
-        GetPage(name: '/add', page: () => AddDataScreen()),
-        GetPage(name: '/invoice', page: () => InvoiceScreen()),
+        GetPage(name: '/add', page: () => const AddDataScreen()),
+        GetPage(name: '/invoice', page: () => const InvoiceScreen()),
       ],
       theme: ThemeData(
         colorScheme: ColorScheme(
