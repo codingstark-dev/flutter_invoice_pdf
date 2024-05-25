@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:invoice_pdf_generate/Controller/sharedController.dart';
 import 'package:invoice_pdf_generate/Utils/Enums.dart';
 import 'package:invoice_pdf_generate/file_handle_api.dart';
+import 'package:invoice_pdf_generate/style/ConstStyle.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -151,8 +153,8 @@ class PdfController extends GetxController {
       'Success',
       'Data Added Successfully',
       snackPosition: SnackPosition.BOTTOM,
-      margin: EdgeInsets.all(10),
-      duration: Duration(seconds: 1),
+      margin: const EdgeInsets.all(10),
+      duration: const Duration(seconds: 1),
       backgroundColor: Colors.green,
       colorText: Colors.white,
     );
@@ -177,15 +179,35 @@ class PdfController extends GetxController {
     update();
   }
 
-  signaturePickImage() async {
-    final picker = ImagePicker();
-    final pickedImage = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
-    signatureCodePickedImageFile = File(pickedImage!.path);
-    update();
-  }
 
+  signaturePickImage() async {
+      final picker = ImagePicker();
+      final pickedImage = await picker.pickImage(
+        source: ImageSource.gallery,
+      );
+
+      if (pickedImage != null) {
+        CroppedFile? croppedFile = await ImageCropper().cropImage(
+          
+          aspectRatio: const CropAspectRatio(ratioX: 4, ratioY: 1),
+         uiSettings: [
+            AndroidUiSettings(
+              toolbarTitle: 'Crop Signature',
+              toolbarColor: primaryColor,
+              toolbarWidgetColor: Colors.white,
+              initAspectRatio: CropAspectRatioPreset.original,
+
+              lockAspectRatio: false,)
+         ],
+          sourcePath: pickedImage.path,
+        );
+
+        if (croppedFile != null) {
+          signatureCodePickedImageFile = File(croppedFile.path);
+          update();
+        }
+      }
+    }
   void Function() get companypickImage => companyPickImage;
   void Function() get qrcodepickImage => qrCodePickImage;
   void Function() get signaturepickImage => signaturePickImage;
@@ -219,7 +241,7 @@ class PdfController extends GetxController {
     final font = await PdfGoogleFonts.firaSansCondensedRegular();
     pdf.addPage(
       pw.MultiPage(
-        margin: pw.EdgeInsets.all(40),
+        margin: const pw.EdgeInsets.all(40),
         theme: pw.ThemeData.withFont(
           fontFallback: [
             await PdfGoogleFonts.materialIcons(),
@@ -483,7 +505,7 @@ class PdfController extends GetxController {
                                       GstVar.values[index ]
                                           .toString()
                                           .split('.')
-                                          .last,
+                                          .last + ' ${gstController[index].text.isEmpty ? '0' : gstController[index].text.trim()}%' ,
                                       style: pw.TextStyle(
                                         // fontSize: 14.0,
                                         fontWeight: pw.FontWeight.bold,
@@ -493,7 +515,7 @@ class PdfController extends GetxController {
                                     ),
                                     pw.Spacer(),
                                     pw.Text(
-                                      '${gstController[index].text.isEmpty ? '0' : gstController[index].text.trim()}%',
+                                      '\₹ ${(tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * int.parse(gstController[index].text.trim()) / 100).toStringAsFixed(2)}',
                                       style: pw.TextStyle(
                                         fontWeight: pw.FontWeight.bold,
                                         color: color.value,
@@ -542,7 +564,7 @@ class PdfController extends GetxController {
                                 ),
                                 width: 200,
                                 height: 50,
-                                fit: pw.BoxFit.cover,
+                                fit: pw.BoxFit.fitWidth,
                               )
                             : pw.Container(),
                       ],
