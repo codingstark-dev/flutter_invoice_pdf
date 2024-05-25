@@ -506,15 +506,12 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                 Expanded(
                                                                   child:
                                                                       TextFormField(
-                                                                    keyboardType:
-                                                                        TextInputType
-                                                                            .number,
+                                                                  
                                                                     textInputAction:
                                                                         TextInputAction
                                                                             .next,
                                                                     inputFormatters: [
-                                                                      FilteringTextInputFormatter
-                                                                          .digitsOnly,
+                                                                   
                                                                       LengthLimitingTextInputFormatter(
                                                                           50),
                                                                     ],
