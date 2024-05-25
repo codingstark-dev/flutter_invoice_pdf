@@ -480,7 +480,7 @@ class PdfController extends GetxController {
                                 return pw.Row(
                                   children: [
                                     pw.Text(
-                                      GstVar.values[index + 1]
+                                      GstVar.values[index ]
                                           .toString()
                                           .split('.')
                                           .last,
