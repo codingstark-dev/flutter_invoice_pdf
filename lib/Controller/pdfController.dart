@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:invoice_pdf_generate/Controller/sharedController.dart';
@@ -440,7 +439,7 @@ Get.snackbar(
                     pw.Text(
                       invoiceNumber.text.isEmpty
                           ? ''
-                          : "#" + invoiceNumber.text,
+                          : "#${invoiceNumber.text}",
                       style: pw.TextStyle(
                         fontSize: 14.0,
                         color: color.value,
@@ -519,7 +518,7 @@ Get.snackbar(
                               ),
                             ),
                             pw.Text(
-                              '\₹ ${tableData.fold(0, (prev, element) => prev + int.parse(element[3]))}',
+                              '₹ ${tableData.fold(0, (prev, element) => prev + int.parse(element[3]))}',
                               style: pw.TextStyle(
                                 fontWeight: pw.FontWeight.bold,
                                 color: color.value,
@@ -540,10 +539,10 @@ Get.snackbar(
                                 return pw.Row(
                                   children: [
                                     pw.Text(
-                                      GstVar.values[index ]
+                                      '${GstVar.values[index ]
                                           .toString()
                                           .split('.')
-                                          .last + ' ${gstController[index].text.isEmpty ? '0' : gstController[index].text.trim()}%' ,
+                                          .last} ${gstController[index].text.isEmpty ? '0' : gstController[index].text.trim()}%' ,
                                       style: pw.TextStyle(
                                         // fontSize: 14.0,
                                         fontWeight: pw.FontWeight.bold,
@@ -553,7 +552,7 @@ Get.snackbar(
                                     ),
                                     pw.Spacer(),
                                     pw.Text(
-                                      '\₹ ${(tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * int.parse(gstController[index].text.trim()) / 100).toStringAsFixed(2)}',
+                                      '₹ ${(tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * int.parse(gstController[index].text.trim()) / 100).toStringAsFixed(2)}',
                                       style: pw.TextStyle(
                                         fontWeight: pw.FontWeight.bold,
                                         color: color.value,
@@ -579,7 +578,7 @@ Get.snackbar(
                               ),
                             ),
                             pw.Text(
-                              '\₹ ${(tableData.fold(0, (prev, element) => prev + int.parse(element[3])) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * gstController.fold(0, (prev, element) => prev + int.parse(element.text.trim()) / 100))).toStringAsFixed(2)}',
+                              '₹ ${(tableData.fold(0, (prev, element) => prev + int.parse(element[3])) + (tableData.fold(0, (prev, element) => prev + int.parse(element[3])) * gstController.fold(0, (prev, element) => prev + int.parse(element.text.trim()) / 100))).toStringAsFixed(2)}',
                               style: pw.TextStyle(
                                 fontWeight: pw.FontWeight.bold,
                                 color: color.value,

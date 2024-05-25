@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:getwidget/getwidget.dart';
-import 'package:invoice_pdf_generate/Utils/PermissionUtil.dart';
 import 'package:invoice_pdf_generate/style/ConstStyle.dart';
 
 class Onboardingscreen extends StatefulWidget {
@@ -45,7 +44,7 @@ class _OnboardingscreenState extends State<Onboardingscreen> {
                   curve: Curves.fastEaseInToSlowEaseOut);
             },
             text: 'Next',
-            textStyle: TextStyle(
+            textStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
@@ -63,7 +62,7 @@ class _OnboardingscreenState extends State<Onboardingscreen> {
             text: 'Skip',
             color: primaryColor,
             highlightColor: secondaryColor,
-            textStyle: TextStyle(
+            textStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
@@ -81,7 +80,7 @@ class _OnboardingscreenState extends State<Onboardingscreen> {
             text: 'Back',
             highlightColor: secondaryColor,
             color: primaryColor,
-            textStyle: TextStyle(
+            textStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
@@ -99,7 +98,7 @@ class _OnboardingscreenState extends State<Onboardingscreen> {
             text: 'Done',
             color: primaryColor,
             highlightColor: secondaryColor,
-            textStyle: TextStyle(
+            textStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),

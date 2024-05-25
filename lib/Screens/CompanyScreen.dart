@@ -6,14 +6,12 @@
 // Company Address
 // QR Code (image file for payment)
 // Signature Image (to add below the total amount)
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:invoice_pdf_generate/Controller/pdfController.dart';
 import 'package:invoice_pdf_generate/Controller/sharedController.dart';
