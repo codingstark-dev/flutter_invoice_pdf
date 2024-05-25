@@ -31,6 +31,11 @@ class _AddDataScreenState extends State<AddDataScreen> {
   final shared = Get.find<SharedPref>();
   final key = GlobalKey<FormState>();
   final key2 = GlobalKey<FormState>();
+  final ScrollController _scrollController = ScrollController(
+    initialScrollOffset: 0.0,
+    keepScrollOffset: true,
+  );
+
   // final TextEditingController _qtyController = TextEditingController();
   // final TextEditingController _amountController = TextEditingController();
   // final TextEditingController _srno = TextEditingController();
@@ -59,6 +64,9 @@ class _AddDataScreenState extends State<AddDataScreen> {
           )),
       body: GetBuilder<PdfController>(builder: (context) {
         return Scrollbar(
+          scrollbarOrientation: ScrollbarOrientation.right,
+          thumbVisibility: true,
+          interactive: true,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Form(
@@ -121,10 +129,8 @@ class _AddDataScreenState extends State<AddDataScreen> {
                       ),
                       Expanded(
                         child: TextFormField(
-                          keyboardType: TextInputType.number,
                           textInputAction: TextInputAction.next,
                           inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
                             LengthLimitingTextInputFormatter(50),
                           ],
                           validator: (value) {
@@ -399,9 +405,19 @@ class _AddDataScreenState extends State<AddDataScreen> {
                   (context.tableData.isEmpty)
                       ? Container()
                       : Scrollbar(
+                          controller: _scrollController,
+
+                          // interactive: true,
+                          // scrollbarOrientation: ScrollbarOrientation.bottom,
+                          thumbVisibility: true,
+                          trackVisibility: true,
+                          interactive: true,
+
                         child: SingleChildScrollView(
+                          controller:     _scrollController,
                             scrollDirection: Axis.horizontal,
                             child: DataTable(
+
                               columns: const [
                                 DataColumn(label: Text('Sr \nNo')),
                                 DataColumn(label: Text('Item &\nDescription')),
