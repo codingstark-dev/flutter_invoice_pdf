@@ -74,21 +74,25 @@ class PdfController extends GetxController {
 
   companyPickImage() async {
     try {
-  final picker = ImagePicker();
-  final pickedImage = await picker.pickImage(source: ImageSource.gallery);
-  companyPickedImageFile = File(pickedImage!.path);
-  update();
-} on Exception catch (e) {
-Get.snackbar(
-  'Error',
-  e.toString(),
-  snackPosition: SnackPosition.BOTTOM,
-  margin: const EdgeInsets.all(10),
-  duration: const Duration(seconds: 1),
-  backgroundColor: Colors.red,
-  colorText: Colors.white,
-  );
-  rethrow;}
+      final picker = ImagePicker();
+      final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+      if (pickedImage == null) {
+        return;
+      }
+      companyPickedImageFile = File(pickedImage.path);
+      update();
+    } on Exception catch (e) {
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(10),
+        duration: const Duration(seconds: 1),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      rethrow;
+    }
   }
 
   deleteCompanyImage() {
@@ -112,14 +116,13 @@ Get.snackbar(
   }
 
   void clearAllData() {
-  
     invoiceToEmailController.clear();
     invoiceToName.value = '';
     invoiceToAddress.value = '';
     invoiceToContactNumber.value = '';
     invoiceDate(DateTime.now());
     tableData.clear();
-   
+
     itemController.clear();
     srnoController.clear();
     qtyController.clear();
@@ -131,7 +134,7 @@ Get.snackbar(
     fileNameController.clear();
 
     // update();
-    Get.offAndToNamed('/company' );
+    Get.offAndToNamed('/company');
   }
 
   void updateTableData() {
@@ -183,68 +186,71 @@ Get.snackbar(
 
   qrCodePickImage() async {
     try {
-  final picker = ImagePicker();
-  final pickedImage = await picker.pickImage(
-    source: ImageSource.gallery,
-  );
-  qrCodePickedImageFile = File(pickedImage!.path);
-  update();
-} on Exception catch (e) {
-  Get.snackbar(
-    'Error',
-    e.toString(),
-    snackPosition: SnackPosition.BOTTOM,
-    margin: const EdgeInsets.all(10),
-    duration: const Duration(seconds: 1),
-    backgroundColor: Colors.red,
-    colorText: Colors.white,
-  );
-  rethrow;
-}
+      final picker = ImagePicker();
+      final pickedImage = await picker.pickImage(
+        source: ImageSource.gallery,
+      );
+      if (pickedImage != null) {
+        qrCodePickedImageFile = File(pickedImage.path);
+      } else {
+        return;
+      }
+      update();
+    } on Exception catch (e) {
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(10),
+        duration: const Duration(seconds: 1),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      rethrow;
+    }
   }
-
 
   signaturePickImage() async {
-      try {
-  final picker = ImagePicker();
-  final pickedImage = await picker.pickImage(
-    source: ImageSource.gallery,
-  );
-  
-  if (pickedImage != null) {
-    CroppedFile? croppedFile = await ImageCropper().cropImage(
-      
-      aspectRatio: const CropAspectRatio(ratioX: 4, ratioY: 1),
-     uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'Crop Signature',
-          toolbarColor: primaryColor,
-          toolbarWidgetColor: Colors.white,
-          initAspectRatio: CropAspectRatioPreset.original,
-  
-          lockAspectRatio: false,)
-     ],
-      sourcePath: pickedImage.path,
-    );
-  
-    if (croppedFile != null) {
-      signatureCodePickedImageFile = File(croppedFile.path);
-      update();
+    try {
+      final picker = ImagePicker();
+      final pickedImage = await picker.pickImage(
+        source: ImageSource.gallery,
+      );
+
+      if (pickedImage != null) {
+        CroppedFile? croppedFile = await ImageCropper().cropImage(
+          aspectRatio: const CropAspectRatio(ratioX: 4, ratioY: 1),
+          uiSettings: [
+            AndroidUiSettings(
+              toolbarTitle: 'Crop Signature',
+              toolbarColor: primaryColor,
+              toolbarWidgetColor: Colors.white,
+              initAspectRatio: CropAspectRatioPreset.original,
+              lockAspectRatio: false,
+            )
+          ],
+          sourcePath: pickedImage.path,
+        );
+
+        if (croppedFile != null) {
+          signatureCodePickedImageFile = File(croppedFile.path);
+          update();
+        }
+      }
+    } on Exception catch (e) {
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(10),
+        duration: const Duration(seconds: 1),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      rethrow;
     }
   }
-} on Exception catch (e) {
-  Get.snackbar(
-    'Error',
-    e.toString(),
-    snackPosition: SnackPosition.BOTTOM,
-    margin: const EdgeInsets.all(10),
-    duration: const Duration(seconds: 1),
-    backgroundColor: Colors.red,
-    colorText: Colors.white,
-  );
-  rethrow;
-}
-    }
+
   void Function() get companypickImage => companyPickImage;
   void Function() get qrcodepickImage => qrCodePickImage;
   void Function() get signaturepickImage => signaturePickImage;
@@ -493,7 +499,6 @@ Get.snackbar(
             ),
             pw.Divider(),
             pw.Container(
-              
               alignment: pw.Alignment.centerRight,
               child: pw.Row(
                 mainAxisSize: pw.MainAxisSize.min,
@@ -539,10 +544,7 @@ Get.snackbar(
                                 return pw.Row(
                                   children: [
                                     pw.Text(
-                                      '${GstVar.values[index ]
-                                          .toString()
-                                          .split('.')
-                                          .last} ${gstController[index].text.isEmpty ? '0' : gstController[index].text.trim()}%' ,
+                                      '${GstVar.values[index].toString().split('.').last} ${gstController[index].text.isEmpty ? '0' : gstController[index].text.trim()}%',
                                       style: pw.TextStyle(
                                         // fontSize: 14.0,
                                         fontWeight: pw.FontWeight.bold,
@@ -611,20 +613,20 @@ Get.snackbar(
               ),
             ),
             pw.Spacer(),
-            pw.Container(            
-                alignment: pw.Alignment.centerLeft,
-            child:   qrCodePickedImageFile != null && qrCodePickedImageFile!.existsSync()
-                ? pw.Image(
-                    pw.MemoryImage(
-                      qrCodePickedImageFile!.readAsBytesSync(),
-                    ),
-                    width: 60,
-                    height: 60,
-                    fit: pw.BoxFit.cover,
-                  )
-                : pw.Container(),
-)
-          
+            pw.Container(
+              alignment: pw.Alignment.centerLeft,
+              child: qrCodePickedImageFile != null &&
+                      qrCodePickedImageFile!.existsSync()
+                  ? pw.Image(
+                      pw.MemoryImage(
+                        qrCodePickedImageFile!.readAsBytesSync(),
+                      ),
+                      width: 60,
+                      height: 60,
+                      fit: pw.BoxFit.cover,
+                    )
+                  : pw.Container(),
+            )
           ];
         },
         footer: (context) {
