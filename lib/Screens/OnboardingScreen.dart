@@ -30,7 +30,9 @@ class _OnboardingscreenState extends State<Onboardingscreen> {
       pageController: _pageController,
       currentIndex: 0,
       pageCount: 4,
+      
       introScreenBottomNavigationBar: GFIntroScreenBottomNavigationBar(
+        
         navigationBarHeight: 80,
         forwardButton: SizedBox(
           // width: 100,
@@ -86,6 +88,7 @@ class _OnboardingscreenState extends State<Onboardingscreen> {
             ),
           ),
         ),
+        
         doneButton: SizedBox(
           // width: 100,
           height: 40,
@@ -107,6 +110,7 @@ class _OnboardingscreenState extends State<Onboardingscreen> {
         pageController: _pageController,
         pageCount: slideList.length,
         currentIndex: initialPage,
+        
         onSkipTap: () {
           Get.offAndToNamed('/company');
         },
