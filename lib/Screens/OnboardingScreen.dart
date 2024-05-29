@@ -30,9 +30,7 @@ class _OnboardingscreenState extends State<Onboardingscreen> {
       pageController: _pageController,
       currentIndex: 0,
       pageCount: 4,
-      
       introScreenBottomNavigationBar: GFIntroScreenBottomNavigationBar(
-        
         navigationBarHeight: 80,
         forwardButton: SizedBox(
           // width: 100,
@@ -53,22 +51,9 @@ class _OnboardingscreenState extends State<Onboardingscreen> {
             color: primaryColor,
           ),
         ),
-        skipButton: SizedBox(
-          // width: 100,
-          height: 40,
-          child: GFButton(
-            onPressed: () async {
-              // await storagePermission();
-              Get.offAndToNamed('/company');
-            },
-            text: 'Skip',
-            color: primaryColor,
-            highlightColor: secondaryColor,
-            textStyle: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+        skipButton: BlinkingButton(
+          text: 'Skip',
+          route: '/company',
         ),
         backButton: SizedBox(
           // width: 100,
@@ -88,29 +73,15 @@ class _OnboardingscreenState extends State<Onboardingscreen> {
             ),
           ),
         ),
-        
-        doneButton: SizedBox(
-          // width: 100,
-          height: 40,
-          child: GFButton(
-            onPressed: () async {
-              // await storagePermission();
 
-              Get.offAndToNamed('/company');
-            },
-            text: 'Done',
-            color: primaryColor,
-            highlightColor: secondaryColor,
-            textStyle: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+        doneButton: BlinkingButton(
+          text: 'Done',
+          route: '/company',
         ),
         pageController: _pageController,
         pageCount: slideList.length,
         currentIndex: initialPage,
-        
+
         onSkipTap: () {
           Get.offAndToNamed('/company');
         },
@@ -164,5 +135,64 @@ class _OnboardingscreenState extends State<Onboardingscreen> {
       ),
     ];
     return slideList;
+  }
+}
+
+class BlinkingButton extends StatefulWidget {
+  @override
+  _BlinkingButtonState createState() => _BlinkingButtonState();
+
+  const BlinkingButton({super.key, required this.text, required this.route});
+  final String text;
+  final String route;
+}
+
+class _BlinkingButtonState extends State<BlinkingButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 1),
+    )..repeat(reverse: true);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      // width: 100,
+      height: 40,
+      child: AnimatedBuilder(
+        animation: _animationController,
+        builder: (context, child) {
+          return Opacity(
+            opacity: _animationController.value,
+            child: child,
+          );
+        },
+        child: GFButton(
+          onPressed: () async {
+            // await storagePermission();
+            Get.offAndToNamed('/company');
+          },
+          text: widget.text,
+          color: secondaryColor,
+          highlightColor: secondaryColor,
+          textStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
   }
 }
