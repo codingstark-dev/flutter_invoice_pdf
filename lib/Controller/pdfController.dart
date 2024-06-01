@@ -698,7 +698,7 @@ class PdfController extends GetxController {
         ? FileHandleApi.saveDocumentTolocal(name: 'temp.pdf', pdf: pdf)
         : FileHandleApi.saveDocument(
             name:
-                '${fileNameController.text.isEmpty ? 'invoice' : fileNameController.text}.pdf',
+                fileNameController.text.isEmpty ? 'invoice' : fileNameController.text,
             pdf: pdf);
   }
 }

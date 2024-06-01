@@ -17,6 +17,7 @@ import 'package:invoice_pdf_generate/Controller/pdfController.dart';
 import 'package:invoice_pdf_generate/Controller/sharedController.dart';
 import 'package:invoice_pdf_generate/Screens/InvoiceScreen.dart';
 import 'package:invoice_pdf_generate/Utils/Enums.dart';
+import 'package:invoice_pdf_generate/Utils/PermissionUtil.dart';
 import 'package:invoice_pdf_generate/style/ConstStyle.dart';
 
 class CompanyScreen extends StatefulWidget {
@@ -667,6 +668,8 @@ class _CompanyScreenState extends State<CompanyScreen> {
                           ),
                           icon: const Icon(Icons.arrow_back_ios),
                           onPressed: () {
+                            // readFile();
+                            // writeFile();
                             if (_formKey.currentState!.validate()) {
                               // sharedPref.clearData();
                               sharedPref.saveData(
