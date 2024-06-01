@@ -14,7 +14,6 @@ import 'package:invoice_pdf_generate/Screens/SplashScreen.dart';
 import 'package:invoice_pdf_generate/firebase_options.dart';
 import 'package:invoice_pdf_generate/style/ConstStyle.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'pdf_invoice_api.dart';
 
 void main() async {
   //  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -52,7 +51,7 @@ class MainApp extends StatelessWidget {
         Get.lazyPut<SharedPref>(() => SharedPref(
               prefs: prefs,
             ));
-        Get.lazyPut<PdfInvoiceApi>(() => PdfInvoiceApi());
+        // Get.lazyPut<PdfInvoiceApi>(() => PdfInvoiceApi());
       }),
       initialRoute: '/',
       getPages: [
