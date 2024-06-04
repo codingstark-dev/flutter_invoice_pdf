@@ -1,10 +1,11 @@
-
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:invoice_pdf_generate/Utils/Ads.dart';
 import 'package:invoice_pdf_generate/api/file_handle_api.dart';
 import 'package:invoice_pdf_generate/style/ConstStyle.dart';
 import 'package:pdf/pdf.dart';
@@ -36,6 +37,38 @@ class _AddDataScreenState extends State<AddDataScreen> {
   // final TextEditingController _amountController = TextEditingController();
   // final TextEditingController _srno = TextEditingController();
   // final TextEditingController _itemController = TextEditingController();
+ 
+  InterstitialAd? _interstitialAd;
+  void _loadInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: interstitialAds,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              // _moveToHome();
+            },
+          );
+
+          setState(() {
+            _interstitialAd = ad;
+          });
+        },
+        onAdFailedToLoad: (err) {
+          print('Failed to load an interstitial ad: ${err.message}');
+        },
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInterstitialAd();
+   
+  }
+
   @override
   Widget build(BuildContext bcontext) {
     return Scaffold(
@@ -76,7 +109,8 @@ class _AddDataScreenState extends State<AddDataScreen> {
                     decoration: BoxDecoration(
                         color: primaryColor.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: primaryColor.withOpacity(0.5))),
+                        border: Border.all(
+                            color: primaryColor.withOpacity(0.5))),
                     child: Row(
                       children: [
                         Icon(
@@ -93,12 +127,12 @@ class _AddDataScreenState extends State<AddDataScreen> {
                       ],
                     ),
                   ),
-          //                 Sr No
-          // Item & Description (editable) 10 items limit and 70 auto adjust based on length of text
-          // Qty (editable)
-          // Amount
-          // Total (auto-calculated)
-          // Add Item Button
+                  //                 Sr No
+                  // Item & Description (editable) 10 items limit and 70 auto adjust based on length of text
+                  // Qty (editable)
+                  // Amount
+                  // Total (auto-calculated)
+                  // Add Item Button
                   Row(
                     children: [
                       Expanded(
@@ -227,7 +261,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                     icon: const Icon(Icons.add),
                     label: const Text('Add Item'),
                   ),
-          
+      
                   Directionality(
                     textDirection: TextDirection.rtl,
                     child: ElevatedButton.icon(
@@ -239,6 +273,9 @@ class _AddDataScreenState extends State<AddDataScreen> {
                         ),
                       ),
                       onPressed: () async {
+                        // if (_interstitialAd != null) {
+                        //   _interstitialAd?.show();
+                        // }
                         if (context.tableData.isEmpty) {
                           Get.snackbar(
                             '',
@@ -268,132 +305,169 @@ class _AddDataScreenState extends State<AddDataScreen> {
                       label: const Text('Preview Invoice PDF'),
                     ),
                   ),
-                  
-               (pdfController.tableData.isEmpty)?Container():
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: secondaryColor,
-                          backgroundColor: primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        onPressed: () async {
-                          if (context.tableData.isEmpty) {
-                            Get.snackbar(
-                              '',
-                              'Please add some items to generate invoice',
-                              snackPosition: SnackPosition.BOTTOM,
-                              margin: const EdgeInsets.all(10),
-                              backgroundColor: Colors.red,
-                              colorText: Colors.white,
-                              titleText: Container(),
-                            );
-                            return;
-                          }
-                          //ask for file name
-                          showDialog(
-                            context: bcontext,
-                            builder: (_) {
-                              return AlertDialog(
-                                title: const Center(child: Text('Enter File Name')),
-                                contentPadding: const EdgeInsets.all(10),
-                                content: TextField(
-                                  controller: context.fileNameController,
-                                  decoration: InputDecoration(
-                                    isDense: true,
-                                    border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10)),
-                                    hintText: 'Enter File Name',
-                                  ),
+      
+                  (pdfController.tableData.isEmpty)
+                      ? Container()
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: secondaryColor,
+                                backgroundColor: primaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                actionsAlignment: MainAxisAlignment.spaceAround,
-                                actions: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Get.back();
-                                    },
-                                    child: const Text('Cancel'),
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      if (context.fileNameController.text.isEmpty) {
-                                        Get.snackbar(
-                                          '',
-                                          'Please enter file name',
-                                          snackPosition: SnackPosition.BOTTOM,
-                                          margin: const EdgeInsets.all(10),
-                                          backgroundColor: Colors.red,
-                                          colorText: Colors.white,
-                                          titleText: Container(),
-                                        );
-                                        return;
-                                      }
-                                      Get.back();
-                              
-                                      // generate pdf file
-                              
-                                      pdfController.generate(false).then((pdfFile) {
-                                        shared.saveData(
-                                            key: "invoice_gen",
-                                            value: shared.getData(
-                                                        key: "invoice_gen") ==
+                              ),
+                              onPressed: () async {
+                                if (context.tableData.isEmpty) {
+                                  Get.snackbar(
+                                    '',
+                                    'Please add some items to generate invoice',
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    margin: const EdgeInsets.all(10),
+                                    backgroundColor: Colors.red,
+                                    colorText: Colors.white,
+                                    titleText: Container(),
+                                  );
+                                  return;
+                                }
+                                //ask for file name
+                                showDialog(
+                                  context: bcontext,
+                                  builder: (_) {
+                                    return AlertDialog(
+                                      title: const Center(
+                                          child: Text('Enter File Name')),
+                                      contentPadding:
+                                          const EdgeInsets.all(10),
+                                      content: TextField(
+                                        controller:
+                                            context.fileNameController,
+                                        decoration: InputDecoration(
+                                          isDense: true,
+                                          border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      10)),
+                                          hintText: 'Enter File Name',
+                                        ),
+                                      ),
+                                      actionsAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      actions: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Get.back();
+                                          },
+                                          child: const Text('Cancel'),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            _loadInterstitialAd();
+                                            int currentCount = shared.getData(
+                                                        key:
+                                                            "invoice_gen") ==
                                                     null
-                                                ? "1"
-                                                : (int.parse(shared.getData(
-                                                            key: "invoice_gen")!) +
-                                                        1)
-                                                    .toString());
-                              
-                                        Get.snackbar(
-                                          'Done',
-                                          'PDF file Saved on Download folder',
-                                          snackPosition: SnackPosition.BOTTOM,
-                                          margin: const EdgeInsets.all(10),
-                                          backgroundColor: Colors.green,
-                                          colorText: Colors.white,
-                                        );
-                                        FileHandleApi.openFile(pdfFile);
-                                      });
-                                      // Get .back();
-                                    },
-                                    child: const Text('Save'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                          // // generate pdf file
-                          // final pdfFile = await pdfController.generate(
-                          //   themeColor,
-                          //   pw.Font.courier(),
-                          // );
-                              
-                          // // opening the pdf file
-                          // FileHandleApi.openFile(pdfFile);
-                        },
-                        child: const Text('Download Invoice PDF'),
-                      ),
-                    //create restart process 
-                   const SizedBox(width: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: secondaryColor,
-                        backgroundColor: primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                                                ? 0
+                                                : int.parse(shared.getData(
+                                                    key: "invoice_gen")!);
+      
+                                            if (context.fileNameController
+                                                .text.isEmpty) {
+                                              Get.snackbar(
+                                                '',
+                                                'Please enter file name',
+                                                snackPosition:
+                                                    SnackPosition.BOTTOM,
+                                                margin:
+                                                    const EdgeInsets.all(
+                                                        10),
+                                                backgroundColor: Colors.red,
+                                                colorText: Colors.white,
+                                                titleText: Container(),
+                                              );
+                                              return;
+                                            }
+                                            Get.back();
+      
+                                            // generate pdf file
+      
+                                            pdfController
+                                                .generate(false)
+                                                .then((pdfFile) {
+                                              shared.saveData(
+                                                  key: "invoice_gen",
+                                                  value: shared.getData(
+                                                              key:
+                                                                  "invoice_gen") ==
+                                                          null
+                                                      ? "1"
+                                                      : (int.parse(shared
+                                                                  .getData(
+                                                                      key:
+                                                                          "invoice_gen")!) +
+                                                              1)
+                                                          .toString());
+      
+                                              // FileHandleApi.openFile(
+                                              //     pdfFile);
+                                            }).whenComplete(() {
+                                              Get.snackbar(
+                                                'Done',
+                                                'PDF file Saved on Download folder',
+                                                snackPosition:
+                                                    SnackPosition.BOTTOM,
+                                                margin:
+                                                    const EdgeInsets.all(
+                                                        10),
+                                                backgroundColor:
+                                                    Colors.green,
+                                                colorText: Colors.white,
+                                              );
+                                              if (currentCount % 5 == 0 &&
+                                                  _interstitialAd != null) {
+                                                _interstitialAd?.show();
+                                              }
+                                            });
+                                            ;
+      
+                                            // Get .back();
+                                          },
+                                          child: const Text('Save'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                                // // generate pdf file
+                                // final pdfFile = await pdfController.generate(
+                                //   themeColor,
+                                //   pw.Font.courier(),
+                                // );
+      
+                                // // opening the pdf file
+                                // FileHandleApi.openFile(pdfFile);
+                              },
+                              child: const Text('Download Invoice PDF'),
+                            ),
+                            //create restart process
+                            const SizedBox(width: 10),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: secondaryColor,
+                                backgroundColor: primaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              onPressed: () {
+                                pdfController.clearAllData();
+                              },
+                              child: const Text('Start New Invoice'),
+                            ),
+                          ],
                         ),
-                      ),
-                      onPressed: () {
-                        pdfController.clearAllData();
-                      },
-                      child: const Text('Start New Invoice'),
-                    ),
-                    ],
-                  ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -402,28 +476,29 @@ class _AddDataScreenState extends State<AddDataScreen> {
                       ? Container()
                       : Scrollbar(
                           controller: _scrollController,
-
+      
                           // interactive: true,
                           // scrollbarOrientation: ScrollbarOrientation.bottom,
                           thumbVisibility: true,
                           trackVisibility: true,
                           interactive: true,
-
-                        child: SingleChildScrollView(
-                          controller:     _scrollController,
+      
+                          child: SingleChildScrollView(
+                            controller: _scrollController,
                             scrollDirection: Axis.horizontal,
                             child: DataTable(
-
                               columns: const [
                                 DataColumn(label: Text('Sr \nNo')),
-                                DataColumn(label: Text('Item &\nDescription')),
+                                DataColumn(
+                                    label: Text('Item &\nDescription')),
                                 DataColumn(label: Text('Qty')),
                                 DataColumn(label: Text('Amount')),
                                 DataColumn(label: Text(""))
                               ],
                               rows: context.tableData.map<DataRow>(
                                 (data) {
-                                  final index = context.tableData.indexOf(data);
+                                  final index =
+                                      context.tableData.indexOf(data);
                                   return DataRow(
                                     onLongPress: () {
                                       context.tableData.remove(data);
@@ -450,16 +525,20 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                           icon: const Icon(Icons.edit),
                                           onPressed: () {
                                             //create showbottomsheet to update value
-                                            context.srnoControlleru.text = data[0];
-                                            context.itemControlleru.text = data[1];
-                                            context.qtyControlleru.text = data[2];
-                                            context.amountControlleru.text =
-                                                data[3];
+                                            context.srnoControlleru.text =
+                                                data[0];
+                                            context.itemControlleru.text =
+                                                data[1];
+                                            context.qtyControlleru.text =
+                                                data[2];
+                                            context.amountControlleru
+                                                .text = data[3];
                                             showModalBottomSheet(
                                                 context: bcontext,
                                                 builder: (s) => Padding(
                                                       padding:
-                                                          const EdgeInsets.all(8.0),
+                                                          const EdgeInsets
+                                                              .all(8.0),
                                                       child: Form(
                                                         key: key2,
                                                         child: Column(
@@ -472,8 +551,8 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                 Expanded(
                                                                   child:
                                                                       TextFormField(
-                                                                    controller: context
-                                                                        .srnoControlleru,
+                                                                    controller:
+                                                                        context.srnoControlleru,
                                                                     // validator: (value) {
                                                                     //   if (value!.isEmpty) {
                                                                     //     return 'Enter Sr No';
@@ -482,101 +561,89 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                     // },
                                                                     decoration:
                                                                         InputDecoration(
-                                                                      isDense: true,
-                                                                      border: OutlineInputBorder(
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(
-                                                                                  10)),
+                                                                      isDense:
+                                                                          true,
+                                                                      border:
+                                                                          OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                                                                       hintText:
                                                                           'Sr No',
-                                                                      label: const Text(
-                                                                          'Sr No'),
+                                                                      label:
+                                                                          const Text('Sr No'),
                                                                       alignLabelWithHint:
                                                                           true,
                                                                     ),
                                                                   ),
                                                                 ),
                                                                 const SizedBox(
-                                                                  width: 10,
+                                                                  width:
+                                                                      10,
                                                                 ),
                                                                 Expanded(
                                                                   child:
                                                                       TextFormField(
-                                                                  
                                                                     textInputAction:
-                                                                        TextInputAction
-                                                                            .next,
+                                                                        TextInputAction.next,
                                                                     inputFormatters: [
-                                                                   
-                                                                      LengthLimitingTextInputFormatter(
-                                                                          50),
+                                                                      LengthLimitingTextInputFormatter(50),
                                                                     ],
                                                                     validator:
                                                                         (value) {
-                                                                      if (value!
-                                                                          .isEmpty) {
+                                                                      if (value!.isEmpty) {
                                                                         return 'Enter quantity';
                                                                       }
                                                                       return null;
                                                                     },
-                                                                    controller: context
-                                                                        .qtyControlleru,
+                                                                    controller:
+                                                                        context.qtyControlleru,
                                                                     decoration:
                                                                         InputDecoration(
-                                                                      isDense: true,
-                                                                      border: OutlineInputBorder(
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(
-                                                                                  10)),
+                                                                      isDense:
+                                                                          true,
+                                                                      border:
+                                                                          OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                                                                       hintText:
                                                                           'Qty',
                                                                       label:
-                                                                          const Text(
-                                                                              'Qty'),
+                                                                          const Text('Qty'),
                                                                       alignLabelWithHint:
                                                                           true,
                                                                     ),
                                                                   ),
                                                                 ),
                                                                 const SizedBox(
-                                                                  width: 10,
+                                                                  width:
+                                                                      10,
                                                                 ),
                                                                 Expanded(
                                                                   child:
                                                                       TextFormField(
                                                                     validator:
                                                                         (value) {
-                                                                      if (value!
-                                                                          .isEmpty) {
+                                                                      if (value!.isEmpty) {
                                                                         return 'Enter amount';
                                                                       }
                                                                       return null;
                                                                     },
                                                                     keyboardType:
-                                                                        TextInputType
-                                                                            .number,
+                                                                        TextInputType.number,
                                                                     textInputAction:
-                                                                        TextInputAction
-                                                                            .next,
+                                                                        TextInputAction.next,
                                                                     inputFormatters: [
-                                                                      FilteringTextInputFormatter
-                                                                          .digitsOnly,
-                                                                      LengthLimitingTextInputFormatter(
-                                                                          50),
+                                                                      FilteringTextInputFormatter.digitsOnly,
+                                                                      LengthLimitingTextInputFormatter(50),
                                                                     ],
-                                                                    controller: context
-                                                                        .amountControlleru,
+                                                                    controller:
+                                                                        context.amountControlleru,
                                                                     decoration:
                                                                         InputDecoration(
-                                                                      isDense: true,
-                                                                      border: OutlineInputBorder(
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(
-                                                                                  10)),
+                                                                      isDense:
+                                                                          true,
+                                                                      border:
+                                                                          OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                                                                       hintText:
                                                                           'Amount',
-                                                                      label: const Text(
-                                                                          'Amount'),
+                                                                      label:
+                                                                          const Text('Amount'),
                                                                       alignLabelWithHint:
                                                                           true,
                                                                     ),
@@ -588,25 +655,27 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                               height: 10,
                                                             ),
                                                             TextFormField(
-                                                              validator: (value) {
+                                                              validator:
+                                                                  (value) {
                                                                 if (value!
                                                                     .isEmpty) {
                                                                   return 'Please enter item & description';
                                                                 }
                                                                 return null;
                                                               },
-                                                              controller: context
-                                                                  .itemControlleru,
+                                                              controller:
+                                                                  context
+                                                                      .itemControlleru,
                                                               maxLines: 3,
-                                                              maxLength: 70,
+                                                              maxLength:
+                                                                  70,
                                                               decoration:
                                                                   InputDecoration(
-                                                                isDense: true,
+                                                                isDense:
+                                                                    true,
                                                                 border: OutlineInputBorder(
                                                                     borderRadius:
-                                                                        BorderRadius
-                                                                            .circular(
-                                                                                10)),
+                                                                        BorderRadius.circular(10)),
                                                                 hintText:
                                                                     'Item & Description',
                                                                 label: const Text(
@@ -615,7 +684,8 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                     true,
                                                               ),
                                                             ),
-                                                            ElevatedButton.icon(
+                                                            ElevatedButton
+                                                                .icon(
                                                               style: ElevatedButton
                                                                   .styleFrom(
                                                                 foregroundColor:
@@ -625,12 +695,11 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                 shape:
                                                                     RoundedRectangleBorder(
                                                                   borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              10),
+                                                                      BorderRadius.circular(10),
                                                                 ),
                                                               ),
-                                                              onPressed: () {
+                                                              onPressed:
+                                                                  () {
                                                                 if (!key2
                                                                     .currentState!
                                                                     .validate()) {
@@ -638,28 +707,25 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                     '',
                                                                     'Please fill all fields',
                                                                     snackPosition:
-                                                                        SnackPosition
-                                                                            .BOTTOM,
-                                                                    margin:
-                                                                        const EdgeInsets
-                                                                            .all(
-                                                                            10),
+                                                                        SnackPosition.BOTTOM,
+                                                                    margin: const EdgeInsets
+                                                                        .all(
+                                                                        10),
                                                                     backgroundColor:
                                                                         Colors.red,
                                                                     colorText:
-                                                                        Colors
-                                                                            .white,
+                                                                        Colors.white,
                                                                     titleText:
                                                                         Container(),
                                                                   );
                                                                   return;
                                                                 }
-                                                                context
-                                                                    .updateTableBasedOnIndex(
-                                                                        index);
+                                                                context.updateTableBasedOnIndex(
+                                                                    index);
                                                               },
                                                               icon: const Icon(
-                                                                  Icons.add),
+                                                                  Icons
+                                                                      .add),
                                                               label: const Text(
                                                                   'Update Item'),
                                                             ),
@@ -676,7 +742,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                               ).toList(),
                             ),
                           ),
-                      ),
+                        ),
                   // (context.tableData.isEmpty)
                   // ? Container()
                   // :
@@ -689,7 +755,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                   //     ).then((file) => file.readAsBytesSync());
                   //   }),
                   // ),
-          
+      
                   //   Row(
                   //   children: [
                   //     Expanded(
