@@ -10,6 +10,9 @@
     <application 
      android:requestLegacyExternalStorage="true" 
     android:label="Invoice Builder" android:name="${applicationName}" android:icon="@mipmap/launcher_icon">
+     <meta-data
+        android:name="com.google.android.gms.ads.APPLICATION_ID"
+        android:value="ca-app-pub-9164317534746006~3943883665"/>
     <activity
     android:name="com.yalantis.ucrop.UCropActivity"
     android:screenOrientation="portrait"
