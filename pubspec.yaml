@@ -1,7 +1,7 @@
 name: invoice_pdf_generate
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.0.4+6
+version: 1.0.5+7
 
 environment:
   sdk: '>=3.4.0 <4.0.0'
@@ -17,6 +17,7 @@ dependencies:
     sdk: flutter
   get: ^4.6.6
   getwidget: ^4.0.0
+  google_mobile_ads: ^5.1.0
   image_cropper: ^6.0.0
   image_picker: ^1.1.1
   # media_storage: ^0.0.1
