@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,6 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:invoice_pdf_generate/Utils/Ads.dart';
-import 'package:invoice_pdf_generate/api/file_handle_api.dart';
 import 'package:invoice_pdf_generate/style/ConstStyle.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -37,7 +37,34 @@ class _AddDataScreenState extends State<AddDataScreen> {
   // final TextEditingController _amountController = TextEditingController();
   // final TextEditingController _srno = TextEditingController();
   // final TextEditingController _itemController = TextEditingController();
- 
+  RewardedAd? _rewardedAd;
+  loadAd() async {
+    await RewardedAd.load(
+        adUnitId: rewardAds,
+        request: const AdRequest(),
+        rewardedAdLoadCallback: RewardedAdLoadCallback(
+          onAdLoaded: (RewardedAd ad) {
+            // An ad loaded successfully.
+            _rewardedAd = ad;
+
+            ad.fullScreenContentCallback = FullScreenContentCallback(
+              onAdDismissedFullScreenContent: (RewardedAd ad) {
+                // Called when ad is dismissed.
+                ad.dispose();
+              },
+              onAdFailedToShowFullScreenContent:
+                  (RewardedAd ad, AdError error) {
+                // Called when ad fails to show.
+                ad.dispose();
+              },
+            );
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            // An ad failed to load.
+          },
+        ));
+  }
+
   InterstitialAd? _interstitialAd;
   void _loadInterstitialAd() {
     InterstitialAd.load(
@@ -65,8 +92,40 @@ class _AddDataScreenState extends State<AddDataScreen> {
   @override
   void initState() {
     super.initState();
+    loadAd();
     _loadInterstitialAd();
-   
+    //internet checker
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        Get.snackbar(
+          '',
+          'No Internet Connection, Please check your internet connection to access pdf',
+          snackPosition: SnackPosition.BOTTOM,
+          margin: const EdgeInsets.all(10),
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          titleText: Container(),
+        );
+      }
+    });
+  }
+
+//check internet function
+  Future checkInternet() async {
+    return await Connectivity().checkConnectivity().then((d) {
+      if (d == ConnectivityResult.none) {
+        Get.snackbar(
+          '',
+          'No Internet Connection, Please check your internet connection to access pdf',
+          snackPosition: SnackPosition.BOTTOM,
+          margin: const EdgeInsets.all(10),
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          titleText: Container(),
+        );
+        return;
+      }
+    });
   }
 
   @override
@@ -109,8 +168,8 @@ class _AddDataScreenState extends State<AddDataScreen> {
                     decoration: BoxDecoration(
                         color: primaryColor.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                            color: primaryColor.withOpacity(0.5))),
+                        border:
+                            Border.all(color: primaryColor.withOpacity(0.5))),
                     child: Row(
                       children: [
                         Icon(
@@ -243,7 +302,9 @@ class _AddDataScreenState extends State<AddDataScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
+                      await await checkInternet();
+
                       if (!key.currentState!.validate()) {
                         Get.snackbar(
                           '',
@@ -261,7 +322,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                     icon: const Icon(Icons.add),
                     label: const Text('Add Item'),
                   ),
-      
+
                   Directionality(
                     textDirection: TextDirection.rtl,
                     child: ElevatedButton.icon(
@@ -273,6 +334,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                         ),
                       ),
                       onPressed: () async {
+                        await checkInternet();
                         // if (_interstitialAd != null) {
                         //   _interstitialAd?.show();
                         // }
@@ -305,7 +367,41 @@ class _AddDataScreenState extends State<AddDataScreen> {
                       label: const Text('Preview Invoice PDF'),
                     ),
                   ),
-      
+                  // create remove watermark button
+                  Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: secondaryColor,
+                        backgroundColor: primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () async {
+                        await checkInternet();
+
+                        await loadAd();
+                        _rewardedAd?.show(
+                          onUserEarnedReward: (_, reward) {
+                            context.waterMark.value = false;
+                            Get.snackbar(
+                              '',
+                              'Watermark removed successfully',
+                              snackPosition: SnackPosition.BOTTOM,
+                              margin: const EdgeInsets.all(10),
+                              backgroundColor: Colors.green,
+                              colorText: Colors.white,
+                              titleText: Container(),
+                            );
+                          },
+                        ); //reward ads
+                      },
+                      icon: const Icon(Icons.delete),
+                      label: const Text('Remove Watermark'),
+                    ),
+                  ),
+
                   (pdfController.tableData.isEmpty)
                       ? Container()
                       : Row(
@@ -320,6 +416,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                 ),
                               ),
                               onPressed: () async {
+                                await checkInternet();
                                 if (context.tableData.isEmpty) {
                                   Get.snackbar(
                                     '',
@@ -339,17 +436,14 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                     return AlertDialog(
                                       title: const Center(
                                           child: Text('Enter File Name')),
-                                      contentPadding:
-                                          const EdgeInsets.all(10),
+                                      contentPadding: const EdgeInsets.all(10),
                                       content: TextField(
-                                        controller:
-                                            context.fileNameController,
+                                        controller: context.fileNameController,
                                         decoration: InputDecoration(
                                           isDense: true,
                                           border: OutlineInputBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(
-                                                      10)),
+                                                  BorderRadius.circular(10)),
                                           hintText: 'Enter File Name',
                                         ),
                                       ),
@@ -363,26 +457,26 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                           child: const Text('Cancel'),
                                         ),
                                         ElevatedButton(
-                                          onPressed: () {
+                                          onPressed: () async {
+                                            await checkInternet();
+
                                             _loadInterstitialAd();
                                             int currentCount = shared.getData(
-                                                        key:
-                                                            "invoice_gen") ==
+                                                        key: "invoice_gen") ==
                                                     null
                                                 ? 0
                                                 : int.parse(shared.getData(
                                                     key: "invoice_gen")!);
-      
-                                            if (context.fileNameController
-                                                .text.isEmpty) {
+
+                                            if (context.fileNameController.text
+                                                .isEmpty) {
                                               Get.snackbar(
                                                 '',
                                                 'Please enter file name',
                                                 snackPosition:
                                                     SnackPosition.BOTTOM,
                                                 margin:
-                                                    const EdgeInsets.all(
-                                                        10),
+                                                    const EdgeInsets.all(10),
                                                 backgroundColor: Colors.red,
                                                 colorText: Colors.white,
                                                 titleText: Container(),
@@ -390,9 +484,9 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                               return;
                                             }
                                             Get.back();
-      
+
                                             // generate pdf file
-      
+
                                             pdfController
                                                 .generate(false)
                                                 .then((pdfFile) {
@@ -403,13 +497,12 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                   "invoice_gen") ==
                                                           null
                                                       ? "1"
-                                                      : (int.parse(shared
-                                                                  .getData(
-                                                                      key:
-                                                                          "invoice_gen")!) +
+                                                      : (int.parse(shared.getData(
+                                                                  key:
+                                                                      "invoice_gen")!) +
                                                               1)
                                                           .toString());
-      
+
                                               // FileHandleApi.openFile(
                                               //     pdfFile);
                                             }).whenComplete(() {
@@ -419,10 +512,8 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                 snackPosition:
                                                     SnackPosition.BOTTOM,
                                                 margin:
-                                                    const EdgeInsets.all(
-                                                        10),
-                                                backgroundColor:
-                                                    Colors.green,
+                                                    const EdgeInsets.all(10),
+                                                backgroundColor: Colors.green,
                                                 colorText: Colors.white,
                                               );
                                               if (currentCount % 5 == 0 &&
@@ -431,7 +522,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                               }
                                             });
                                             ;
-      
+
                                             // Get .back();
                                           },
                                           child: const Text('Save'),
@@ -445,7 +536,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                 //   themeColor,
                                 //   pw.Font.courier(),
                                 // );
-      
+
                                 // // opening the pdf file
                                 // FileHandleApi.openFile(pdfFile);
                               },
@@ -476,29 +567,27 @@ class _AddDataScreenState extends State<AddDataScreen> {
                       ? Container()
                       : Scrollbar(
                           controller: _scrollController,
-      
+
                           // interactive: true,
                           // scrollbarOrientation: ScrollbarOrientation.bottom,
                           thumbVisibility: true,
                           trackVisibility: true,
                           interactive: true,
-      
+
                           child: SingleChildScrollView(
                             controller: _scrollController,
                             scrollDirection: Axis.horizontal,
                             child: DataTable(
                               columns: const [
                                 DataColumn(label: Text('Sr \nNo')),
-                                DataColumn(
-                                    label: Text('Item &\nDescription')),
+                                DataColumn(label: Text('Item &\nDescription')),
                                 DataColumn(label: Text('Qty')),
                                 DataColumn(label: Text('Amount')),
                                 DataColumn(label: Text(""))
                               ],
                               rows: context.tableData.map<DataRow>(
                                 (data) {
-                                  final index =
-                                      context.tableData.indexOf(data);
+                                  final index = context.tableData.indexOf(data);
                                   return DataRow(
                                     onLongPress: () {
                                       context.tableData.remove(data);
@@ -531,14 +620,14 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                 data[1];
                                             context.qtyControlleru.text =
                                                 data[2];
-                                            context.amountControlleru
-                                                .text = data[3];
+                                            context.amountControlleru.text =
+                                                data[3];
                                             showModalBottomSheet(
                                                 context: bcontext,
                                                 builder: (s) => Padding(
                                                       padding:
-                                                          const EdgeInsets
-                                                              .all(8.0),
+                                                          const EdgeInsets.all(
+                                                              8.0),
                                                       child: Form(
                                                         key: key2,
                                                         child: Column(
@@ -552,7 +641,8 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                   child:
                                                                       TextFormField(
                                                                     controller:
-                                                                        context.srnoControlleru,
+                                                                        context
+                                                                            .srnoControlleru,
                                                                     // validator: (value) {
                                                                     //   if (value!.isEmpty) {
                                                                     //     return 'Enter Sr No';
@@ -563,87 +653,98 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                         InputDecoration(
                                                                       isDense:
                                                                           true,
-                                                                      border:
-                                                                          OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                                                      border: OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(10)),
                                                                       hintText:
                                                                           'Sr No',
-                                                                      label:
-                                                                          const Text('Sr No'),
+                                                                      label: const Text(
+                                                                          'Sr No'),
                                                                       alignLabelWithHint:
                                                                           true,
                                                                     ),
                                                                   ),
                                                                 ),
                                                                 const SizedBox(
-                                                                  width:
-                                                                      10,
+                                                                  width: 10,
                                                                 ),
                                                                 Expanded(
                                                                   child:
                                                                       TextFormField(
                                                                     textInputAction:
-                                                                        TextInputAction.next,
+                                                                        TextInputAction
+                                                                            .next,
                                                                     inputFormatters: [
-                                                                      LengthLimitingTextInputFormatter(50),
+                                                                      LengthLimitingTextInputFormatter(
+                                                                          50),
                                                                     ],
                                                                     validator:
                                                                         (value) {
-                                                                      if (value!.isEmpty) {
+                                                                      if (value!
+                                                                          .isEmpty) {
                                                                         return 'Enter quantity';
                                                                       }
                                                                       return null;
                                                                     },
                                                                     controller:
-                                                                        context.qtyControlleru,
+                                                                        context
+                                                                            .qtyControlleru,
                                                                     decoration:
                                                                         InputDecoration(
                                                                       isDense:
                                                                           true,
-                                                                      border:
-                                                                          OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                                                      border: OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(10)),
                                                                       hintText:
                                                                           'Qty',
-                                                                      label:
-                                                                          const Text('Qty'),
+                                                                      label: const Text(
+                                                                          'Qty'),
                                                                       alignLabelWithHint:
                                                                           true,
                                                                     ),
                                                                   ),
                                                                 ),
                                                                 const SizedBox(
-                                                                  width:
-                                                                      10,
+                                                                  width: 10,
                                                                 ),
                                                                 Expanded(
                                                                   child:
                                                                       TextFormField(
                                                                     validator:
                                                                         (value) {
-                                                                      if (value!.isEmpty) {
+                                                                      if (value!
+                                                                          .isEmpty) {
                                                                         return 'Enter amount';
                                                                       }
                                                                       return null;
                                                                     },
                                                                     keyboardType:
-                                                                        TextInputType.number,
+                                                                        TextInputType
+                                                                            .number,
                                                                     textInputAction:
-                                                                        TextInputAction.next,
+                                                                        TextInputAction
+                                                                            .next,
                                                                     inputFormatters: [
-                                                                      FilteringTextInputFormatter.digitsOnly,
-                                                                      LengthLimitingTextInputFormatter(50),
+                                                                      FilteringTextInputFormatter
+                                                                          .digitsOnly,
+                                                                      LengthLimitingTextInputFormatter(
+                                                                          50),
                                                                     ],
                                                                     controller:
-                                                                        context.amountControlleru,
+                                                                        context
+                                                                            .amountControlleru,
                                                                     decoration:
                                                                         InputDecoration(
                                                                       isDense:
                                                                           true,
-                                                                      border:
-                                                                          OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                                                      border: OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(10)),
                                                                       hintText:
                                                                           'Amount',
-                                                                      label:
-                                                                          const Text('Amount'),
+                                                                      label: const Text(
+                                                                          'Amount'),
                                                                       alignLabelWithHint:
                                                                           true,
                                                                     ),
@@ -663,19 +764,17 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                 }
                                                                 return null;
                                                               },
-                                                              controller:
-                                                                  context
-                                                                      .itemControlleru,
+                                                              controller: context
+                                                                  .itemControlleru,
                                                               maxLines: 3,
-                                                              maxLength:
-                                                                  70,
+                                                              maxLength: 70,
                                                               decoration:
                                                                   InputDecoration(
-                                                                isDense:
-                                                                    true,
+                                                                isDense: true,
                                                                 border: OutlineInputBorder(
                                                                     borderRadius:
-                                                                        BorderRadius.circular(10)),
+                                                                        BorderRadius.circular(
+                                                                            10)),
                                                                 hintText:
                                                                     'Item & Description',
                                                                 label: const Text(
@@ -684,10 +783,10 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                     true,
                                                               ),
                                                             ),
-                                                            ElevatedButton
-                                                                .icon(
-                                                              style: ElevatedButton
-                                                                  .styleFrom(
+                                                            ElevatedButton.icon(
+                                                              style:
+                                                                  ElevatedButton
+                                                                      .styleFrom(
                                                                 foregroundColor:
                                                                     secondaryColor,
                                                                 backgroundColor:
@@ -695,11 +794,12 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                 shape:
                                                                     RoundedRectangleBorder(
                                                                   borderRadius:
-                                                                      BorderRadius.circular(10),
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10),
                                                                 ),
                                                               ),
-                                                              onPressed:
-                                                                  () {
+                                                              onPressed: () {
                                                                 if (!key2
                                                                     .currentState!
                                                                     .validate()) {
@@ -707,25 +807,29 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                                     '',
                                                                     'Please fill all fields',
                                                                     snackPosition:
-                                                                        SnackPosition.BOTTOM,
-                                                                    margin: const EdgeInsets
-                                                                        .all(
-                                                                        10),
+                                                                        SnackPosition
+                                                                            .BOTTOM,
+                                                                    margin:
+                                                                        const EdgeInsets
+                                                                            .all(
+                                                                            10),
                                                                     backgroundColor:
-                                                                        Colors.red,
+                                                                        Colors
+                                                                            .red,
                                                                     colorText:
-                                                                        Colors.white,
+                                                                        Colors
+                                                                            .white,
                                                                     titleText:
                                                                         Container(),
                                                                   );
                                                                   return;
                                                                 }
-                                                                context.updateTableBasedOnIndex(
-                                                                    index);
+                                                                context
+                                                                    .updateTableBasedOnIndex(
+                                                                        index);
                                                               },
                                                               icon: const Icon(
-                                                                  Icons
-                                                                      .add),
+                                                                  Icons.add),
                                                               label: const Text(
                                                                   'Update Item'),
                                                             ),
@@ -755,7 +859,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                   //     ).then((file) => file.readAsBytesSync());
                   //   }),
                   // ),
-      
+
                   //   Row(
                   //   children: [
                   //     Expanded(
