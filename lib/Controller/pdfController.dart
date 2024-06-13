@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:invoice_pdf_generate/Controller/sharedController.dart';
@@ -20,11 +22,14 @@ class PdfController extends GetxController {
   TextEditingController companyNameController = TextEditingController();
   TextEditingController companyAddressController = TextEditingController();
   TextEditingController companyEmailController = TextEditingController();
-  TextEditingController invoiceToEmailController = TextEditingController();
+  //company contact
+  TextEditingController companyContactController = TextEditingController();
+    TextEditingController invoiceToEmailController = TextEditingController();
   //invoicedate
   Rx<DateTime> invoiceDate = DateTime.now().obs;
   late List<List<String>> tableData = [];
   Rx<GstVar> gstVar = GstVar.NONE.obs;
+  RxBool waterMark = true.obs;
 
   TextEditingController itemController = TextEditingController();
   TextEditingController srnoController = TextEditingController();
@@ -307,32 +312,32 @@ class PdfController extends GetxController {
                         fit: pw.BoxFit.cover,
                       )
                     : pw.Container(),
-                pw.SizedBox(width: 2 * PdfPageFormat.mm),
-                pw.Column(
-                  mainAxisSize: pw.MainAxisSize.min,
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text(
-                      companyNameController.text.isEmpty
-                          ? ''
-                          : companyNameController.text,
-                      style: pw.TextStyle(
-                        fontSize: 17.0,
-                        fontWeight: pw.FontWeight.bold,
-                        color: color.value,
-                        font: fontFamily.value,
-                      ),
-                    ),
-                    // pw.Text(
-                    //   'Test',
-                    //   style: pw.TextStyle(
-                    //     fontSize: 15.0,
-                    //     color:color.value,
-                    //     font: fontFamily.value,
-                    //   ),
-                    // ),
-                  ],
-                ),
+                // pw.SizedBox(width: 2 * PdfPageFormat.mm),
+                // pw.Column(
+                //   mainAxisSize: pw.MainAxisSize.min,
+                //   crossAxisAlignment: pw.CrossAxisAlignment.start,
+                //   children: [
+                //     pw.Text(
+                //       companyNameController.text.isEmpty
+                //           ? ''
+                //           : companyNameController.text,
+                //       style: pw.TextStyle(
+                //         fontSize: 17.0,
+                //         fontWeight: pw.FontWeight.bold,
+                //         color: color.value,
+                //         font: fontFamily.value,
+                //       ),
+                //     ),
+                //     // pw.Text(
+                //     //   'Test',
+                //     //   style: pw.TextStyle(
+                //     //     fontSize: 15.0,
+                //     //     color:color.value,
+                //     //     font: fontFamily.value,
+                //     //   ),
+                //     // ),
+                //   ],
+                // ),
                 pw.Spacer(),
                 pw.Column(
                   mainAxisSize: pw.MainAxisSize.min,
@@ -613,19 +618,38 @@ class PdfController extends GetxController {
               ),
             ),
             pw.Spacer(),
-            pw.Container(
-              alignment: pw.Alignment.centerLeft,
-              child: qrCodePickedImageFile != null &&
-                      qrCodePickedImageFile!.existsSync()
-                  ? pw.Image(
-                      pw.MemoryImage(
-                        qrCodePickedImageFile!.readAsBytesSync(),
-                      ),
-                      width: 60,
-                      height: 60,
-                      fit: pw.BoxFit.cover,
-                    )
-                  : pw.Container(),
+            pw.Stack(
+              children: [
+                pw.Container(
+                  alignment: pw.Alignment.centerLeft,
+                  child: qrCodePickedImageFile != null &&
+                          qrCodePickedImageFile!.existsSync()
+                      ? pw.Image(
+                          pw.MemoryImage(
+                            qrCodePickedImageFile!.readAsBytesSync(),
+                          ),
+                          width: 60,
+                          height: 60,
+                          fit: pw.BoxFit.cover,
+                        )
+                      : pw.Container(),
+                ),
+                waterMark.isTrue
+                    ? pw.Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: pw.Opacity(
+                          opacity: 0.5,
+                          child: pw.Text(
+                            'Watermark',
+                            style: pw.TextStyle(
+                              fontSize: 30.0,
+                            ),
+                          ),
+                        ),
+                      )
+                    : pw.Container(),
+              ],
             )
           ];
         },
@@ -697,8 +721,9 @@ class PdfController extends GetxController {
     return preview
         ? FileHandleApi.saveDocumentTolocal(name: 'temp.pdf', pdf: pdf)
         : FileHandleApi.saveDocument(
-            name:
-                fileNameController.text.isEmpty ? 'invoice' : fileNameController.text,
+            name: fileNameController.text.isEmpty
+                ? 'invoice'
+                : fileNameController.text,
             pdf: pdf);
   }
 }
