@@ -7,6 +7,7 @@ environment:
   sdk: '>=3.4.0 <4.0.0'
 
 dependencies:
+  connectivity_plus: ^2.3.8
   device_info_plus: ^10.1.0
   downloadsfolder: ^1.0.1
   expandable_text: ^2.3.0
@@ -15,6 +16,7 @@ dependencies:
   firebase_crashlytics: ^3.5.6
   flutter:
     sdk: flutter
+  flutter_offline: ^2.1.0
   get: ^4.6.6
   getwidget: ^4.0.0
   google_mobile_ads: ^5.1.0
