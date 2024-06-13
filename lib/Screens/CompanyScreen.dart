@@ -209,8 +209,41 @@ class _CompanyScreenState extends State<CompanyScreen> {
                           isDense: true,
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10)),
-                          hintText: 'Company Email',
-                          label: const Text('Company Email'),
+                          hintText: 'Company Email (Optional)',
+                          label: const Text('Company Email (Optional)'),
+                          alignLabelWithHint: true,
+                          // errorText: 'Please enter company address',
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        keyboardType: TextInputType.number,
+                        controller: pdfController.companyContactController
+                          ..text = pdfController
+                                  .companyContactController.text.isEmpty
+                              ? sharedPref.getData(key: 'company_contact') ?? ''
+                              : pdfController.companyContactController.text,
+                        // onChanged: (value) {
+                        //   pdfController.companyEmail.value = value;
+                        // },
+                        // validator: (value) {
+                        //   if (value?.contains('@') == false) {
+                        //     return 'Please enter valid email';
+                        //   }
+                        //   return null;
+                        // },
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(12),
+                        ],
+
+                        decoration: InputDecoration(
+
+                          isDense: true,
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          hintText: 'Company Contact (Optional)',
+                          label: const Text('Company Contact (Optional)'),
                           alignLabelWithHint: true,
                           // errorText: 'Please enter company address',
                         ),
@@ -219,10 +252,14 @@ class _CompanyScreenState extends State<CompanyScreen> {
                       SegmentedButton(
                         // selectedIcon: const Icon(Icons.check),
                         showSelectedIcon: false,
+
                         style: ButtonStyle(
                           padding: WidgetStateProperty.all(
                             const EdgeInsets.symmetric(
                                 horizontal: 2, vertical: 2),
+                          ),
+                          textStyle: WidgetStateProperty.all(
+                            const TextStyle(fontSize: 12),
                           ),
                           shape: WidgetStateProperty.all(
                             RoundedRectangleBorder(
@@ -584,7 +621,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                                     .path),
                                                 height: 50,
                                                 width: 600,
-                                            fit: BoxFit.fitWidth,
+                                                fit: BoxFit.fitWidth,
                                               ),
                                               Container(
                                                 decoration: BoxDecoration(
@@ -714,6 +751,15 @@ class _CompanyScreenState extends State<CompanyScreen> {
                                           ''
                                       : pdfController
                                           .companyAddressController.text);
+                                sharedPref.saveData(
+                                  key: 'company_contact',
+                                  value: pdfController
+                                          .companyContactController.text.isEmpty
+                                      ? sharedPref.getData(
+                                              key: 'company_contact') ??
+                                          ''
+                                      : pdfController
+                                          .companyContactController.text);
                               sharedPref.saveData(
                                   key: 'gst_type',
                                   value: pdfController.gstVar.value
