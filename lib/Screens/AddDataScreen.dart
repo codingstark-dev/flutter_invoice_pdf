@@ -417,6 +417,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                               ),
                               onPressed: () async {
                                 await checkInternet();
+
                                 if (context.tableData.isEmpty) {
                                   Get.snackbar(
                                     '',
@@ -428,6 +429,21 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                     titleText: Container(),
                                   );
                                   return;
+                                }
+                                // await checkInternet();
+
+                                _loadInterstitialAd();
+                                int currentCount =
+                                    shared.getData(key: "invoice_gen") == null
+                                        ? 0
+                                        : int.parse(shared.getData(
+                                                    key: "invoice_gen") ??
+                                                "0") +
+                                            1;
+
+                                if (currentCount % 5 == 0 &&
+                                    _interstitialAd != null) {
+                                  _interstitialAd?.show();
                                 }
                                 //ask for file name
                                 showDialog(
@@ -458,16 +474,6 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                         ),
                                         ElevatedButton(
                                           onPressed: () async {
-                                            await checkInternet();
-
-                                            _loadInterstitialAd();
-                                            int currentCount = shared.getData(
-                                                        key: "invoice_gen") ==
-                                                    null
-                                                ? 0
-                                                : int.parse(shared.getData(
-                                                    key: "invoice_gen")!);
-
                                             if (context.fileNameController.text
                                                 .isEmpty) {
                                               Get.snackbar(
@@ -516,10 +522,6 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                                 backgroundColor: Colors.green,
                                                 colorText: Colors.white,
                                               );
-                                              if (currentCount % 5 == 0 &&
-                                                  _interstitialAd != null) {
-                                                _interstitialAd?.show();
-                                              }
                                             });
                                             ;
 

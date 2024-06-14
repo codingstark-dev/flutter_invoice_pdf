@@ -24,7 +24,7 @@ class PdfController extends GetxController {
   TextEditingController companyEmailController = TextEditingController();
   //company contact
   TextEditingController companyContactController = TextEditingController();
-    TextEditingController invoiceToEmailController = TextEditingController();
+  TextEditingController invoiceToEmailController = TextEditingController();
   //invoicedate
   Rx<DateTime> invoiceDate = DateTime.now().obs;
   late List<List<String>> tableData = [];
@@ -669,29 +669,40 @@ class PdfController extends GetxController {
                     font: fontFamily.value),
               ),
               pw.SizedBox(height: 1 * PdfPageFormat.mm),
-              companyAddressController.text.isEmpty
-                  ? pw.Container()
-                  : companyAddressController.text.isEmpty
-                      ? pw.Container()
-                      : pw.Row(
+              if (companyAddressController.text
+                  .isNotEmpty) // Only add widgets if the address is not empty
+                pw.SizedBox(
+                  child: pw.Flexible(
+                    child: pw.Wrap(
+                      // Use Wrap for a more flexible layout
+                      alignment: pw.WrapAlignment.center,
+                      spacing: 5, // Add spacing between elements if needed
+                      children: [
+                        pw.Row(
+                          mainAxisSize: pw.MainAxisSize.min,
                           mainAxisAlignment: pw.MainAxisAlignment.center,
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
                           children: [
-                            pw.Text(
-                              'Address: ',
-                              style: pw.TextStyle(
-                                  fontWeight: pw.FontWeight.bold,
-                                  color: color.value,
-                                  font: fontFamily.value),
-                            ),
-                            pw.Text(
-                              companyAddressController.text.isEmpty
-                                  ? ''
-                                  : companyAddressController.text,
+                          pw.Text(
+                            'Address: ',
+                            style: pw.TextStyle(
+                                fontWeight: pw.FontWeight.bold,
+                                color: color.value,
+                                font: fontFamily.value),
+                          ),
+                          pw.Expanded(
+                            // Use Expanded to allow the text to fill the available space
+                            child: pw.Text(
+                              companyAddressController.text,
                               style: pw.TextStyle(
                                   color: color.value, font: fontFamily.value),
                             ),
-                          ],
-                        ),
+                          ),
+                        ]),
+                      ],
+                    ),
+                  ),
+                ),
               pw.SizedBox(height: 1 * PdfPageFormat.mm),
               companyEmailController.text.isEmpty
                   ? pw.Container()
@@ -707,6 +718,27 @@ class PdfController extends GetxController {
                         ),
                         pw.Text(
                           companyEmailController.text,
+                          style: pw.TextStyle(
+                              color: color.value, font: pw.Font.courier()),
+                        ),
+                      ],
+                    ),
+              //companycontact
+              pw.SizedBox(height: 1 * PdfPageFormat.mm),
+              companyContactController.text.isEmpty
+                  ? pw.Container()
+                  : pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.center,
+                      children: [
+                        pw.Text(
+                          'Contact: ',
+                          style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              color: color.value,
+                              font: fontFamily.value),
+                        ),
+                        pw.Text(
+                          companyContactController.text,
                           style: pw.TextStyle(
                               color: color.value, font: pw.Font.courier()),
                         ),
