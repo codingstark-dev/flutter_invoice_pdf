@@ -380,10 +380,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                       ),
                       onPressed: () async {
                         await checkInternet();
-                          
-                        await loadAd();
-                          //To remove watermark you need to watch ad. snacbar
-                        Get.snackbar(
+                            Get.snackbar(
                           '',
                           'To remove watermark you need to watch ad',
                           snackPosition: SnackPosition.BOTTOM,
@@ -393,7 +390,25 @@ class _AddDataScreenState extends State<AddDataScreen> {
                           titleText: Container(),
                         );
                         // continue after 5 seconds
-                        Future.delayed(Duration(seconds: 3));
+                        Future.delayed(const Duration(seconds: 3)).whenComplete(() async {
+                         await loadAd();
+                           if (_rewardedAd == null) {
+                            Get.snackbar(
+                              '',
+                              'Ad not loaded, Please try again',
+                              snackPosition: SnackPosition.BOTTOM,
+                              margin: const EdgeInsets.all(10),
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white,
+                              titleText: Container(),
+                            );
+                            return;
+                          }
+                          //
+                          
+                       
+                          //To remove watermark you need to watch ad. snacbar
+                      
                         // Future.delayed(const Duration(seconds: 5), () {
                         //   if (_rewardedAd == null) {
                         //     Get.snackbar(
@@ -434,6 +449,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                             );
                           },
                         ); //reward ads
+                        });
                       },
                       icon: const Icon(Icons.delete),
                       label: const Text('Remove Watermark'),
