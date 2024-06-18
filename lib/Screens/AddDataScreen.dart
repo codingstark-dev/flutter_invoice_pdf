@@ -380,8 +380,46 @@ class _AddDataScreenState extends State<AddDataScreen> {
                       ),
                       onPressed: () async {
                         await checkInternet();
-
+                          
                         await loadAd();
+                          //To remove watermark you need to watch ad. snacbar
+                        Get.snackbar(
+                          '',
+                          'To remove watermark you need to watch ad',
+                          snackPosition: SnackPosition.BOTTOM,
+                          margin: const EdgeInsets.all(10),
+                          backgroundColor: primaryColor,
+                          colorText: Colors.white,
+                          titleText: Container(),
+                        );
+                        // continue after 5 seconds
+                        Future.delayed(Duration(seconds: 3));
+                        // Future.delayed(const Duration(seconds: 5), () {
+                        //   if (_rewardedAd == null) {
+                        //     Get.snackbar(
+                        //       '',
+                        //       'Ad not loaded, Please try again',
+                        //       snackPosition: SnackPosition.BOTTOM,
+                        //       margin: const EdgeInsets.all(10),
+                        //       backgroundColor: Colors.red,
+                        //       colorText: Colors.white,
+                        //       titleText: Container(),
+                        //     );
+                        //     return;
+                        //   }
+                          _rewardedAd?.fullScreenContentCallback =
+                              FullScreenContentCallback(
+                            onAdDismissedFullScreenContent: (ad) {
+                              ad.dispose();
+                            },
+                            onAdFailedToShowFullScreenContent:
+                                (RewardedAd ad, AdError error) {
+                              ad.dispose();
+                            },
+                          );
+                       
+                        
+
                         _rewardedAd?.show(
                           onUserEarnedReward: (_, reward) {
                             context.waterMark.value = false;
