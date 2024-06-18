@@ -619,6 +619,9 @@ class PdfController extends GetxController {
             ),
             pw.Spacer(),
             pw.Stack(
+              alignment: pw.Alignment.centerRight,
+              fit: pw.StackFit.loose,
+               
               children: [
                 pw.Container(
                   alignment: pw.Alignment.centerLeft,
@@ -634,20 +637,18 @@ class PdfController extends GetxController {
                         )
                       : pw.Container(),
                 ),
+                // pw.Text("data"),
                 waterMark.isTrue
-                    ? pw.Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: pw.Opacity(
+                    ?  pw.Opacity(
                           opacity: 0.5,
                           child: pw.Text(
-                            'Watermark',
+                            'Invoice created using Invoice Builder',
+                            textAlign: pw.TextAlign.right,
                             style: pw.TextStyle(
-                              fontSize: 30.0,
+                              fontSize: 14.0,
                             ),
                           ),
-                        ),
-                      )
+                        )
                     : pw.Container(),
               ],
             )
@@ -668,42 +669,33 @@ class PdfController extends GetxController {
                     color: color.value,
                     font: fontFamily.value),
               ),
-              pw.SizedBox(height: 1 * PdfPageFormat.mm),
-              if (companyAddressController.text
-                  .isNotEmpty) // Only add widgets if the address is not empty
-                pw.SizedBox(
-                  child: pw.Flexible(
-                    child: pw.Wrap(
-                      // Use Wrap for a more flexible layout
-                      alignment: pw.WrapAlignment.center,
-                      spacing: 5, // Add spacing between elements if needed
+              if (companyAddressController.text.isNotEmpty) // Only add widgets if the address is not empty
+                pw.Column(
+                  children: [
+                    pw.SizedBox(height: 1 * PdfPageFormat.mm),
+                    pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.center,
+                      crossAxisAlignment: pw.CrossAxisAlignment.center,
                       children: [
-                        pw.Row(
-                          mainAxisSize: pw.MainAxisSize.min,
-                          mainAxisAlignment: pw.MainAxisAlignment.center,
-                          crossAxisAlignment: pw.CrossAxisAlignment.start,
-                          children: [
-                          pw.Text(
-                            'Address: ',
-                            style: pw.TextStyle(
-                                fontWeight: pw.FontWeight.bold,
-                                color: color.value,
-                                font: fontFamily.value),
+                        pw.Text(
+                          'Address: ',
+                          style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              color: color.value,
+                              font: fontFamily.value),
+                        ),
+                        pw.Flexible( // Use pw.Expanded to allow the address to wrap
+                          child: pw.Text(
+                            companyAddressController.text,
+                            style: pw.TextStyle(color: color.value, font: fontFamily.value),
+                            textAlign: pw.TextAlign.center, // Ensure text is centered
                           ),
-                          pw.Expanded(
-                            // Use Expanded to allow the text to fill the available space
-                            child: pw.Text(
-                              companyAddressController.text,
-                              style: pw.TextStyle(
-                                  color: color.value, font: fontFamily.value),
-                            ),
-                          ),
-                        ]),
+                        ),
                       ],
                     ),
-                  ),
+                    pw.SizedBox(height: 1 * PdfPageFormat.mm),
+                  ],
                 ),
-              pw.SizedBox(height: 1 * PdfPageFormat.mm),
               companyEmailController.text.isEmpty
                   ? pw.Container()
                   : pw.Row(
