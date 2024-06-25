@@ -402,7 +402,8 @@ class PdfController extends GetxController {
                         font: fontFamily.value,
                       ),
                     ),
-                    pw.Text(
+                    pw.SizedBox(width: 350,
+                    child: pw.Text(
                       invoiceToAddress.value.isEmpty
                           ? ''
                           : invoiceToAddress.value,
@@ -412,6 +413,8 @@ class PdfController extends GetxController {
                         font: fontFamily.value,
                       ),
                     ),
+                    ),
+                    
                     pw.Text(
                       invoiceToContactNumber.value.isEmpty
                           ? ''
@@ -677,16 +680,10 @@ class PdfController extends GetxController {
                       mainAxisAlignment: pw.MainAxisAlignment.center,
                       crossAxisAlignment: pw.CrossAxisAlignment.center,
                       children: [
-                        pw.Text(
-                          'Address: ',
-                          style: pw.TextStyle(
-                              fontWeight: pw.FontWeight.bold,
-                              color: color.value,
-                              font: fontFamily.value),
-                        ),
+                       
                         pw.Flexible( // Use pw.Expanded to allow the address to wrap
                           child: pw.Text(
-                            companyAddressController.text,
+                          'Address: '+  companyAddressController.text,
                             style: pw.TextStyle(color: color.value, font: fontFamily.value),
                             textAlign: pw.TextAlign.center, // Ensure text is centered
                           ),
