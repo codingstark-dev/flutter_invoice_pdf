@@ -380,7 +380,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                       ),
                       onPressed: () async {
                         await checkInternet();
-                            Get.snackbar(
+                        Get.snackbar(
                           '',
                           'To remove watermark you need to watch ad',
                           snackPosition: SnackPosition.BOTTOM,
@@ -388,68 +388,82 @@ class _AddDataScreenState extends State<AddDataScreen> {
                           backgroundColor: primaryColor,
                           colorText: Colors.white,
                           titleText: Container(),
+                          duration: const Duration(seconds: 10),
+
+                          dismissDirection: DismissDirection.none,
+                          // icon: const Icon(Icons.info),
+                          mainButton: TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor: secondaryColor),
+                            onPressed: () async {
+                              Get.back();
+                              await loadAd();
+                              if (_rewardedAd == null) {
+                                Get.snackbar(
+                                    '', 'Ad not loaded, Please try again',
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    margin: const EdgeInsets.all(10),
+                                    backgroundColor: Colors.red,
+                                    colorText: Colors.white,
+                                    titleText: Container());
+                                return;
+                              }
+                              _rewardedAd?.fullScreenContentCallback =
+                                  FullScreenContentCallback(
+                                onAdDismissedFullScreenContent: (ad) {
+                                  ad.dispose();
+                                },
+                                onAdFailedToShowFullScreenContent:
+                                    (RewardedAd ad, AdError error) {
+                                  ad.dispose();
+                                },
+                              );
+
+                              _rewardedAd?.show(
+                                onUserEarnedReward: (_, reward) {
+                                  context.waterMark.value = false;
+                                  Get.snackbar(
+                                    '',
+                                    'Watermark removed successfully',
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    margin: const EdgeInsets.all(10),
+                                    backgroundColor: Colors.green,
+                                    colorText: Colors.white,
+                                    titleText: Container(),
+                                  );
+                                },
+                              );
+                            },
+                            child: const Text(
+                              'Ok',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
                         );
                         // continue after 5 seconds
-                        Future.delayed(const Duration(seconds: 3)).whenComplete(() async {
-                         await loadAd();
-                           if (_rewardedAd == null) {
-                            Get.snackbar(
-                              '',
-                              'Ad not loaded, Please try again',
-                              snackPosition: SnackPosition.BOTTOM,
-                              margin: const EdgeInsets.all(10),
-                              backgroundColor: Colors.red,
-                              colorText: Colors.white,
-                              titleText: Container(),
-                            );
-                            return;
-                          }
-                          //
-                          
-                       
-                          //To remove watermark you need to watch ad. snacbar
-                      
-                        // Future.delayed(const Duration(seconds: 5), () {
-                        //   if (_rewardedAd == null) {
-                        //     Get.snackbar(
-                        //       '',
-                        //       'Ad not loaded, Please try again',
-                        //       snackPosition: SnackPosition.BOTTOM,
-                        //       margin: const EdgeInsets.all(10),
-                        //       backgroundColor: Colors.red,
-                        //       colorText: Colors.white,
-                        //       titleText: Container(),
-                        //     );
+                        // Future.delayed(const Duration(seconds: 3)).whenComplete(() async {
+
                         //     return;
                         //   }
-                          _rewardedAd?.fullScreenContentCallback =
-                              FullScreenContentCallback(
-                            onAdDismissedFullScreenContent: (ad) {
-                              ad.dispose();
-                            },
-                            onAdFailedToShowFullScreenContent:
-                                (RewardedAd ad, AdError error) {
-                              ad.dispose();
-                            },
-                          );
-                       
-                        
+                        //   //
 
-                        _rewardedAd?.show(
-                          onUserEarnedReward: (_, reward) {
-                            context.waterMark.value = false;
-                            Get.snackbar(
-                              '',
-                              'Watermark removed successfully',
-                              snackPosition: SnackPosition.BOTTOM,
-                              margin: const EdgeInsets.all(10),
-                              backgroundColor: Colors.green,
-                              colorText: Colors.white,
-                              titleText: Container(),
-                            );
-                          },
-                        ); //reward ads
-                        });
+                        //   //To remove watermark you need to watch ad. snacbar
+
+                        // // Future.delayed(const Duration(seconds: 5), () {
+                        // //   if (_rewardedAd == null) {
+                        // //     Get.snackbar(
+                        // //       '',
+                        // //       'Ad not loaded, Please try again',
+                        // //       snackPosition: SnackPosition.BOTTOM,
+                        // //       margin: const EdgeInsets.all(10),
+                        // //       backgroundColor: Colors.red,
+                        // //       colorText: Colors.white,
+                        // //       titleText: Container(),
+                        // //     );
+                        // //     return;
+                        // //   }
+
+                        // });
                       },
                       icon: const Icon(Icons.delete),
                       label: const Text('Remove Watermark'),
