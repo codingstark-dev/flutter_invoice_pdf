@@ -601,7 +601,7 @@ class PdfController extends GetxController {
                         pw.Container(height: 1, color: PdfColors.grey400),
                         pw.SizedBox(height: 0.5 * PdfPageFormat.mm),
                         pw.Container(height: 1, color: PdfColors.grey400),
-                        pw.SizedBox(height: 2 * PdfPageFormat.mm),
+                        // pw.SizedBox(height: 2 * PdfPageFormat.mm),
                         signatureCodePickedImageFile != null &&
                                 signatureCodePickedImageFile!.existsSync()
                             ? pw.Image(
@@ -609,8 +609,8 @@ class PdfController extends GetxController {
                                   signatureCodePickedImageFile!
                                       .readAsBytesSync(),
                                 ),
-                                width: 200,
-                                height: 50,
+                                width: 100,
+                                height: 40,
                                 fit: pw.BoxFit.fitWidth,
                               )
                             : pw.Container(),

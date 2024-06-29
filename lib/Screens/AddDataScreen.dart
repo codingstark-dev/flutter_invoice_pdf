@@ -382,11 +382,12 @@ class _AddDataScreenState extends State<AddDataScreen> {
                         await checkInternet();
                         Get.snackbar(
                           '',
-                          'To remove watermark you need to watch ad',
+                          'To remove watermark you need to watch ads',
                           snackPosition: SnackPosition.BOTTOM,
                           margin: const EdgeInsets.all(10),
                           backgroundColor: primaryColor,
-                          colorText: Colors.white,
+                          colorText: secondaryColor,
+                          
                           titleText: Container(),
                           duration: const Duration(seconds: 10),
 
